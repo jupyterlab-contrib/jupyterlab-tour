@@ -1,0 +1,17 @@
+# a mybinder.org-ready environment for demoing jupyterlab-tour
+# this environment may also be used locally on Linux/MacOS/Windows, e.g.
+#
+#   conda env update --file binder/environment.yml
+#   conda activate jupyterlab-tour-demo
+#
+name: jupyterlab-tour-demo
+
+channels:
+  - conda-forge
+
+dependencies:
+  # runtime dependencies
+  - python >=3.8,<3.9.0a0
+  - jupyterlab >=2,<3.0.0a0
+  # labextension build dependencies
+  - nodejs >=12,<13.0.0a0
