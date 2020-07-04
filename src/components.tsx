@@ -50,6 +50,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
   render(): JSX.Element {
     return this.props.tutorials && this.props.tutorials[this.state.index] ? (
       <ReactJoyride
+        key={this.props.tutorials[this.state.index].id}
         {...this.props.tutorials[this.state.index].optionsJoyride}
         callback={this._handleJoyrideCallback}
         run={this.state.run}

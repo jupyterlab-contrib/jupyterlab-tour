@@ -1,11 +1,12 @@
 import { IDisposable } from '@lumino/disposable';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Menu } from '@lumino/widgets';
-import { ITutorial, ITutorialManager } from 'jupyterlab-tutorial';
 import {
+  ITutorial,
+  ITutorialManager,
   StyleOptions,
   TutorialOptions
-} from 'jupyterlab-tutorial/lib/constants';
+} from 'jupyterlab-tutorial';
 import {
   CallBackProps,
   Placement,
