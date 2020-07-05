@@ -1,4 +1,5 @@
 import { MainMenu } from '@jupyterlab/mainmenu';
+import { IStateDB } from '@jupyterlab/statedb';
 import { ISignal, Signal } from '@lumino/signaling';
 import {
   ITutorial,
@@ -6,14 +7,24 @@ import {
   TutorialOptions
 } from 'jupyterlab-tutorial';
 import { Props } from 'react-joyride';
-import { Tutorial } from './tutorial';
-import { IStateDB } from '@jupyterlab/statedb';
 import { PLUGIN_ID } from './constants';
+import { Tutorial } from './tutorial';
+import { version } from './version';
 
 const STATE_ID = `${PLUGIN_ID}:state`;
 
+/**
+ * Manager state saved in the state database
+ */
 interface IManagerState {
+  /**
+   * Set of seen tutorial IDs
+   */
   tutorialsDone: Set<string>;
+  /**
+   * Tour extension version
+   */
+  version: string;
 }
 
 /**
@@ -33,9 +44,18 @@ export class TutorialManager implements ITutorialManager {
 
     this._stateDB.fetch(STATE_ID).then(value => {
       if (value) {
-        this._state.tutorialsDone = new Set<string>([
-          ...(value as any).tutorialsDone
-        ]);
+        const savedState = (value as any) as IManagerState;
+        if (savedState.version !== version) {
+          this._state.tutorialsDone = new Set<string>();
+          this._stateDB.save(STATE_ID, {
+            version,
+            tutorialsDone: []
+          });
+        } else {
+          this._state.tutorialsDone = new Set<string>([
+            ...savedState.tutorialsDone
+          ]);
+        }
       }
     });
   }
@@ -150,21 +170,24 @@ export class TutorialManager implements ITutorialManager {
   private _forgetDoneTutorial = (id: string): void => {
     this._state.tutorialsDone.delete(id);
     this._stateDB.save(STATE_ID, {
-      tutorialsDone: [...this._state.tutorialsDone]
+      tutorialsDone: [...this._state.tutorialsDone],
+      version
     });
   };
 
   private _rememberDoneTutorial = (id: string): void => {
     this._state.tutorialsDone.add(id);
     this._stateDB.save(STATE_ID, {
-      tutorialsDone: [...this._state.tutorialsDone]
+      tutorialsDone: [...this._state.tutorialsDone],
+      version
     });
   };
 
   private _defaultOptions: Partial<TutorialOptions>;
   private _menu: MainMenu | undefined;
   private _state: IManagerState = {
-    tutorialsDone: new Set<string>()
+    tutorialsDone: new Set<string>(),
+    version
   };
   private _stateDB: IStateDB;
   private _tutorials: Map<string, Tutorial>;
