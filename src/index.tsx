@@ -2,15 +2,16 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
-import { InputDialog, ICommandPalette } from '@jupyterlab/apputils';
+import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
-import { CommandIDs, JP_STYLE, WELCOME_ID, PLUGIN_ID } from './constants';
-import { addTutorials, Tutorial } from './tutorial';
+import { CommandIDs, JP_STYLE, PLUGIN_ID, WELCOME_ID } from './constants';
+import { addTours } from './defaults';
+import { Tutorial } from './tutorial';
 import { TutorialManager } from './tutorialManager';
 
 /**
@@ -87,7 +88,7 @@ function activate(
     });
   }
 
-  addTutorials(manager);
+  addTours(manager);
 
   const node = document.createElement('div');
   document.body.appendChild(node);

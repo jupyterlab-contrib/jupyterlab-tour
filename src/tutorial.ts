@@ -1,11 +1,6 @@
 import { ISignal, Signal } from '@lumino/signaling';
 import { Menu } from '@lumino/widgets';
-import {
-  ITutorial,
-  ITutorialManager,
-  StyleOptions,
-  TutorialOptions
-} from 'jupyterlab-tutorial';
+import { ITutorial, StyleOptions, TutorialOptions } from 'jupyterlab-tutorial';
 import {
   CallBackProps,
   Placement,
@@ -16,16 +11,7 @@ import {
   Styles,
   valueof
 } from 'react-joyride';
-import { CommandIDs, TutorialDefaultOptions, tutorials } from './constants';
-
-export function addTutorials(manager: ITutorialManager): void {
-  tutorials.forEach(({ id, label, hasHelpEntry, steps }) => {
-    const tutorial = manager.createTutorial(id, label, hasHelpEntry);
-    steps.forEach(({ content, placement, target, title }) => {
-      tutorial.createAndAddStep(target, content, placement, title);
-    });
-  });
-}
+import { CommandIDs, TutorialDefaultOptions } from './constants';
 
 export class Tutorial implements ITutorial {
   constructor(id: string, label: string, options?: Partial<JoyrideProps>) {
