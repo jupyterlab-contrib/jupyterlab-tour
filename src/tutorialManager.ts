@@ -1,6 +1,4 @@
-import { JupyterFrontEnd } from '@jupyterlab/application';
 import { MainMenu } from '@jupyterlab/mainmenu';
-import { CommandRegistry } from '@lumino/commands';
 import { ISignal, Signal } from '@lumino/signaling';
 import {
   ITutorial,
@@ -14,12 +12,7 @@ import { Tutorial } from './tutorial';
  * The TutorialManager is needed to manage creation, removal and launching of Tutorials
  */
 export class TutorialManager implements ITutorialManager {
-  constructor(
-    app: JupyterFrontEnd,
-    mainMenu?: MainMenu,
-    defaultOptions?: Partial<TutorialOptions>
-  ) {
-    this._commands = app.commands;
+  constructor(mainMenu?: MainMenu, defaultOptions?: Partial<TutorialOptions>) {
     this._menu = mainMenu;
     this._tutorials = new Map<string, Tutorial>();
 
@@ -53,26 +46,11 @@ export class TutorialManager implements ITutorialManager {
       );
     }
 
-    // Create the command that will launch the tutorial when executed
-    const commandID = `tutorial-manager:${id}`;
-    const commandDisposable = this._commands.addCommand(commandID, {
-      execute: () => {
-        this.launch(id);
-      },
-      label: label,
-      className: id
-    });
-
     // Create tutorial and add it to help menu if needed
     const { styles, ...others } = this._defaultOptions;
     const options: Partial<Props> = others;
     options.styles = { options: styles };
-    const newTutorial: Tutorial = new Tutorial(
-      id,
-      commandID,
-      commandDisposable,
-      options
-    );
+    const newTutorial: Tutorial = new Tutorial(id, label, options);
     if (this._menu && addToHelpMenu) {
       newTutorial.addTutorialToMenu(this._menu.helpMenu.menu);
     }
@@ -122,13 +100,10 @@ export class TutorialManager implements ITutorialManager {
     if (!tutorial) {
       return;
     }
-    // Remove the tutorial's command
-    tutorial.commandDisposable.dispose();
     // Remove tutorial from the list
     this._tutorials.delete(id);
   }
 
-  private _commands: CommandRegistry;
   private _defaultOptions: Partial<TutorialOptions>;
   private _menu: MainMenu | undefined;
   private _tutorials: Map<string, Tutorial>;

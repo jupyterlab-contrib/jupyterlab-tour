@@ -1,4 +1,3 @@
-import { IDisposable } from '@lumino/disposable';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Menu } from '@lumino/widgets';
 import {
@@ -17,7 +16,7 @@ import {
   Styles,
   valueof
 } from 'react-joyride';
-import { TutorialDefaultOptions, tutorials } from './constants';
+import { CommandIDs, TutorialDefaultOptions, tutorials } from './constants';
 
 export function addTutorials(manager: ITutorialManager): void {
   tutorials.forEach(({ id, label, hasHelpEntry, steps }) => {
@@ -29,14 +28,8 @@ export function addTutorials(manager: ITutorialManager): void {
 }
 
 export class Tutorial implements ITutorial {
-  constructor(
-    id: string,
-    commandID: string,
-    commandDisposable: IDisposable,
-    options?: Partial<JoyrideProps>
-  ) {
-    this._commandID = commandID;
-    this._commandDisposable = commandDisposable;
+  constructor(id: string, label: string, options?: Partial<JoyrideProps>) {
+    this._label = label;
     this._id = id;
     const { styles, ...others } = options || { styles: {} };
     this._options = { ...TutorialDefaultOptions, ...others };
@@ -51,12 +44,8 @@ export class Tutorial implements ITutorial {
     });
   }
 
-  get commandDisposable(): IDisposable {
-    return this._commandDisposable;
-  }
-
   get commandID(): string {
-    return this._commandID;
+    return CommandIDs.launch;
   }
 
   get currentStepIndex(): number {
@@ -73,6 +62,10 @@ export class Tutorial implements ITutorial {
 
   get id(): string {
     return this._id;
+  }
+
+  get label(): string {
+    return this._label;
   }
 
   get options(): TutorialOptions {
@@ -123,13 +116,38 @@ export class Tutorial implements ITutorial {
 
   addTutorialToMenu(menu: Menu): Menu.IItem {
     const btnOptions: Menu.IItemOptions = {
-      args: {},
-      command: this._commandID
+      args: {
+        id: this._id
+      },
+      command: this.commandID
     };
 
     const menuButton: Menu.IItem = menu.addItem(btnOptions);
     this._menuButtons.push(menuButton);
     return menuButton;
+  }
+
+  removeTutorialFromMenu(menu: Menu): Menu.IItem[] {
+    if (
+      !menu ||
+      !menu.items ||
+      menu.items.length <= 0 ||
+      this._menuButtons.length <= 0
+    ) {
+      return; // No-op if menu or buttons list are empty
+    }
+
+    const menuItems: Set<Menu.IItem> = new Set(menu.items);
+    const tutorialItems: Set<Menu.IItem> = new Set(this._menuButtons);
+    const intersection: Set<Menu.IItem> = new Set(
+      [...menuItems].filter(item => tutorialItems.has(item))
+    );
+    const itemsToRemove: Menu.IItem[] = Array.from(intersection);
+    itemsToRemove.forEach((item: Menu.IItem, idx: number) => {
+      menu.removeItem(item);
+      this._menuButtons.splice(idx, 1);
+    });
+    return itemsToRemove;
   }
 
   handleTourEvent = (data: CallBackProps): void => {
@@ -187,29 +205,6 @@ export class Tutorial implements ITutorial {
     this.steps = updatedSteps;
   }
 
-  removeTutorialFromMenu(menu: Menu): Menu.IItem[] {
-    if (
-      !menu ||
-      !menu.items ||
-      menu.items.length <= 0 ||
-      this._menuButtons.length <= 0
-    ) {
-      return; // No-op if menu or buttons list are empty
-    }
-
-    const menuItems: Set<Menu.IItem> = new Set(menu.items);
-    const tutorialItems: Set<Menu.IItem> = new Set(this._menuButtons);
-    const intersection: Set<Menu.IItem> = new Set(
-      [...menuItems].filter(item => tutorialItems.has(item))
-    );
-    const itemsToRemove: Menu.IItem[] = Array.from(intersection);
-    itemsToRemove.forEach((item: Menu.IItem, idx: number) => {
-      menu.removeItem(item);
-      this._menuButtons.splice(idx, 1);
-    });
-    return itemsToRemove;
-  }
-
   removeStep(index: number): Step {
     if (index < 0 || index >= this.steps.length) {
       return;
@@ -236,8 +231,7 @@ export class Tutorial implements ITutorial {
 
   private _currentStepIndex = -1;
   private _id: string;
-  private _commandID: string;
-  private _commandDisposable: IDisposable;
+  private _label: string;
   private _menuButtons: Menu.IItem[] = new Array<Menu.IItem>();
   private _options: Partial<JoyrideProps>;
   private _previousStatus: valueof<status> = STATUS.READY;

@@ -1,22 +1,25 @@
-import { Placement, Props as JoyrideProps } from 'react-joyride';
+import { StyleOptions } from 'jupyterlab-tutorial';
+import { Props as JoyrideProps } from 'react-joyride';
+import { ITutorial } from './interfaces';
 
-export interface IStep {
-  content: string;
-  target: string;
-  placement?: Placement;
-  title?: string;
+export namespace CommandIDs {
+  export const launch = 'jupyterlab-tutorial:launch';
 }
 
-export interface ITutorial {
-  id: string;
-  label: string;
-  hasHelpEntry: boolean;
-  steps: Array<IStep>;
-}
+export const JP_STYLE: Partial<StyleOptions> = {
+  arrowColor: 'var(--jp-layout-color1)',
+  backgroundColor: 'var(--jp-layout-color1)',
+  overlayColor: 'var(--jp-dialog-background)',
+  primaryColor: 'var(--jp-brand-color1)',
+  spotlightShadow: 'var(--jp-elevation-z6)',
+  textColor: 'var(--jp-ui-font-color1)'
+};
+
+export const WELCOME_ID = 'jupyterlab-tour:welcome';
 
 export const tutorials: Array<ITutorial> = [
   {
-    id: 'jupyterlab-tour:welcome',
+    id: WELCOME_ID,
     label: 'Welcome Tour',
     hasHelpEntry: true,
     steps: [
