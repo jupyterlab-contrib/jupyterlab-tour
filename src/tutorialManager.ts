@@ -7,16 +7,37 @@ import {
 } from 'jupyterlab-tutorial';
 import { Props } from 'react-joyride';
 import { Tutorial } from './tutorial';
+import { IStateDB } from '@jupyterlab/statedb';
+import { PLUGIN_ID } from './constants';
+
+const STATE_ID = `${PLUGIN_ID}:state`;
+
+interface IManagerState {
+  tutorialsDone: Set<string>;
+}
 
 /**
  * The TutorialManager is needed to manage creation, removal and launching of Tutorials
  */
 export class TutorialManager implements ITutorialManager {
-  constructor(mainMenu?: MainMenu, defaultOptions?: Partial<TutorialOptions>) {
+  constructor(
+    stateDB: IStateDB,
+    mainMenu?: MainMenu,
+    defaultOptions?: Partial<TutorialOptions>
+  ) {
+    this._stateDB = stateDB;
     this._menu = mainMenu;
     this._tutorials = new Map<string, Tutorial>();
 
     this._defaultOptions = defaultOptions || {};
+
+    this._stateDB.fetch(STATE_ID).then(value => {
+      if (value) {
+        this._state.tutorialsDone = new Set<string>([
+          ...(value as any).tutorialsDone
+        ]);
+      }
+    });
   }
 
   get activeTutorial(): ITutorial {
@@ -58,12 +79,19 @@ export class TutorialManager implements ITutorialManager {
     // Add tutorial to current set
     this._tutorials.set(id, newTutorial);
 
+    const done = (tutorial: Tutorial): void => {
+      this._rememberDoneTutorial(tutorial.id);
+    };
+    newTutorial.skipped.connect(done);
+    newTutorial.finished.connect(done);
+
     return newTutorial;
   };
 
-  async launch(...tutorials: ITutorial[]): Promise<void>;
-  async launch(...tutorialIDs: string[]): Promise<void>;
-  async launch(...tutorials: ITutorial[] | string[]): Promise<void> {
+  launchConditionally(
+    tutorials: ITutorial[] | string[],
+    force = true
+  ): Promise<void> {
     if (!tutorials || tutorials.length === 0) {
       return;
     }
@@ -77,9 +105,23 @@ export class TutorialManager implements ITutorialManager {
       tutorialGroup = tutorials as ITutorial[];
     }
 
-    this._tutorialLaunched.emit(tutorialGroup.filter(
+    let tutorialList = tutorialGroup.filter(
       (tutorial: ITutorial) => tutorial && tutorial.hasSteps
-    ) as Tutorial[]);
+    ) as Tutorial[];
+
+    if (!force) {
+      tutorialList = tutorialList.filter(
+        tutorial => !this._state.tutorialsDone.has(tutorial.id)
+      );
+    }
+
+    this._tutorialLaunched.emit(tutorialList);
+  }
+
+  async launch(...tutorials: ITutorial[]): Promise<void>;
+  async launch(...tutorialIDs: string[]): Promise<void>;
+  async launch(...tutorials: ITutorial[] | string[]): Promise<void> {
+    this.launchConditionally(tutorials);
   }
 
   removeTutorial(tutorial: ITutorial): void;
@@ -102,10 +144,29 @@ export class TutorialManager implements ITutorialManager {
     }
     // Remove tutorial from the list
     this._tutorials.delete(id);
+    this._forgetDoneTutorial(id);
   }
+
+  private _forgetDoneTutorial = (id: string): void => {
+    this._state.tutorialsDone.delete(id);
+    this._stateDB.save(STATE_ID, {
+      tutorialsDone: [...this._state.tutorialsDone]
+    });
+  };
+
+  private _rememberDoneTutorial = (id: string): void => {
+    this._state.tutorialsDone.add(id);
+    this._stateDB.save(STATE_ID, {
+      tutorialsDone: [...this._state.tutorialsDone]
+    });
+  };
 
   private _defaultOptions: Partial<TutorialOptions>;
   private _menu: MainMenu | undefined;
+  private _state: IManagerState = {
+    tutorialsDone: new Set<string>()
+  };
+  private _stateDB: IStateDB;
   private _tutorials: Map<string, Tutorial>;
   private _tutorialLaunched: Signal<ITutorialManager, Tutorial[]> = new Signal<
     ITutorialManager,

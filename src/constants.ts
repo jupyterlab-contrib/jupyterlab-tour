@@ -2,6 +2,8 @@ import { StyleOptions } from 'jupyterlab-tutorial';
 import { Props as JoyrideProps } from 'react-joyride';
 import { ITutorial } from './interfaces';
 
+export const PLUGIN_ID = 'jupyterlab-tour';
+
 export namespace CommandIDs {
   export const launch = 'jupyterlab-tutorial:launch';
 }

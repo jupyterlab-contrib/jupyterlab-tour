@@ -35,7 +35,8 @@
   "dependencies": {
     "@jupyterlab/application": "^2.0.0",
     "@jupyterlab/apputils": "^2.0.0",
-    "@jupyterlab/mainmenu": "^2.1.1",
+    "@jupyterlab/mainmenu": "^2.0.0",
+    "@jupyterlab/statedb": "^2.0.0",
     "jupyterlab-tutorial": "^1.0.5",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

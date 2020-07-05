@@ -4,11 +4,12 @@ import {
 } from '@jupyterlab/application';
 import { InputDialog, ICommandPalette } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
+import { IStateDB } from '@jupyterlab/statedb';
 import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
-import { CommandIDs, JP_STYLE, WELCOME_ID } from './constants';
+import { CommandIDs, JP_STYLE, WELCOME_ID, PLUGIN_ID } from './constants';
 import { addTutorials, Tutorial } from './tutorial';
 import { TutorialManager } from './tutorialManager';
 
@@ -16,23 +17,24 @@ import { TutorialManager } from './tutorialManager';
  * Initialization data for the jupyterlab-tour extension.
  */
 const extension: JupyterFrontEndPlugin<ITutorialManager> = {
-  id: 'jupyterlab-tour',
+  id: PLUGIN_ID,
   autoStart: true,
   activate,
-  requires: [],
+  requires: [IStateDB],
   optional: [ICommandPalette, IMainMenu],
   provides: ITutorialManager
 };
 
 function activate(
   app: JupyterFrontEnd,
+  stateDB: IStateDB,
   palette?: ICommandPalette,
   menu?: MainMenu
 ): ITutorialManager {
   const { commands } = app;
 
   // Create tutorial manager
-  const manager = new TutorialManager(menu, {
+  const manager = new TutorialManager(stateDB, menu, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     styles: JP_STYLE
@@ -51,6 +53,8 @@ function activate(
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}',
     execute: async args => {
       let id = args['id'] as string;
+      const force =
+        args['force'] === undefined ? true : (args['force'] as boolean);
 
       if (!id) {
         const answer = await InputDialog.getItem({
@@ -65,7 +69,7 @@ function activate(
         }
       }
 
-      manager.launch(id);
+      manager.launchConditionally([id], force);
     }
   });
 
@@ -88,7 +92,7 @@ function activate(
   app.restored.then(() => {
     if (manager.tutorials.has(WELCOME_ID)) {
       // Wait 3s before launching the first tour - to be sure element are loaded
-      setTimeout(() => manager.launch(WELCOME_ID), 3000);
+      setTimeout(() => manager.launchConditionally([WELCOME_ID], false), 3000);
     }
   });
 
