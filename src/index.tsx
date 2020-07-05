@@ -35,6 +35,13 @@ function activate(
 
   // Create tutorial manager
   const manager = new TutorialManager(stateDB, menu, {
+    locale: {
+      back: 'Back',
+      close: 'Close',
+      last: 'Done',
+      next: 'Next',
+      skip: 'Skip'
+    },
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     styles: JP_STYLE
