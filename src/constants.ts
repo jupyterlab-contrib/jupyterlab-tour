@@ -17,6 +17,7 @@ export const JP_STYLE: Partial<StyleOptions> = {
 };
 
 export const WELCOME_ID = `${PLUGIN_ID}:welcome`;
+export const NOTEBOOK_ID = `${PLUGIN_ID}:notebook`;
 
 export const TutorialDefaultOptions: Partial<JoyrideProps> = {
   continuous: true,

@@ -4,12 +4,19 @@ import {
 } from '@jupyterlab/application';
 import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
+import { INotebookTracker } from '@jupyterlab/notebook';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
-import { CommandIDs, JP_STYLE, PLUGIN_ID, WELCOME_ID } from './constants';
+import {
+  CommandIDs,
+  JP_STYLE,
+  PLUGIN_ID,
+  WELCOME_ID,
+  NOTEBOOK_ID
+} from './constants';
 import { addTours } from './defaults';
 import { Tutorial } from './tutorial';
 import { TutorialManager } from './tutorialManager';
@@ -22,7 +29,7 @@ const extension: JupyterFrontEndPlugin<ITutorialManager> = {
   autoStart: true,
   activate,
   requires: [IStateDB],
-  optional: [ICommandPalette, IMainMenu],
+  optional: [ICommandPalette, IMainMenu, INotebookTracker],
   provides: ITutorialManager
 };
 
@@ -30,7 +37,8 @@ function activate(
   app: JupyterFrontEnd,
   stateDB: IStateDB,
   palette?: ICommandPalette,
-  menu?: MainMenu
+  menu?: MainMenu,
+  nbTracker?: INotebookTracker
 ): ITutorialManager {
   const { commands } = app;
 
@@ -96,6 +104,14 @@ function activate(
     <TourContainer tutorialLaunched={manager.tutorialLaunched} />,
     node
   );
+
+  if (nbTracker) {
+    nbTracker.widgetAdded.connect(() => {
+      if (manager.tutorials.has(NOTEBOOK_ID)) {
+        manager.launchConditionally([NOTEBOOK_ID], true);
+      }
+    });
+  }
 
   app.restored.then(() => {
     if (manager.tutorials.has(WELCOME_ID)) {

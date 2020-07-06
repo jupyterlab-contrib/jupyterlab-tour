@@ -1,6 +1,7 @@
 import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
-import { WELCOME_ID, PLUGIN_ID } from './constants';
+import { WELCOME_ID, NOTEBOOK_ID } from './constants';
+// import { triggerMouseEvent } from './utils';
 
 function addWelcomeTour(manager: ITutorialManager): void {
   const welcomeTour = manager.createTutorial(WELCOME_ID, 'Welcome Tour', true);
@@ -16,11 +17,9 @@ function addWelcomeTour(manager: ITutorialManager): void {
   welcomeTour.addStep({
     content: (
       <>
-        <p>
-          You can paused a tour by clicking anywhere outside of the tooltip.
-        </p>
-        <p>Resume the tour by clicking on the following symbol:</p>
-        <div style={{ display: 'inline-block', height: '40px' }}>
+        <p>Pause the tour by clicking anywhere outside of the tooltip.</p>
+        <p>Resume the tour by clicking on the symbol:</p>
+        <div style={{ display: 'inline-block', height: '60px' }}>
           <span
             style={{
               animation:
@@ -53,7 +52,9 @@ function addWelcomeTour(manager: ITutorialManager): void {
           />
         </div>
         <p>
-          Tip: Tours can be restarted from the <em>Help</em> menu.
+          <small>
+            Tip: Tours can be restarted from the <em>Help</em> menu.
+          </small>
         </p>
       </>
     ),
@@ -64,8 +65,10 @@ function addWelcomeTour(manager: ITutorialManager): void {
 
   welcomeTour.addStep({
     content: (
-      <>
-        <p>This is the top menu bar where you can access several menus.</p>
+      <details>
+        <summary>
+          This is the top menu bar where you can access several menus.
+        </summary>
         <ul>
           <li>
             <strong>File</strong>: actions related to files and directories
@@ -97,7 +100,7 @@ function addWelcomeTour(manager: ITutorialManager): void {
             <strong>Help</strong>: help links
           </li>
         </ul>
-      </>
+      </details>
     ),
     placement: 'bottom',
     target: '#jp-MainMenu',
@@ -119,9 +122,11 @@ function addWelcomeTour(manager: ITutorialManager): void {
           work area,...
         </p>
         <p>
-          The sidebar can be collapsed or expanded by selecting{' '}
-          <em>&quot;Show Left Sidebar&quot;</em> in the View menu or by clicking
-          on the active sidebar tab.
+          <small>
+            Tip: The sidebar can be collapsed or expanded by selecting{' '}
+            <em>&quot;Show Left Sidebar&quot;</em> in the View menu or by
+            clicking on the active sidebar tab.
+          </small>
         </p>
       </>
     ),
@@ -134,16 +139,17 @@ function addWelcomeTour(manager: ITutorialManager): void {
     content: (
       <>
         <p>
-          The main area enables you to arrange documents (notebooks, text files,
-          etc.) and other activities (terminals, code consoles, etc.) into
-          panels of tabs that can be resized or subdivided. Drag a tab to the
-          center of a tab panel to move the tab to the panel. Subdivide a tab
-          panel by dragging a tab to the left, right, top, or bottom of the
-          panel.
+          The main area enables you to arrange documents and activities into
+          panels of tabs that can be resized or subdivided.
         </p>
         <p>
-          The work area has a single current activity. The tab for the current
-          activity is marked with a colored top border (blue by default).
+          Drag a tab to the center of a tab panel to move the tab to the panel.
+          <br />
+          Subdivide a tab panel by dragging a tab to the left, right, top, or
+          bottom of the panel.
+        </p>
+        <p>
+          The tab for the current activity is marked with a colored top border.
         </p>
       </>
     ),
@@ -154,21 +160,15 @@ function addWelcomeTour(manager: ITutorialManager): void {
 
   welcomeTour.addStep({
     target: '#jp-main-statusbar',
-    content: 'Various information are reported on the status bar.',
+    content: <p>Various information are reported on the status bar.</p>,
     placement: 'top',
     title: 'Status Bar'
-  });
-
-  welcomeTour.stepChanged.connect((_, data) => {
-    if (data.action === 'next' && data.step.title === 'Main Work Area') {
-      console.log('Gotcha');
-    }
   });
 }
 
 function addNotebookTour(manager: ITutorialManager): void {
   const notebookTour = manager.createTutorial(
-    `${PLUGIN_ID}:notebook`,
+    NOTEBOOK_ID,
     'Notebook Tour',
     true
   );
@@ -176,16 +176,10 @@ function addNotebookTour(manager: ITutorialManager): void {
   notebookTour.addStep({
     target: '.jp-MainAreaWidget.jp-NotebookPanel',
     content: (
-      <>
-        <p>
-          This tour will point out some of the main elements to work with
-          notebooks.
-        </p>
-        <p>
-          Notebooks are documents that combine live runnable code with narrative
-          text (i.e. text, images,...).
-        </p>
-      </>
+      <p>
+        Notebooks are documents combining live runnable code with narrative text
+        (i.e. text, images,...).
+      </p>
     ),
     placement: 'center',
     title: 'Working with notebooks!'
@@ -193,12 +187,18 @@ function addNotebookTour(manager: ITutorialManager): void {
 
   notebookTour.addStep({
     target: '.jp-Cell.jp-Notebook-cell',
-    content: 'Notebook consists of list of cells. This is the first cell.',
+    content: (
+      <p>
+        Notebook consists of one cells list.
+        <br />
+        This is the first cell.
+      </p>
+    ),
     placement: 'bottom'
   });
 
   notebookTour.addStep({
-    target: '.jp-Notebook-toolbarCelltype',
+    target: '.jp-NotebookPanel-toolbar .jp-Notebook-toolbarCellType',
     content: (
       <>
         <p>A cell can have different type</p>
@@ -219,16 +219,79 @@ function addNotebookTour(manager: ITutorialManager): void {
 
   notebookTour.addStep({
     target: '.jp-InputArea.jp-Cell-inputArea',
-    content:
-      'A cell has an input and an output area. This is the input area that you can edit with the proper syntax depending on the type.',
+    content: (
+      <p>
+        A cell has an input and an output area. This is the input area that you
+        can edit with the proper syntax depending on the type.
+      </p>
+    ),
     placement: 'bottom'
   });
 
   notebookTour.addStep({
-    target: ".jp-NotebookPanel-toolbar svg[data-icon='ui-component:run']",
-    content:
-      'Hitting the Play button (or pressing Shift+Enter) will execute the cell content.',
+    target: '.jp-NotebookPanel-toolbar svg[data-icon="ui-components:run"]',
+    content: (
+      <p>
+        Hitting the Play button (or pressing Shift+Enter) will execute the cell
+        content.
+      </p>
+    ),
     placement: 'bottom'
+  });
+
+  notebookTour.addStep({
+    target: '.jp-NotebookPanel-toolbar .jp-KernelName',
+    content: (
+      <p>
+        When executing a <em>Code</em> cell, its code is sent to a execution
+        kernel.
+        <br />
+        Its name and its status are displayed here and in the status bar.
+      </p>
+    ),
+    placement: 'bottom'
+  });
+
+  const runningSelector =
+    '.lm-TabBar-tab svg[data-icon="ui-components:running"]';
+
+  // notebookTour.stepChanged.connect((_, data) => {
+  //   if (data.type === 'step:before' && data.step.target === runningSelector) {
+  //     const node = document.querySelector<SVGElement>(runningSelector);
+  //     const rect = node.getBoundingClientRect();
+  //     triggerMouseEvent(node, 'mousedown', rect);
+  //   }
+  // });
+
+  notebookTour.addStep({
+    target: runningSelector,
+    content: (
+      <p>
+        The running kernels are listed on this tab.
+        <br /> It can be used to open the associated document or to shut them
+        down.
+      </p>
+    ),
+    placement: 'right'
+  });
+
+  const metadataSelector =
+    '.lm-TabBar-tab svg[data-icon="ui-components:build"]';
+
+  // notebookTour.stepChanged.connect((_, data) => {
+  //   if (data.type === 'step:before' && data.step.target === metadataSelector) {
+  //     const node = document.querySelector<HTMLElement>(metadataSelector);
+  //     const rect = node.getBoundingClientRect();
+  //     triggerMouseEvent(node, 'mousedown', rect);
+  //   }
+  // });
+
+  notebookTour.addStep({
+    target: metadataSelector,
+    content: (
+      <p>Metadata (like tags) can be added to cells through this tab.</p>
+    ),
+    placement: 'right'
   });
 }
 
