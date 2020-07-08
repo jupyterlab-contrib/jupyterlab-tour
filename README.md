@@ -2,6 +2,8 @@
 
 ![Github Actions Status](https://github.com/fcollonval/jupyterlab-tour/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fcollonval/jupyterlab-tour/master?urlpath=lab)
 
+![demo](./doc/tourDemo.gif)
+
 A JupyterLab UI Tour based on [jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) and [react-joyride](https://docs.react-joyride.com).
 
 Compare to `jupyterlab-tutorial`, this extension add the following features:
