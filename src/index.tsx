@@ -96,7 +96,7 @@ function activate(
     });
   }
 
-  addTours(manager);
+  addTours(manager, app, nbTracker);
 
   const node = document.createElement('div');
   document.body.appendChild(node);
@@ -108,7 +108,7 @@ function activate(
   if (nbTracker) {
     nbTracker.widgetAdded.connect(() => {
       if (manager.tutorials.has(NOTEBOOK_ID)) {
-        manager.launchConditionally([NOTEBOOK_ID], true);
+        manager.launchConditionally([NOTEBOOK_ID], false);
       }
     });
   }

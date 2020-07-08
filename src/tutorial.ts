@@ -159,9 +159,11 @@ export class Tutorial implements ITutorial {
     }
 
     // Emit step change event
-    if (status === STATUS.RUNNING && index !== this._previousStepIndex) {
-      this._previousStepIndex = index;
-      this._currentStepIndex = data.index;
+    if (status === STATUS.RUNNING) {
+      if (index !== this._previousStepIndex) {
+        this._previousStepIndex = index;
+        this._currentStepIndex = data.index;
+      }
       this._stepChanged.emit(data);
     }
   };

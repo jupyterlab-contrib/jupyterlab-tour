@@ -1,10 +1,16 @@
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
+import { INotebookTracker, NotebookActions } from '@jupyterlab/notebook';
 import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
-import { WELCOME_ID, NOTEBOOK_ID } from './constants';
-// import { triggerMouseEvent } from './utils';
+import { NOTEBOOK_ID, WELCOME_ID } from './constants';
 
-function addWelcomeTour(manager: ITutorialManager): void {
+function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
   const welcomeTour = manager.createTutorial(WELCOME_ID, 'Welcome Tour', true);
+
+  welcomeTour.options = {
+    ...welcomeTour.options,
+    hideBackButton: true
+  };
 
   welcomeTour.addStep({
     target: '#jp-main-dock-panel',
@@ -117,28 +123,6 @@ function addWelcomeTour(manager: ITutorialManager): void {
     content: (
       <>
         <p>
-          This sidebar contains a number tabs: a file browser, a list of running
-          kernels and terminals, the command palette, a list of tabs in the main
-          work area,...
-        </p>
-        <p>
-          <small>
-            Tip: The sidebar can be collapsed or expanded by selecting{' '}
-            <em>&quot;Show Left Sidebar&quot;</em> in the View menu or by
-            clicking on the active sidebar tab.
-          </small>
-        </p>
-      </>
-    ),
-    placement: 'right',
-    target: '.jp-SideBar.jp-mod-left',
-    title: 'Left Side Bar'
-  });
-
-  welcomeTour.addStep({
-    content: (
-      <>
-        <p>
           The main area enables you to arrange documents and activities into
           panels of tabs that can be resized or subdivided.
         </p>
@@ -164,14 +148,93 @@ function addWelcomeTour(manager: ITutorialManager): void {
     placement: 'top',
     title: 'Status Bar'
   });
+
+  welcomeTour.addStep({
+    content: (
+      <>
+        <p>
+          This sidebar contains a number of tabs: a file browser, a list of
+          running kernels and terminals, the command palette, a list of tabs in
+          the main work area,...
+        </p>
+        <p>
+          <small>
+            Tip: The sidebar can be collapsed or expanded by selecting{' '}
+            <em>&quot;Show Left Sidebar&quot;</em> in the View menu or by
+            clicking on the active sidebar tab.
+          </small>
+        </p>
+      </>
+    ),
+    placement: 'right',
+    target: '.jp-SideBar.jp-mod-left',
+    title: 'Left Side Bar'
+  });
+
+  welcomeTour.addStep({
+    content: (
+      <p>
+        All user actions in JupyterLab are processed through a centralized
+        command system, called command palette. It provides a keyboard-driven
+        way to search for and run JupyterLab commands.
+      </p>
+    ),
+    placement: 'right',
+    target: '#command-palette',
+    title: 'Command Palette'
+  });
+
+  welcomeTour.addStep({
+    content: (
+      <>
+        <p>
+          The file browser enable you to work with files and directories on your
+          system. This includes opening, creating, deleting, renaming,
+          downloading, copying, and sharing files and directories.
+        </p>
+        <p>
+          <small>Tip: Actions can be triggered through the context menu.</small>
+        </p>
+      </>
+    ),
+    placement: 'right',
+    target: '#filebrowser',
+    title: 'File Browser'
+  });
+
+  welcomeTour.stepChanged.connect((_, data) => {
+    if (data.type === 'step:after') {
+      switch (data.step.target) {
+        case '.jp-SideBar.jp-mod-left':
+          shell.activateById('command-palette');
+          break;
+        case '#command-palette':
+          shell.activateById('filebrowser');
+          break;
+        default:
+          break;
+      }
+    }
+  });
 }
 
-function addNotebookTour(manager: ITutorialManager): void {
+function addNotebookTour(
+  manager: ITutorialManager,
+  shell: ILabShell,
+  nbTracker?: INotebookTracker
+): void {
   const notebookTour = manager.createTutorial(
     NOTEBOOK_ID,
     'Notebook Tour',
     true
   );
+
+  notebookTour.options = {
+    ...notebookTour.options,
+    hideBackButton: true
+  };
+
+  let cellAdded = false;
 
   notebookTour.addStep({
     target: '.jp-MainAreaWidget.jp-NotebookPanel',
@@ -218,7 +281,7 @@ function addNotebookTour(manager: ITutorialManager): void {
   });
 
   notebookTour.addStep({
-    target: '.jp-InputArea.jp-Cell-inputArea',
+    target: '.jp-Notebook-cell:last-child .jp-InputArea.jp-Cell-inputArea',
     content: (
       <p>
         A cell has an input and an output area. This is the input area that you
@@ -234,6 +297,17 @@ function addNotebookTour(manager: ITutorialManager): void {
       <p>
         Hitting the Play button (or pressing Shift+Enter) will execute the cell
         content.
+      </p>
+    ),
+    placement: 'right'
+  });
+
+  notebookTour.addStep({
+    target: '.jp-Notebook-cell:last-child .jp-OutputArea.jp-Cell-outputArea',
+    content: (
+      <p>
+        Once a cell has been executed. Its result is display in the output cell
+        area.
       </p>
     ),
     placement: 'bottom'
@@ -252,19 +326,8 @@ function addNotebookTour(manager: ITutorialManager): void {
     placement: 'bottom'
   });
 
-  const runningSelector =
-    '.lm-TabBar-tab svg[data-icon="ui-components:running"]';
-
-  // notebookTour.stepChanged.connect((_, data) => {
-  //   if (data.type === 'step:before' && data.step.target === runningSelector) {
-  //     const node = document.querySelector<SVGElement>(runningSelector);
-  //     const rect = node.getBoundingClientRect();
-  //     triggerMouseEvent(node, 'mousedown', rect);
-  //   }
-  // });
-
   notebookTour.addStep({
-    target: runningSelector,
+    target: '#jp-running-sessions',
     content: (
       <p>
         The running kernels are listed on this tab.
@@ -275,27 +338,65 @@ function addNotebookTour(manager: ITutorialManager): void {
     placement: 'right'
   });
 
-  const metadataSelector =
-    '.lm-TabBar-tab svg[data-icon="ui-components:build"]';
-
-  // notebookTour.stepChanged.connect((_, data) => {
-  //   if (data.type === 'step:before' && data.step.target === metadataSelector) {
-  //     const node = document.querySelector<HTMLElement>(metadataSelector);
-  //     const rect = node.getBoundingClientRect();
-  //     triggerMouseEvent(node, 'mousedown', rect);
-  //   }
-  // });
-
   notebookTour.addStep({
-    target: metadataSelector,
+    target: '#jp-property-inspector',
     content: (
       <p>Metadata (like tags) can be added to cells through this tab.</p>
     ),
     placement: 'right'
   });
+
+  notebookTour.stepChanged.connect((_, data) => {
+    if (data.type === 'tour:start') {
+      cellAdded = false;
+    } else if (data.type === 'step:before') {
+      switch (data.step.target) {
+        case '.jp-NotebookPanel-toolbar svg[data-icon="ui-components:run"]':
+          {
+            const current = nbTracker.currentWidget;
+            if (current) {
+              const { content, context } = current;
+              NotebookActions.run(content, context.sessionContext);
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    } else if (data.type === 'step:after') {
+      switch (data.step.target) {
+        case '.jp-NotebookPanel-toolbar .jp-Notebook-toolbarCellType':
+          {
+            const current = nbTracker.currentWidget;
+            if (current && !cellAdded) {
+              const notebook = current.content;
+              NotebookActions.insertBelow(notebook);
+              const activeCell = notebook.activeCell;
+              activeCell.model.value.text = 'a = 2\na';
+              cellAdded = true;
+            }
+          }
+
+          break;
+        case '.jp-NotebookPanel-toolbar .jp-KernelName':
+          shell.activateById('jp-running-sessions');
+          break;
+        case '#jp-running-sessions':
+          shell.activateById('jp-property-inspector');
+          break;
+        default:
+          break;
+      }
+    }
+  });
 }
 
-export function addTours(manager: ITutorialManager): void {
-  addWelcomeTour(manager);
-  addNotebookTour(manager);
+export function addTours(
+  manager: ITutorialManager,
+  app: JupyterFrontEnd,
+  nbTracker?: INotebookTracker
+): void {
+  const { shell } = app;
+  addWelcomeTour(manager, shell as ILabShell);
+  addNotebookTour(manager, shell as ILabShell, nbTracker);
 }
