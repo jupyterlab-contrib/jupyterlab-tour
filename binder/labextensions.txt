@@ -1,2 +1,2 @@
-# development install of jupyterlab-tour
-.
+# Do not install in dev mode
+jupyterlab-tour
