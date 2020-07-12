@@ -48,7 +48,7 @@ _("jupyter", "labextension", "install", "--no-build", "--debug",
 _("jupyter", "labextension", "list")
 
 # verify the list of extensions
-_("jupyter", "lab", "build", "--dev-build=False", "--minimize=False", "--debug")
+_("jupyter", "lab", "build", "--dev-build=False", "--minimize=True", "--debug")
 
 # verify the list of extensions one last time
 _("jupyter", "labextension", "list")
