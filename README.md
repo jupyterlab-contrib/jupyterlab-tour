@@ -78,6 +78,9 @@ if ( tour ) {
 }
 ```
 
+> One example is available on [`jupyter_conda`](https://github.com/fcollonval/jupyter_conda/blob/master/labextension/src/index.ts#L92).
+> Test it on [binder](https://mybinder.org/v2/gh/fcollonval/jupyter_conda/master?urlpath=lab).
+
 ## Contributing
 
 ### Install
