@@ -7,7 +7,7 @@ export interface IStep {
   title?: string;
 }
 
-export interface ITutorial {
+export interface ITour {
   id: string;
   label: string;
   hasHelpEntry: boolean;

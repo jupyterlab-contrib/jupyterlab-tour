@@ -6,20 +6,21 @@ import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { IStateDB } from '@jupyterlab/statedb';
-import { ITutorialManager } from 'jupyterlab-tutorial';
+import { ITutorialManager, ITutorial } from 'jupyterlab-tutorial';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
 import {
   CommandIDs,
   JP_STYLE,
+  NOTEBOOK_ID,
   PLUGIN_ID,
-  WELCOME_ID,
-  NOTEBOOK_ID
+  WELCOME_ID
 } from './constants';
 import { addTours } from './defaults';
 import { Tutorial } from './tutorial';
 import { TutorialManager } from './tutorialManager';
+import { addJSONTour } from './utils';
 
 /**
  * Initialization data for the jupyterlab-tour extension.
@@ -86,6 +87,15 @@ function activate(
       }
 
       manager.launchConditionally([id], force);
+    }
+  });
+
+  commands.addCommand(CommandIDs.addTour, {
+    label: 'Add a tour',
+    usage:
+      'Add a tour and returns it.\nArguments {tour: ITour}\nReturns `null` if a failure occurs.',
+    execute: (args): ITutorial | null => {
+      return addJSONTour(manager, args.tour as any);
     }
   });
 

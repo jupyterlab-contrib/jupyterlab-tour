@@ -4,6 +4,7 @@ import { Props as JoyrideProps } from 'react-joyride';
 export const PLUGIN_ID = 'jupyterlab-tour';
 
 export namespace CommandIDs {
+  export const addTour = `${PLUGIN_ID}:add`;
   export const launch = `${PLUGIN_ID}:launch`;
 }
 

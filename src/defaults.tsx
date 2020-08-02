@@ -353,10 +353,12 @@ function addNotebookTour(
       switch (data.step.target) {
         case '.jp-NotebookPanel-toolbar svg[data-icon="ui-components:run"]':
           {
-            const current = nbTracker.currentWidget;
-            if (current) {
-              const { content, context } = current;
-              NotebookActions.run(content, context.sessionContext);
+            if (nbTracker) {
+              const current = nbTracker.currentWidget;
+              if (current) {
+                const { content, context } = current;
+                NotebookActions.run(content, context.sessionContext);
+              }
             }
           }
           break;
@@ -367,13 +369,17 @@ function addNotebookTour(
       switch (data.step.target) {
         case '.jp-NotebookPanel-toolbar .jp-Notebook-toolbarCellType':
           {
-            const current = nbTracker.currentWidget;
-            if (current && !cellAdded) {
-              const notebook = current.content;
-              NotebookActions.insertBelow(notebook);
-              const activeCell = notebook.activeCell;
-              activeCell.model.value.text = 'a = 2\na';
-              cellAdded = true;
+            if (nbTracker) {
+              const current = nbTracker.currentWidget;
+              if (current && !cellAdded) {
+                const notebook = current.content;
+                NotebookActions.insertBelow(notebook);
+                const activeCell = notebook.activeCell;
+                if (activeCell) {
+                  activeCell.model.value.text = 'a = 2\na';
+                  cellAdded = true;
+                }
+              }
             }
           }
 

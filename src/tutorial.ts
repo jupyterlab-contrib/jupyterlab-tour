@@ -195,7 +195,7 @@ export class Tutorial implements ITutorial {
 
   removeStep(index: number): Step {
     if (index < 0 || index >= this.steps.length) {
-      return;
+      return null;
     }
     return this.steps.splice(index, 1)[0];
   }

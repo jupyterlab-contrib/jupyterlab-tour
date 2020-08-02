@@ -113,9 +113,9 @@ export class TutorialManager implements ITutorialManager {
     force = true
   ): Promise<void> {
     if (!tutorials || tutorials.length === 0) {
-      return;
+      return Promise.resolve();
     }
-    let tutorialGroup: ITutorial[];
+    let tutorialGroup: Array<ITutorial | undefined>;
 
     if (typeof tutorials[0] === 'string') {
       tutorialGroup = (tutorials as string[]).map((id: string) =>
@@ -126,7 +126,7 @@ export class TutorialManager implements ITutorialManager {
     }
 
     let tutorialList = tutorialGroup.filter(
-      (tutorial: ITutorial) => tutorial && tutorial.hasSteps
+      (tutorial: ITutorial | undefined) => tutorial && tutorial.hasSteps
     ) as Tutorial[];
 
     if (!force) {
@@ -136,6 +136,8 @@ export class TutorialManager implements ITutorialManager {
     }
 
     this._tutorialLaunched.emit(tutorialList);
+
+    return Promise.resolve();
   }
 
   async launch(...tutorials: ITutorial[]): Promise<void>;
@@ -158,7 +160,7 @@ export class TutorialManager implements ITutorialManager {
       id = t.id;
     }
 
-    const tutorial: Tutorial = this._tutorials.get(id);
+    const tutorial: Tutorial | undefined = this._tutorials.get(id);
     if (!tutorial) {
       return;
     }

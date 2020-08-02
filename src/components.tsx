@@ -47,7 +47,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
     }
   };
 
-  render(): JSX.Element {
+  render(): JSX.Element | null {
     return this.props.tutorials && this.props.tutorials[this.state.index] ? (
       <ReactJoyride
         key={this.props.tutorials[this.state.index].id}
