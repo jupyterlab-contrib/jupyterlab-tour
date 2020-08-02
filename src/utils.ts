@@ -16,7 +16,7 @@ export function addJSONTour(
   try {
     tutorial = manager.createTutorial(id, label, hasHelpEntry);
     steps.forEach(({ content, placement, target, title }) => {
-      tutorial?.createAndAddStep(target, content, placement, title);
+      tutorial.createAndAddStep(target, content, placement, title);
     });
   } catch (error) {
     console.error(`Fail to add tour '${label}' (${id})`, error);
