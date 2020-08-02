@@ -27,6 +27,7 @@ jobs:
       run: |
         jlpm
         jlpm run eslint:check
+        jlpm run test
 
         jupyter labextension install .
 
