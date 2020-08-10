@@ -113,6 +113,10 @@ export class Tutorial implements ITutorial {
     return menuButton;
   }
 
+  isRunning(): boolean {
+    return this._currentStepIndex >= 0;
+  }
+
   removeTutorialFromMenu(menu: Menu): Menu.IItem[] {
     if (
       !menu ||
