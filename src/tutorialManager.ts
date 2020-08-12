@@ -62,8 +62,10 @@ export class TutorialManager implements ITutorialManager {
   }
 
   get activeTutorial(): ITutorial {
-    console.warn('activeTutorial is deprecated');
-    return null;
+    const activeTutorial = this._activeTutorials.filter(tutorial =>
+      tutorial.isRunning()
+    );
+    return activeTutorial[0];
   }
 
   /**
@@ -113,7 +115,7 @@ export class TutorialManager implements ITutorialManager {
     tutorials: ITutorial[] | string[],
     force = true
   ): Promise<void> {
-    if (!tutorials || tutorials.length === 0) {
+    if (!tutorials || tutorials.length === 0 || this.activeTutorial) {
       return Promise.resolve();
     }
     let tutorialGroup: Array<ITutorial | undefined>;
@@ -136,18 +138,21 @@ export class TutorialManager implements ITutorialManager {
       );
     }
 
+    const startTours = (): void => {
+      this._activeTutorials = tutorialList;
+      this._tutorialLaunched.emit(tutorialList);
+    };
+
     if (tutorialList.length > 0) {
       if (force) {
-        this._tutorialLaunched.emit(tutorialList);
+        startTours();
       } else {
         INotification.info(`Try the ${tutorialList[0].label}.`, {
           autoClose: 10000,
           buttons: [
             {
               label: 'Start now',
-              callback: (): void => {
-                this._tutorialLaunched.emit(tutorialList);
-              }
+              callback: startTours
             },
             {
               label: "Don't show me again",
@@ -210,6 +215,7 @@ export class TutorialManager implements ITutorialManager {
     });
   };
 
+  private _activeTutorials: Tutorial[] = new Array<Tutorial>();
   private _defaultOptions: Partial<TutorialOptions>;
   private _menu: MainMenu | undefined;
   private _state: IManagerState = {
