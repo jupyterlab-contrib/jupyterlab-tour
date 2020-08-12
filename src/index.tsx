@@ -68,6 +68,7 @@ function activate(
     },
     usage:
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}',
+    isEnabled: () => !manager.activeTutorial,
     execute: async args => {
       let id = args['id'] as string;
       const force =
