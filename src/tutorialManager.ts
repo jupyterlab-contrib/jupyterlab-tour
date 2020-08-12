@@ -136,23 +136,31 @@ export class TutorialManager implements ITutorialManager {
       );
     }
 
-    INotification.info(`Try the ${tutorialList[0].label}.`, {
-      autoClose: 5000,
-      buttons: [
-        {
-          label: 'Start now',
-          callback: (): void => {
-            this._tutorialLaunched.emit(tutorialList);
-          }
-        },
-        {
-          label: "Don't show me again",
-          callback: (): void => {
-            tutorialList.forEach(tour => this._rememberDoneTutorial(tour.id));
-          }
-        }
-      ]
-    });
+    if (tutorialList.length > 0) {
+      if (force) {
+        this._tutorialLaunched.emit(tutorialList);
+      } else {
+        INotification.info(`Try the ${tutorialList[0].label}.`, {
+          autoClose: 10000,
+          buttons: [
+            {
+              label: 'Start now',
+              callback: (): void => {
+                this._tutorialLaunched.emit(tutorialList);
+              }
+            },
+            {
+              label: "Don't show me again",
+              callback: (): void => {
+                tutorialList.forEach(tour =>
+                  this._rememberDoneTutorial(tour.id)
+                );
+              }
+            }
+          ]
+        });
+      }
+    }
 
     return Promise.resolve();
   }
