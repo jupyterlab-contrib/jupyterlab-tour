@@ -40,6 +40,7 @@
     "@jupyterlab/notebook": "^2.0.0",
     "@jupyterlab/statedb": "^2.0.0",
     "jupyterlab-tutorial": "^1.0.5",
+    "jupyterlab_toastify": "^4.1.2",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-joyride": "^2.2.1"
