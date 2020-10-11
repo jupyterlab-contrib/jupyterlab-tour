@@ -50,6 +50,7 @@ jobs:
         jlpm run eslint:check
         jlpm run test
 
-        jupyter labextension install .
+        python -m pip install .
 
+        jupyter labextension list 2>&1 | grep -ie "jupyterlab-tour.*OK"
         python -m jupyterlab.browser_check
