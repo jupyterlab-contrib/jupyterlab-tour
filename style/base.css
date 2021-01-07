@@ -1,0 +1,9 @@
+.react-joyride__tooltip p,
+.react-joyride__tooltip li,
+.react-joyride__tooltip summary {
+  text-align: left;
+}
+
+.react-joyride__tooltip small {
+  font-size: .8em
+}

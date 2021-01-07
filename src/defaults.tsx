@@ -1,8 +1,8 @@
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { INotebookTracker, NotebookActions } from '@jupyterlab/notebook';
-import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
 import { NOTEBOOK_ID, WELCOME_ID } from './constants';
+import { ITutorialManager } from './tokens';
 
 function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
   const welcomeTour = manager.createTutorial(WELCOME_ID, 'Welcome Tour', true);

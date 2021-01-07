@@ -1,4 +1,4 @@
-import { ITutorialManager, ITutorial } from 'jupyterlab-tutorial';
+import { ITutorialManager, ITutorial } from './tokens';
 import { ITour } from './interfaces';
 
 /**

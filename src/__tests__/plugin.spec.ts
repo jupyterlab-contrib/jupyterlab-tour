@@ -1,9 +1,9 @@
-import 'jest';
-import plugin from '../index';
-import { CommandRegistry } from '@lumino/commands';
 import { StateDB } from '@jupyterlab/statedb';
+import { CommandRegistry } from '@lumino/commands';
+import 'jest';
 import { CommandIDs } from '../constants';
-import { ITutorialManager, ITutorial } from 'jupyterlab-tutorial';
+import plugin from '../index';
+import { ITutorial, ITutorialManager } from '../tokens';
 
 const DEFAULT_TOURS_SIZE = 2;
 

@@ -2,13 +2,13 @@ import { MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ISignal, Signal } from '@lumino/signaling';
 import { INotification } from 'jupyterlab_toastify';
+import { Props } from 'react-joyride';
 import {
   ITutorial,
   ITutorialManager,
+  PLUGIN_ID,
   TutorialOptions
-} from 'jupyterlab-tutorial';
-import { Props } from 'react-joyride';
-import { PLUGIN_ID } from './constants';
+} from './tokens';
 import { Tutorial } from './tutorial';
 import { version } from './version';
 

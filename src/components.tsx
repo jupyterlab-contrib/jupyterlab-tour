@@ -1,8 +1,8 @@
 import { UseSignal } from '@jupyterlab/apputils';
 import { ISignal } from '@lumino/signaling';
-import { ITutorialManager } from 'jupyterlab-tutorial';
 import React from 'react';
 import ReactJoyride, { CallBackProps, STATUS } from 'react-joyride';
+import { ITutorialManager } from './tokens';
 import { Tutorial } from './tutorial';
 
 interface ITourProps {

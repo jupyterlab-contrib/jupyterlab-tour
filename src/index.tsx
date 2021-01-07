@@ -6,18 +6,12 @@ import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { IStateDB } from '@jupyterlab/statedb';
-import { ITutorialManager, ITutorial } from 'jupyterlab-tutorial';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
-import {
-  CommandIDs,
-  JP_STYLE,
-  NOTEBOOK_ID,
-  PLUGIN_ID,
-  WELCOME_ID
-} from './constants';
+import { CommandIDs, JP_STYLE, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
+import { ITutorial, ITutorialManager, PLUGIN_ID, StyleOptions } from './tokens';
 import { Tutorial } from './tutorial';
 import { TutorialManager } from './tutorialManager';
 import { addJSONTour } from './utils';
@@ -26,7 +20,7 @@ import { addJSONTour } from './utils';
  * Initialization data for the jupyterlab-tour extension.
  */
 const extension: JupyterFrontEndPlugin<ITutorialManager> = {
-  id: PLUGIN_ID,
+  id: `${PLUGIN_ID}:plugin`,
   autoStart: true,
   activate,
   requires: [IStateDB],
@@ -52,9 +46,7 @@ function activate(
       next: 'Next',
       skip: 'Skip'
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    styles: JP_STYLE
+    styles: JP_STYLE as StyleOptions
   });
 
   commands.addCommand(CommandIDs.launch, {

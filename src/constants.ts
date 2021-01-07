@@ -1,7 +1,5 @@
-import { StyleOptions } from 'jupyterlab-tutorial';
 import { Props as JoyrideProps } from 'react-joyride';
-
-export const PLUGIN_ID = 'jupyterlab-tour';
+import { PLUGIN_ID, StyleOptions } from './tokens';
 
 export namespace CommandIDs {
   export const addTour = `${PLUGIN_ID}:add`;
