@@ -34,6 +34,8 @@ This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDA
 
 For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupyterlab-tour/tree/2.x).
 
+> For developers, the API has changed between v3 (for JupyterLab 3) and v2 (for JupyterLab 2).
+
 ## Install
 
 ```bash

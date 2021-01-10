@@ -94,10 +94,7 @@ function activate(
 
   const node = document.createElement('div');
   document.body.appendChild(node);
-  ReactDOM.render(
-    <TourContainer tourLaunched={manager.tutorialLaunched} />,
-    node
-  );
+  ReactDOM.render(<TourContainer tourLaunched={manager.tourLaunched} />, node);
 
   if (nbTracker) {
     nbTracker.widgetAdded.connect(() => {

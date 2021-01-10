@@ -1,4 +1,5 @@
 import { Token } from '@lumino/coreutils';
+import { IDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
 import React from 'react';
 import {
@@ -67,7 +68,7 @@ export interface ITour {
 /**
  * Tour handler interface
  */
-export interface ITourHandler {
+export interface ITourHandler extends IDisposable {
   /**
    * Adds a step to the tour.
    *
@@ -82,6 +83,8 @@ export interface ITourHandler {
    * @param content The text content to use for this tour step.
    * @param placement The position of the content when it is displayed for this step.
    * @param title The title to use for the the tour step.
+   *
+   * @returns The create step
    */
   createAndAddStep(
     target: string,
@@ -96,6 +99,11 @@ export interface ITourHandler {
   readonly currentStepIndex: number;
 
   /**
+   * Is the tour running?
+   */
+  isRunning(): boolean;
+
+  /**
    * A signal emitted when all the steps of the tour have been seen and tour is finished.
    */
   readonly finished: ISignal<this, CallBackProps>;
@@ -106,9 +114,14 @@ export interface ITourHandler {
   readonly hasSteps: boolean;
 
   /**
-   * The id of the tour, used by the tour manager to track different tours.
+   * The tour id, used by the tour manager to track different tours.
    */
   readonly id: string;
+
+  /**
+   * The tour label
+   */
+  readonly label: string;
 
   /**
    * Each tour can have it's behavior, attributes and css styling customized
@@ -130,6 +143,11 @@ export interface ITourHandler {
   removeStep(index: number): Step;
 
   /**
+   * A signal emitted if the user skips or ends the tour prematurely.
+   */
+  readonly skipped: ISignal<this, CallBackProps>;
+
+  /**
    * A signal emitted when the tour is first launched.
    */
   readonly started: ISignal<this, CallBackProps>;
@@ -138,11 +156,6 @@ export interface ITourHandler {
    * A signal emitted when the tour step has changed.
    */
   readonly stepChanged: ISignal<this, CallBackProps>;
-
-  /**
-   * A signal emitted if the user skips or ends the tour prematurely.
-   */
-  readonly skipped: ISignal<this, CallBackProps>;
 
   /**
    * The array of steps the tour currently contains. Each step will be followed
@@ -154,7 +167,7 @@ export interface ITourHandler {
 /**
  * Tours manager interface
  */
-export interface ITourManager {
+export interface ITourManager extends IDisposable {
   /**
    * The currently active tour. undefined if no tour is currently running.
    */

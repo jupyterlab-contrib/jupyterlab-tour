@@ -49,22 +49,45 @@ export class TourManager implements ITourManager {
     });
   }
 
+  /**
+   * The currently active tour. undefined if no tour is currently running.
+   */
   get activeTour(): ITourHandler | undefined {
     const activeTour = this._activeTours.filter(tour => tour.isRunning());
     return activeTour[0];
   }
 
   /**
+   * Whether the tour manager is disposed.
+   */
+  get isDisposed(): boolean {
+    return this._isDisposed;
+  }
+
+  /**
    * Signal emit with the launched tour
    */
-  get tutorialLaunched(): ISignal<ITourManager, TourHandler[]> {
+  get tourLaunched(): ISignal<ITourManager, TourHandler[]> {
     return this._tourLaunched;
   }
 
+  /**
+   * A key/value map of the tours that the tour manager contains.
+   * Key: ID of the tour, value: tour object.
+   */
   get tours(): Map<string, ITourHandler> {
     return this._tours;
   }
 
+  /**
+   * Creates an interactive TourHandler object that can be customized and run by the TourManager.
+   * @param id The id used to track the tour.
+   * @param label The label to use for the tour. If added to help menu, this would be the button text.
+   * @param addToHelpMenu If true, the tour will be added as a button on the help menu. Default = True.
+   * @param options Tour options
+   *
+   * @returns The tour created
+   */
   createTour = (
     id: string,
     label: string,
@@ -100,6 +123,24 @@ export class TourManager implements ITourManager {
     return newTutorial;
   };
 
+  /**
+   * Dispose the tour manager.
+   */
+  dispose(): void {
+    if (this.isDisposed) {
+      return;
+    }
+    this._isDisposed = true;
+    Signal.clearData(this);
+  }
+
+  /**
+   * Launches a tour or series of tours one after another in order of the array provided.
+   * If the array is empty or no tours have steps, this will be a no-op.
+   *
+   * @param tours An array of tours or tutorialIDs to launch.
+   * @param force Force the tour execution
+   */
   launch(tours: ITourHandler[] | string[], force = true): Promise<void> {
     if (!tours || tours.length === 0 || this.activeTour) {
       return Promise.resolve();
@@ -150,6 +191,11 @@ export class TourManager implements ITourManager {
     return Promise.resolve();
   }
 
+  /**
+   * Removes the tour and its associated command from the application.
+   *
+   * @param tour The TourHandler object or the id of the tour object to remove
+   */
   removeTour(t: string | ITourHandler): void {
     if (!t) {
       return;
@@ -166,6 +212,7 @@ export class TourManager implements ITourManager {
     if (!tour) {
       return;
     }
+    tour.dispose();
     // Remove tour from the list
     this._tours.delete(id);
     this._forgetDoneTour(id);
@@ -188,6 +235,7 @@ export class TourManager implements ITourManager {
   };
 
   private _activeTours: TourHandler[] = new Array<TourHandler>();
+  private _isDisposed = false;
   private _menu: MainMenu | undefined;
   private _state: IManagerState = {
     toursDone: new Set<string>(),
