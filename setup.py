@@ -16,7 +16,7 @@ import setuptools
 HERE = Path(__file__).parent.resolve()
 
 # The name of the project
-name = "jupyterlab-tour"
+name = "jupyterlab_tour"
 
 # Get our version
 with (HERE / "package.json").open() as f:
@@ -56,7 +56,7 @@ else:
 long_description = (HERE / "README.md").read_text()
 
 setup_args = dict(
-    name=name,
+    name=name.replace("_", "-"),
     version=version,
     url="https://github.com/jupyterlab-contrib/jupyterlab-tour.git",
     author="JupyterLab Contrib Team",
