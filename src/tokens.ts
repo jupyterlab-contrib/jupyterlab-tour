@@ -1,7 +1,12 @@
 import { Token } from '@lumino/coreutils';
 import { ISignal } from '@lumino/signaling';
 import React from 'react';
-import { CallBackProps, Locale, Placement, Step } from 'react-joyride';
+import {
+  CallBackProps,
+  Placement,
+  Props as JoyrideProps,
+  Step
+} from 'react-joyride';
 
 /**
  * Extension ID
@@ -14,42 +19,6 @@ export const PLUGIN_ID = 'jupyterlab-tour';
 export const ITourManager = new Token<ITourManager>(
   `${PLUGIN_ID}:ITourManager`
 );
-
-/**
- * Step style
- */
-export type StyleOptions = {
-  arrowColor: string;
-  backgroundColor: string;
-  beaconSize: number;
-  overlayColor: string;
-  primaryColor: string;
-  spotlightShadow: string;
-  textColor: string;
-  width: number;
-  zIndex: number;
-};
-
-/**
- * Tour options
- */
-export type TourOptions = {
-  continuous: boolean;
-  debug: boolean;
-  disableCloseOnEsc: boolean;
-  disableOverlay: boolean;
-  disableOverlayClose: boolean;
-  disableScrolling: boolean;
-  hideBackButton: boolean;
-  locale: Locale;
-  scrollOffset: number;
-  scrollToFirstStep: boolean;
-  showProgress: boolean;
-  showSkipButton: boolean;
-  spotlightClicks: boolean;
-  spotlightPadding: number;
-  styles: StyleOptions;
-};
 
 /**
  * Serialized step interface
@@ -137,7 +106,7 @@ export interface ITourHandler {
   readonly hasSteps: boolean;
 
   /**
-   * The id of the tour, used by the tour manager to track different tutorials.
+   * The id of the tour, used by the tour manager to track different tours.
    */
   readonly id: string;
 
@@ -145,7 +114,7 @@ export interface ITourHandler {
    * Each tour can have it's behavior, attributes and css styling customized
    * by accessing and setting its options.
    */
-  options: TourOptions;
+  options: Omit<JoyrideProps, 'steps'>;
 
   /**
    * This will replace the tour step at the specified index with a new step
@@ -189,41 +158,43 @@ export interface ITourManager {
   /**
    * The currently active tour. undefined if no tour is currently running.
    */
-  readonly activeTutorial: ITourHandler | undefined;
+  readonly activeTour: ITourHandler | undefined;
 
   /**
    * Creates an interactive TourHandler object that can be customized and run by the TourManager.
    * @param id The id used to track the tour.
    * @param label The label to use for the tour. If added to help menu, this would be the button text.
    * @param addToHelpMenu If true, the tour will be added as a button on the help menu. Default = True.
+   * @param options Tour options
    *
    * @returns The tour created
    */
-  createTutorial(
+  createTour(
     id: string,
     label: string,
-    addToHelpMenu: boolean
+    addToHelpMenu?: boolean,
+    options?: Omit<JoyrideProps, 'steps'>
   ): ITourHandler;
 
   /**
-   * Launches a tour or series of tutorials one after another in order of the array provided.
-   * If the array is empty or no tutorials have steps, this will be a no-op.
+   * Launches a tour or series of tours one after another in order of the array provided.
+   * If the array is empty or no tours have steps, this will be a no-op.
    *
-   * @param tutorials An array of tutorials or tutorialIDs to launch.
+   * @param tours An array of tours or tutorialIDs to launch.
    * @param force Force the tour execution
    */
-  launch(tutorials: ITourHandler[] | string[], force: boolean): Promise<void>;
+  launch(tours: ITourHandler[] | string[], force: boolean): Promise<void>;
 
   /**
    * Removes the tour and its associated command from the application.
    *
    * @param tour The TourHandler object or the id of the tour object to remove
    */
-  removeTutorial(tour: string | ITourHandler): void;
+  removeTour(tour: string | ITourHandler): void;
 
   /**
-   * A key/value map of the tutorials that the tour manager contains.
+   * A key/value map of the tours that the tour manager contains.
    * Key: ID of the tour, value: tour object.
    */
-  readonly tutorials: Map<string, ITourHandler>;
+  readonly tours: Map<string, ITourHandler>;
 }

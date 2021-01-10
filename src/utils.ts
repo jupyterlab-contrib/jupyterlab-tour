@@ -13,7 +13,7 @@ export function addJSONTour(
   const { id, label, hasHelpEntry, steps } = tour;
   let tourHandler: ITourHandler | null = null;
   try {
-    tourHandler = manager.createTutorial(id, label, hasHelpEntry);
+    tourHandler = manager.createTour(id, label, hasHelpEntry);
     steps.forEach(({ content, placement, target, title }) => {
       tourHandler.createAndAddStep(target, content, placement, title);
     });

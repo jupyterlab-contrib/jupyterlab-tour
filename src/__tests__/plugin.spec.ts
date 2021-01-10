@@ -30,7 +30,7 @@ describe('plugin', () => {
         };
         const stateDB = new StateDB();
         const manager = plugin.activate(app as any, stateDB) as ITourManager;
-        expect(manager.tutorials.size).toEqual(DEFAULT_TOURS_SIZE);
+        expect(manager.tours.size).toEqual(DEFAULT_TOURS_SIZE);
 
         const tour = (await app.commands.execute(CommandIDs.addTour, {
           tour: {
@@ -55,9 +55,9 @@ describe('plugin', () => {
           }
         })) as ITourHandler;
 
-        expect(manager.tutorials.size).toEqual(DEFAULT_TOURS_SIZE + 1);
+        expect(manager.tours.size).toEqual(DEFAULT_TOURS_SIZE + 1);
         expect(tour).toBeTruthy();
-        expect(manager.tutorials.get(tour.id)).toBeTruthy();
+        expect(manager.tours.get(tour.id)).toBeTruthy();
       });
     });
   });

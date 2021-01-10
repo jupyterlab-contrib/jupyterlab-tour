@@ -9,9 +9,9 @@ import { IStateDB } from '@jupyterlab/statedb';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
-import { CommandIDs, JP_STYLE, NOTEBOOK_ID, WELCOME_ID } from './constants';
+import { CommandIDs, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
-import { ITourHandler, ITourManager, PLUGIN_ID, StyleOptions } from './tokens';
+import { ITourHandler, ITourManager, PLUGIN_ID } from './tokens';
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
 import { addJSONTour } from './utils';
@@ -38,21 +38,12 @@ function activate(
   const { commands } = app;
 
   // Create tour manager
-  const manager = new TourManager(stateDB, menu, {
-    locale: {
-      back: 'Back',
-      close: 'Close',
-      last: 'Done',
-      next: 'Next',
-      skip: 'Skip'
-    },
-    styles: JP_STYLE as StyleOptions
-  });
+  const manager = new TourManager(stateDB, menu);
 
   commands.addCommand(CommandIDs.launch, {
     label: args => {
       if (args['id']) {
-        const tour = manager.tutorials.get(args['id'] as string) as TourHandler;
+        const tour = manager.tours.get(args['id'] as string) as TourHandler;
         return tour.label;
       } else {
         return 'Launch a Tour';
@@ -60,7 +51,7 @@ function activate(
     },
     usage:
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}',
-    isEnabled: () => !manager.activeTutorial,
+    isEnabled: () => !manager.activeTour,
     execute: async args => {
       let id = args['id'] as string;
       const force =
@@ -68,7 +59,7 @@ function activate(
 
       if (!id) {
         const answer = await InputDialog.getItem({
-          items: Array.from(manager.tutorials.keys()),
+          items: Array.from(manager.tours.keys()),
           title: 'Choose a tour'
         });
 
@@ -110,14 +101,14 @@ function activate(
 
   if (nbTracker) {
     nbTracker.widgetAdded.connect(() => {
-      if (manager.tutorials.has(NOTEBOOK_ID)) {
+      if (manager.tours.has(NOTEBOOK_ID)) {
         manager.launch([NOTEBOOK_ID], false);
       }
     });
   }
 
   app.restored.then(() => {
-    if (manager.tutorials.has(WELCOME_ID)) {
+    if (manager.tours.has(WELCOME_ID)) {
       // Wait 3s before launching the first tour - to be sure element are loaded
       setTimeout(() => manager.launch([WELCOME_ID], false), 3000);
     }

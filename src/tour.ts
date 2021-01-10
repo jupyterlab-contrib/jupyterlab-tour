@@ -1,3 +1,4 @@
+import { JSONExt } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
 import {
   CallBackProps,
@@ -6,28 +7,26 @@ import {
   status,
   STATUS,
   Step,
-  Styles,
   valueof
 } from 'react-joyride';
 import { TutorialDefaultOptions } from './constants';
-import { ITourHandler, StyleOptions, TourOptions } from './tokens';
+import { ITourHandler } from './tokens';
 
 // TODO should be IDisposable !! handling signal connection clearance
 export class TourHandler implements ITourHandler {
-  constructor(id: string, label: string, options?: Partial<JoyrideProps>) {
+  constructor(
+    id: string,
+    label: string,
+    options?: Omit<JoyrideProps, 'steps'>
+  ) {
     this._label = label;
     this._id = id;
-    const { styles, ...others } = options || { styles: {} };
+    const { styles, ...others } = options;
     this._options = { ...TutorialDefaultOptions, ...others };
-    Object.keys(styles).forEach(k => {
-      const key = k as keyof Styles;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      this._options.styles[key] = {
-        ...this._options.styles[key],
-        ...styles[key]
-      };
-    });
+    this._options.styles.options = {
+      ...(this._options.styles.options || {}),
+      ...(styles?.options || {})
+    };
   }
 
   get currentStepIndex(): number {
@@ -50,24 +49,12 @@ export class TourHandler implements ITourHandler {
     return this._label;
   }
 
-  get options(): TourOptions {
-    const { styles, ...others } = this._options;
-    const options = others as TourOptions;
-    options.styles = { ...styles.options } as StyleOptions;
-    return options;
-  }
-
-  set options(options: TourOptions) {
-    const { styles, ...others } = options;
-    this._options = { ...this._options, ...others };
-    this._options.styles.options = {
-      ...this._options.styles.options,
-      ...styles
-    };
-  }
-
-  get optionsJoyride(): Partial<JoyrideProps> {
+  get options(): Omit<JoyrideProps, 'steps'> {
     return this._options;
+  }
+
+  set options(options: Omit<JoyrideProps, 'steps'>) {
+    this._options = JSONExt.deepCopy(options as any) as any;
   }
 
   get skipped(): ISignal<this, CallBackProps> {

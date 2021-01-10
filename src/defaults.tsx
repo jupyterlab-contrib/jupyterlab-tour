@@ -15,7 +15,7 @@ function addWelcomeTour(
   manager: ITourManager,
   commands: CommandRegistry
 ): void {
-  const welcomeTour = manager.createTutorial(WELCOME_ID, 'Welcome Tour', true);
+  const welcomeTour = manager.createTour(WELCOME_ID, 'Welcome Tour', true);
 
   welcomeTour.options = {
     ...welcomeTour.options,
@@ -243,7 +243,7 @@ function addNotebookTour(
   shell: ILabShell,
   nbTracker?: INotebookTracker
 ): void {
-  const notebookTour = manager.createTutorial(
+  const notebookTour = manager.createTour(
     NOTEBOOK_ID,
     'Notebook Tour',
     true

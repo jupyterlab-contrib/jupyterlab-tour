@@ -1,5 +1,5 @@
 import { Props as JoyrideProps } from 'react-joyride';
-import { PLUGIN_ID, StyleOptions } from './tokens';
+import { PLUGIN_ID } from './tokens';
 
 /**
  * Command IDs
@@ -10,18 +10,6 @@ export namespace CommandIDs {
 }
 
 /**
- * Default style following JupyterLab styling
- */
-export const JP_STYLE: Partial<StyleOptions> = {
-  arrowColor: 'var(--jp-layout-color1)',
-  backgroundColor: 'var(--jp-layout-color1)',
-  overlayColor: 'var(--jp-dialog-background)',
-  primaryColor: 'var(--jp-brand-color1)',
-  spotlightShadow: 'var(--jp-elevation-z6)',
-  textColor: 'var(--jp-ui-font-color1)'
-};
-
-/**
  * Default tour IDs
  */
 export const WELCOME_ID = `${PLUGIN_ID}:welcome`;
@@ -30,8 +18,15 @@ export const NOTEBOOK_ID = `${PLUGIN_ID}:notebook`;
 /**
  * Default tour options
  */
-export const TutorialDefaultOptions: Partial<JoyrideProps> = {
+export const TutorialDefaultOptions: Omit<JoyrideProps, 'steps'> = {
   continuous: true,
+  locale: {
+    back: 'Back',
+    close: 'Close',
+    last: 'Done',
+    next: 'Next',
+    skip: 'Skip'
+  },
   showProgress: true,
   showSkipButton: true,
   styles: {
@@ -41,8 +36,8 @@ export const TutorialDefaultOptions: Partial<JoyrideProps> = {
       beaconSize: 36,
       overlayColor: 'var(--jp-dialog-background)',
       primaryColor: 'var(--jp-brand-color1)',
-      spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
-      textColor: '#333',
+      spotlightShadow: 'var(--jp-elevation-z6)',
+      textColor: 'var(--jp-ui-font-color1)',
       zIndex: 100
     }
   }

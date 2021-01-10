@@ -72,7 +72,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
     return this.props.tours && this.props.tours[this.state.index] ? (
       <ReactJoyride
         key={this.props.tours[this.state.index].id}
-        {...this.props.tours[this.state.index].optionsJoyride}
+        {...this.props.tours[this.state.index].options}
         callback={this._handleJoyrideCallback}
         run={this.state.run}
         steps={this.props.tours[this.state.index].steps}
