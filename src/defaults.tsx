@@ -1,11 +1,21 @@
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { INotebookTracker, NotebookActions } from '@jupyterlab/notebook';
-import { ITutorialManager } from 'jupyterlab-tutorial';
+import { CommandRegistry } from '@lumino/commands';
 import React from 'react';
 import { NOTEBOOK_ID, WELCOME_ID } from './constants';
+import { ITourManager } from './tokens';
 
-function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
-  const welcomeTour = manager.createTutorial(WELCOME_ID, 'Welcome Tour', true);
+/**
+ * Add the default welcome tour
+ *
+ * @param manager Tours manager
+ * @param commands Jupyter commands registry
+ */
+function addWelcomeTour(
+  manager: ITourManager,
+  commands: CommandRegistry
+): void {
+  const welcomeTour = manager.createTour(WELCOME_ID, 'Welcome Tour', true);
 
   welcomeTour.options = {
     ...welcomeTour.options,
@@ -154,8 +164,7 @@ function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
       <>
         <p>
           This sidebar contains a number of tabs: a file browser, a list of
-          running kernels and terminals, the command palette, a list of tabs in
-          the main work area,...
+          tabs, running kernels and terminals,...
         </p>
         <p>
           <small>
@@ -169,19 +178,6 @@ function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
     placement: 'right',
     target: '.jp-SideBar.jp-mod-left',
     title: 'Left Side Bar'
-  });
-
-  welcomeTour.addStep({
-    content: (
-      <p>
-        All user actions in JupyterLab are processed through a centralized
-        command system, called command palette. It provides a keyboard-driven
-        way to search for and run JupyterLab commands.
-      </p>
-    ),
-    placement: 'right',
-    target: '#command-palette',
-    title: 'Command Palette'
   });
 
   welcomeTour.addStep({
@@ -202,32 +198,52 @@ function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
     title: 'File Browser'
   });
 
+  welcomeTour.addStep({
+    content: (
+      <>
+        <p>
+          All user actions in JupyterLab are processed through a centralized
+          command system, called command palette. It provides a keyboard-driven
+          way to search for and run JupyterLab commands.
+        </p>
+        <p>
+          <small>
+            Tip: To open it, the default shortcut is <em>Ctrl + Shift + C</em>
+          </small>
+        </p>
+      </>
+    ),
+    placement: 'center',
+    target: '#jp-main-dock-panel',
+    title: 'Command Palette'
+  });
+
   welcomeTour.stepChanged.connect((_, data) => {
-    if (data.type === 'step:after') {
-      switch (data.step.target) {
-        case '.jp-SideBar.jp-mod-left':
-          shell.activateById('command-palette');
-          break;
-        case '#command-palette':
-          shell.activateById('filebrowser');
-          break;
-        default:
-          break;
-      }
+    switch (data.type) {
+      case 'step:after':
+        if (data.step.target === '.jp-SideBar.jp-mod-left') {
+          commands.execute('filebrowser:activate');
+        } else if (data.step.target === '#filebrowser') {
+          commands.execute('apputils:activate-command-palette');
+        }
+        break;
     }
   });
 }
 
+/**
+ * Add the default notebook tour
+ *
+ * @param manager Tours manager
+ * @param shell Jupyter shell
+ * @param nbTracker Notebook tracker (optional)
+ */
 function addNotebookTour(
-  manager: ITutorialManager,
+  manager: ITourManager,
   shell: ILabShell,
   nbTracker?: INotebookTracker
 ): void {
-  const notebookTour = manager.createTutorial(
-    NOTEBOOK_ID,
-    'Notebook Tour',
-    true
-  );
+  const notebookTour = manager.createTour(NOTEBOOK_ID, 'Notebook Tour', true);
 
   notebookTour.options = {
     ...notebookTour.options,
@@ -343,7 +359,7 @@ function addNotebookTour(
     content: (
       <p>Metadata (like tags) can be added to cells through this tab.</p>
     ),
-    placement: 'right'
+    placement: 'left'
   });
 
   notebookTour.stepChanged.connect((_, data) => {
@@ -397,12 +413,19 @@ function addNotebookTour(
   });
 }
 
+/**
+ * Add all default tours
+ *
+ * @param manager Tours manager
+ * @param app Jupyter application
+ * @param nbTracker Notebook tracker (optional)
+ */
 export function addTours(
-  manager: ITutorialManager,
+  manager: ITourManager,
   app: JupyterFrontEnd,
   nbTracker?: INotebookTracker
 ): void {
-  const { shell } = app;
-  addWelcomeTour(manager, shell as ILabShell);
+  const { commands, shell } = app;
+  addWelcomeTour(manager, commands);
   addNotebookTour(manager, shell as ILabShell, nbTracker);
 }

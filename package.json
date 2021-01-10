@@ -1,74 +1,100 @@
 {
   "name": "jupyterlab-tour",
-  "version": "2.1.1",
-  "description": "A JupyterLab UI Tour based on jupyterlab-tutorial.",
+  "version": "3.0.0",
+  "description": "A JupyterLab UI Tour.",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/fcollonval/jupyterlab-tour",
+  "homepage": "https://github.com/jupyterlab-contrib/jupyterlab-tour",
   "bugs": {
-    "url": "https://github.com/fcollonval/jupyterlab-tour/issues"
+    "url": "https://github.com/jupyterlab-contrib/jupyterlab-tour/issues"
   },
   "license": "BSD-3-Clause",
   "author": "Frederic Collonval",
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+    "style/index.js"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fcollonval/jupyterlab-tour.git"
+    "url": "https://github.com/jupyterlab-contrib/jupyterlab-tour.git"
   },
   "scripts": {
-    "build": "genversion --es6 --semi src/version.ts && tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "clean": "jlpm run clean:lib",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "clean:labextension": "rimraf jupyterlab_tour/labextension",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
-    "prepare": "jlpm run clean && jlpm run build",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "prepare": "jlpm run clean && jlpm run build:prod",
     "test": "jest --coverage",
-    "watch": "genversion --es6 --semi src/version.ts && tsc -w"
+    "watch": "run-p watch:src watch:labextension",
+    "watch:labextension": "jupyter labextension watch .",
+    "watch:src": "tsc -w"
   },
   "dependencies": {
-    "@jupyterlab/application": "^2.0.0",
-    "@jupyterlab/apputils": "^2.0.0",
-    "@jupyterlab/mainmenu": "^2.0.0",
-    "@jupyterlab/notebook": "^2.0.0",
-    "@jupyterlab/statedb": "^2.0.0",
-    "jupyterlab-tutorial": "^1.0.5",
+    "@jupyterlab/application": "^3.0.0",
+    "@jupyterlab/apputils": "^3.0.0",
+    "@jupyterlab/mainmenu": "^3.0.0",
+    "@jupyterlab/notebook": "^3.0.0",
+    "@jupyterlab/statedb": "^3.0.0",
+    "@lumino/coreutils": "^1.5.3",
+    "@lumino/disposable": "^1.4.3",
+    "@lumino/signaling": "^1.4.3",
+    "@lumino/widgets": "^1.17.0",
     "jupyterlab_toastify": "^4.1.2",
-    "react": "~16.9.0",
-    "react-dom": "~16.9.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-joyride": "^2.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.11.0",
     "@babel/preset-env": "^7.11.0",
+    "@jupyterlab/builder": "^3.0.0",
     "@jupyterlab/testutils": "^2.0.0",
-    "@types/jest": "^25.0.0",
+    "@types/jest": "^26.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "@types/react-joyride": "^2.0.5",
-    "@typescript-eslint/eslint-plugin": "^2.25.0",
-    "@typescript-eslint/parser": "^2.25.0",
-    "eslint": "^6.8.0",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.5",
     "genversion": "^2.2.1",
-    "jest": "^25.0.0",
-    "prettier": "1.16.4",
-    "rimraf": "^2.6.1",
-    "ts-jest": "^25.0.0",
-    "typescript": "~3.7.0"
+    "jest": "^26.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.19.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^26.0.0",
+    "typescript": "~4.1.3"
   },
   "sideEffects": [
-    "style/*.css"
+    "style/*.css",
+    "style/index.js"
   ],
   "jupyterlab": {
-    "extension": true
-  }
+    "extension": true,
+    "outputDir": "jupyterlab_tour/labextension",
+    "sharedPackages": {
+      "jupyterlab_toastify": {
+        "singleton": true
+       }
+     }
+  },
+  "styleModule": "style/index.js"
 }

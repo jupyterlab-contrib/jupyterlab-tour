@@ -15,16 +15,22 @@ jobs:
           node-version: '12.x'
           registry-url: 'https://registry.npmjs.org'
       - name: Install Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install jupyterlab~=2.0
-      - name: Build and publish NPM package
-        run: |
-          npm install
-          npm publish
+          python -m pip install jupyterlab~=3.0 jupyter_packaging~=0.7.9 setuptools>=40.8.0 wheel twine
+      - name: Publish the package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PRE_RELEASE: ${{ github.event.release.prerelease }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python setup.py sdist bdist_wheel
+          twine upload dist/*
+          
+          if [[ $PRE_RELEASE == "true" ]]; then export TAG="next"; else export TAG="latest"; fi
+          npm publish --tag ${TAG} --access public

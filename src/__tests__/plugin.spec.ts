@@ -1,9 +1,9 @@
-import 'jest';
-import plugin from '../index';
-import { CommandRegistry } from '@lumino/commands';
 import { StateDB } from '@jupyterlab/statedb';
+import { CommandRegistry } from '@lumino/commands';
+import 'jest';
 import { CommandIDs } from '../constants';
-import { ITutorialManager, ITutorial } from 'jupyterlab-tutorial';
+import plugin from '../index';
+import { ITourHandler, ITourManager } from '../tokens';
 
 const DEFAULT_TOURS_SIZE = 2;
 
@@ -29,11 +29,8 @@ describe('plugin', () => {
           restored: Promise.resolve()
         };
         const stateDB = new StateDB();
-        const manager = plugin.activate(
-          app as any,
-          stateDB
-        ) as ITutorialManager;
-        expect(manager.tutorials.size).toEqual(DEFAULT_TOURS_SIZE);
+        const manager = plugin.activate(app as any, stateDB) as ITourManager;
+        expect(manager.tours.size).toEqual(DEFAULT_TOURS_SIZE);
 
         const tour = (await app.commands.execute(CommandIDs.addTour, {
           tour: {
@@ -42,7 +39,7 @@ describe('plugin', () => {
             steps: [
               {
                 content:
-                  'The following tutorial will point out some of the main UI components within JupyterLab.',
+                  'The following tour will point out some of the main UI components within JupyterLab.',
                 placement: 'center',
                 target: '#jp-main-dock-panel',
                 title: 'Welcome to Jupyter Lab!'
@@ -56,11 +53,11 @@ describe('plugin', () => {
               }
             ]
           }
-        })) as ITutorial;
+        })) as ITourHandler;
 
-        expect(manager.tutorials.size).toEqual(DEFAULT_TOURS_SIZE + 1);
+        expect(manager.tours.size).toEqual(DEFAULT_TOURS_SIZE + 1);
         expect(tour).toBeTruthy();
-        expect(manager.tutorials.get(tour.id)).toBeTruthy();
+        expect(manager.tours.get(tour.id)).toBeTruthy();
       });
     });
   });
