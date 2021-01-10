@@ -243,11 +243,7 @@ function addNotebookTour(
   shell: ILabShell,
   nbTracker?: INotebookTracker
 ): void {
-  const notebookTour = manager.createTour(
-    NOTEBOOK_ID,
-    'Notebook Tour',
-    true
-  );
+  const notebookTour = manager.createTour(NOTEBOOK_ID, 'Notebook Tour', true);
 
   notebookTour.options = {
     ...notebookTour.options,
