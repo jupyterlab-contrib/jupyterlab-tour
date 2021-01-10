@@ -10,23 +10,23 @@ A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
 
 ![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/master/doc/tourDemo.gif)
 
-This extension add the following features:
+This extension has the following features:
 
-- Add default tours:
+- Default tours:
   - Welcome tour
   - Notebook tour
+- Toast proposing to start a tour - to experienced users the need to exit each time the tour.
 - If a tour has already be seen by the user, this is saved in the state database. So you can start tour on event only if the user have not seen it; e.g. the welcome tour is launched at JupyterLab start except if the user have seen it.
 
 > The state is cleaned if this extension is updated
 
 - Tooltip are styled using JupyterLab theming system
-- Clear separation between tour manager and React views
-- Add commands to _add_ and _launch_ tours
-- Through the tour manager (`ITutorialManager` extension token), you can add, modify or delete a tour
-- You can connect to tour events through signals
-- You can override the default style for the tour separately.
+- Commands to _add_ and _launch_ tours
+- Through the tour manager (`ITourManager` extension token), add, modify or delete a tour
+- Connect to tour events through signals
+- Override the default style (and options) for the tour separately
 
-This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under BSD 3-Clause License with Copyright (c) 2020, Lawrence Livermore National Security, LLC
+This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under BSD 3-Clause License with Copyright (c) 2020, Lawrence Livermore National Security, LLC.
 
 ## Requirements
 

@@ -1,5 +1,4 @@
-import { ITutorialManager, ITutorial } from './tokens';
-import { ITour } from './interfaces';
+import { ITourManager, ITourHandler, ITour } from './tokens';
 
 /**
  * Add a tour from its JSON serialization
@@ -8,19 +7,19 @@ import { ITour } from './interfaces';
  * @param tour Tour to add
  */
 export function addJSONTour(
-  manager: ITutorialManager,
+  manager: ITourManager,
   tour: ITour
-): ITutorial | null {
+): ITourHandler | null {
   const { id, label, hasHelpEntry, steps } = tour;
-  let tutorial: ITutorial | null = null;
+  let tourHandler: ITourHandler | null = null;
   try {
-    tutorial = manager.createTutorial(id, label, hasHelpEntry);
+    tourHandler = manager.createTutorial(id, label, hasHelpEntry);
     steps.forEach(({ content, placement, target, title }) => {
-      tutorial.createAndAddStep(target, content, placement, title);
+      tourHandler.createAndAddStep(target, content, placement, title);
     });
   } catch (error) {
     console.error(`Fail to add tour '${label}' (${id})`, error);
   }
 
-  return tutorial;
+  return tourHandler;
 }

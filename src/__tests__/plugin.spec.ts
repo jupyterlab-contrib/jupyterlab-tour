@@ -3,7 +3,7 @@ import { CommandRegistry } from '@lumino/commands';
 import 'jest';
 import { CommandIDs } from '../constants';
 import plugin from '../index';
-import { ITutorial, ITutorialManager } from '../tokens';
+import { ITourHandler, ITourManager } from '../tokens';
 
 const DEFAULT_TOURS_SIZE = 2;
 
@@ -29,10 +29,7 @@ describe('plugin', () => {
           restored: Promise.resolve()
         };
         const stateDB = new StateDB();
-        const manager = plugin.activate(
-          app as any,
-          stateDB
-        ) as ITutorialManager;
+        const manager = plugin.activate(app as any, stateDB) as ITourManager;
         expect(manager.tutorials.size).toEqual(DEFAULT_TOURS_SIZE);
 
         const tour = (await app.commands.execute(CommandIDs.addTour, {
@@ -42,7 +39,7 @@ describe('plugin', () => {
             steps: [
               {
                 content:
-                  'The following tutorial will point out some of the main UI components within JupyterLab.',
+                  'The following tour will point out some of the main UI components within JupyterLab.',
                 placement: 'center',
                 target: '#jp-main-dock-panel',
                 title: 'Welcome to Jupyter Lab!'
@@ -56,7 +53,7 @@ describe('plugin', () => {
               }
             ]
           }
-        })) as ITutorial;
+        })) as ITourHandler;
 
         expect(manager.tutorials.size).toEqual(DEFAULT_TOURS_SIZE + 1);
         expect(tour).toBeTruthy();

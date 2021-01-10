@@ -1,11 +1,17 @@
 import { Props as JoyrideProps } from 'react-joyride';
 import { PLUGIN_ID, StyleOptions } from './tokens';
 
+/**
+ * Command IDs
+ */
 export namespace CommandIDs {
   export const addTour = `${PLUGIN_ID}:add`;
   export const launch = `${PLUGIN_ID}:launch`;
 }
 
+/**
+ * Default style following JupyterLab styling
+ */
 export const JP_STYLE: Partial<StyleOptions> = {
   arrowColor: 'var(--jp-layout-color1)',
   backgroundColor: 'var(--jp-layout-color1)',
@@ -15,9 +21,15 @@ export const JP_STYLE: Partial<StyleOptions> = {
   textColor: 'var(--jp-ui-font-color1)'
 };
 
+/**
+ * Default tour IDs
+ */
 export const WELCOME_ID = `${PLUGIN_ID}:welcome`;
 export const NOTEBOOK_ID = `${PLUGIN_ID}:notebook`;
 
+/**
+ * Default tour options
+ */
 export const TutorialDefaultOptions: Partial<JoyrideProps> = {
   continuous: true,
   showProgress: true,

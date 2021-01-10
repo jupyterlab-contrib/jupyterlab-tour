@@ -3,13 +3,9 @@ import { IStateDB } from '@jupyterlab/statedb';
 import { ISignal, Signal } from '@lumino/signaling';
 import { INotification } from 'jupyterlab_toastify';
 import { Props } from 'react-joyride';
-import {
-  ITutorial,
-  ITutorialManager,
-  PLUGIN_ID,
-  TutorialOptions
-} from './tokens';
-import { Tutorial } from './tutorial';
+import { CommandIDs } from './constants';
+import { ITourHandler, ITourManager, PLUGIN_ID, TourOptions } from './tokens';
+import { TourHandler } from './tour';
 import { version } from './version';
 
 const STATE_ID = `${PLUGIN_ID}:state`;
@@ -19,7 +15,7 @@ const STATE_ID = `${PLUGIN_ID}:state`;
  */
 interface IManagerState {
   /**
-   * Set of seen tutorial IDs
+   * Set of seen tour IDs
    */
   tutorialsDone: Set<string>;
   /**
@@ -29,17 +25,17 @@ interface IManagerState {
 }
 
 /**
- * The TutorialManager is needed to manage creation, removal and launching of Tutorials
+ * The TourManager is needed to manage creation, removal and launching of Tutorials
  */
-export class TutorialManager implements ITutorialManager {
+export class TourManager implements ITourManager {
   constructor(
     stateDB: IStateDB,
     mainMenu?: MainMenu,
-    defaultOptions?: Partial<TutorialOptions>
+    defaultOptions?: Partial<TourOptions>
   ) {
     this._stateDB = stateDB;
     this._menu = mainMenu;
-    this._tutorials = new Map<string, Tutorial>();
+    this._tutorials = new Map<string, TourHandler>();
 
     this._defaultOptions = defaultOptions || {};
 
@@ -61,21 +57,21 @@ export class TutorialManager implements ITutorialManager {
     });
   }
 
-  get activeTutorial(): ITutorial {
-    const activeTutorial = this._activeTutorials.filter(tutorial =>
-      tutorial.isRunning()
+  get activeTutorial(): ITourHandler | undefined {
+    const activeTutorial = this._activeTutorials.filter(tour =>
+      tour.isRunning()
     );
     return activeTutorial[0];
   }
 
   /**
-   * Signal emit with the launched tutorial
+   * Signal emit with the launched tour
    */
-  get tutorialLaunched(): ISignal<ITutorialManager, Tutorial[]> {
+  get tutorialLaunched(): ISignal<ITourManager, TourHandler[]> {
     return this._tutorialLaunched;
   }
 
-  get tutorials(): Map<string, ITutorial> {
+  get tutorials(): Map<string, ITourHandler> {
     return this._tutorials;
   }
 
@@ -83,27 +79,32 @@ export class TutorialManager implements ITutorialManager {
     id: string,
     label: string,
     addToHelpMenu = true
-  ): ITutorial => {
+  ): ITourHandler => {
     if (this._tutorials.has(id)) {
       throw new Error(
-        `Error creating new tutorial. Tutorial id's must be unique.\nTutorial with the id: '${id}' already exists.`
+        `Error creating new tour. TourHandler id's must be unique.\nTutorial with the id: '${id}' already exists.`
       );
     }
 
-    // Create tutorial and add it to help menu if needed
+    // Create tour and add it to help menu if needed
     const { styles, ...others } = this._defaultOptions;
     const options: Partial<Props> = others;
     options.styles = { options: styles };
-    const newTutorial: Tutorial = new Tutorial(id, label, options);
+    const newTutorial: TourHandler = new TourHandler(id, label, options);
     if (this._menu && addToHelpMenu) {
-      newTutorial.addTutorialToMenu(this._menu.helpMenu.menu);
+      this._menu.helpMenu.menu.addItem({
+        args: {
+          id: newTutorial.id
+        },
+        command: CommandIDs.launch
+      });
     }
 
-    // Add tutorial to current set
+    // Add tour to current set
     this._tutorials.set(id, newTutorial);
 
-    const done = (tutorial: Tutorial): void => {
-      this._rememberDoneTutorial(tutorial.id);
+    const done = (tour: TourHandler): void => {
+      this._rememberDoneTutorial(tour.id);
     };
     newTutorial.skipped.connect(done);
     newTutorial.finished.connect(done);
@@ -111,30 +112,27 @@ export class TutorialManager implements ITutorialManager {
     return newTutorial;
   };
 
-  launchConditionally(
-    tutorials: ITutorial[] | string[],
-    force = true
-  ): Promise<void> {
+  launch(tutorials: ITourHandler[] | string[], force = true): Promise<void> {
     if (!tutorials || tutorials.length === 0 || this.activeTutorial) {
       return Promise.resolve();
     }
-    let tutorialGroup: Array<ITutorial | undefined>;
+    let tutorialGroup: Array<ITourHandler | undefined>;
 
     if (typeof tutorials[0] === 'string') {
       tutorialGroup = (tutorials as string[]).map((id: string) =>
         this._tutorials.get(id)
       );
     } else {
-      tutorialGroup = tutorials as ITutorial[];
+      tutorialGroup = tutorials as ITourHandler[];
     }
 
     let tutorialList = tutorialGroup.filter(
-      (tutorial: ITutorial | undefined) => tutorial && tutorial.hasSteps
-    ) as Tutorial[];
+      (tour: ITourHandler | undefined) => tour && tour.hasSteps
+    ) as TourHandler[];
 
     if (!force) {
       tutorialList = tutorialList.filter(
-        tutorial => !this._state.tutorialsDone.has(tutorial.id)
+        tour => !this._state.tutorialsDone.has(tour.id)
       );
     }
 
@@ -170,15 +168,7 @@ export class TutorialManager implements ITutorialManager {
     return Promise.resolve();
   }
 
-  async launch(...tutorials: ITutorial[]): Promise<void>;
-  async launch(...tutorialIDs: string[]): Promise<void>;
-  async launch(...tutorials: ITutorial[] | string[]): Promise<void> {
-    this.launchConditionally(tutorials);
-  }
-
-  removeTutorial(tutorial: ITutorial): void;
-  removeTutorial(tutorialID: string): void;
-  removeTutorial(t: string | ITutorial): void {
+  removeTutorial(t: string | ITourHandler): void {
     if (!t) {
       return;
     }
@@ -190,11 +180,11 @@ export class TutorialManager implements ITutorialManager {
       id = t.id;
     }
 
-    const tutorial: Tutorial | undefined = this._tutorials.get(id);
-    if (!tutorial) {
+    const tour: TourHandler | undefined = this._tutorials.get(id);
+    if (!tour) {
       return;
     }
-    // Remove tutorial from the list
+    // Remove tour from the list
     this._tutorials.delete(id);
     this._forgetDoneTutorial(id);
   }
@@ -215,17 +205,17 @@ export class TutorialManager implements ITutorialManager {
     });
   };
 
-  private _activeTutorials: Tutorial[] = new Array<Tutorial>();
-  private _defaultOptions: Partial<TutorialOptions>;
+  private _activeTutorials: TourHandler[] = new Array<TourHandler>();
+  private _defaultOptions: Partial<TourOptions>;
   private _menu: MainMenu | undefined;
   private _state: IManagerState = {
     tutorialsDone: new Set<string>(),
     version
   };
   private _stateDB: IStateDB;
-  private _tutorials: Map<string, Tutorial>;
-  private _tutorialLaunched: Signal<ITutorialManager, Tutorial[]> = new Signal<
-    ITutorialManager,
-    Tutorial[]
+  private _tutorials: Map<string, TourHandler>;
+  private _tutorialLaunched: Signal<ITourManager, TourHandler[]> = new Signal<
+    ITourManager,
+    TourHandler[]
   >(this);
 }

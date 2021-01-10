@@ -2,9 +2,15 @@ import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { INotebookTracker, NotebookActions } from '@jupyterlab/notebook';
 import React from 'react';
 import { NOTEBOOK_ID, WELCOME_ID } from './constants';
-import { ITutorialManager } from './tokens';
+import { ITourManager } from './tokens';
 
-function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
+/**
+ * Add the default welcome tour
+ *
+ * @param manager Tours manager
+ * @param shell Jupyter shell
+ */
+function addWelcomeTour(manager: ITourManager, shell: ILabShell): void {
   const welcomeTour = manager.createTutorial(WELCOME_ID, 'Welcome Tour', true);
 
   welcomeTour.options = {
@@ -218,8 +224,15 @@ function addWelcomeTour(manager: ITutorialManager, shell: ILabShell): void {
   });
 }
 
+/**
+ * Add the default notebook tour
+ *
+ * @param manager Tours manager
+ * @param shell Jupyter shell
+ * @param nbTracker Notebook tracker (optional)
+ */
 function addNotebookTour(
-  manager: ITutorialManager,
+  manager: ITourManager,
   shell: ILabShell,
   nbTracker?: INotebookTracker
 ): void {
@@ -397,8 +410,15 @@ function addNotebookTour(
   });
 }
 
+/**
+ * Add all default tours
+ *
+ * @param manager Tours manager
+ * @param app Jupyter application
+ * @param nbTracker Notebook tracker (optional)
+ */
 export function addTours(
-  manager: ITutorialManager,
+  manager: ITourManager,
   app: JupyterFrontEnd,
   nbTracker?: INotebookTracker
 ): void {

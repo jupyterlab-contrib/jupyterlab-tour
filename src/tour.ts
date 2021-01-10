@@ -1,5 +1,4 @@
 import { ISignal, Signal } from '@lumino/signaling';
-import { Menu } from '@lumino/widgets';
 import {
   CallBackProps,
   Placement,
@@ -10,10 +9,11 @@ import {
   Styles,
   valueof
 } from 'react-joyride';
-import { CommandIDs, TutorialDefaultOptions } from './constants';
-import { ITutorial, StyleOptions, TutorialOptions } from './tokens';
+import { TutorialDefaultOptions } from './constants';
+import { ITourHandler, StyleOptions, TourOptions } from './tokens';
 
-export class Tutorial implements ITutorial {
+// TODO should be IDisposable !! handling signal connection clearance
+export class TourHandler implements ITourHandler {
   constructor(id: string, label: string, options?: Partial<JoyrideProps>) {
     this._label = label;
     this._id = id;
@@ -28,10 +28,6 @@ export class Tutorial implements ITutorial {
         ...styles[key]
       };
     });
-  }
-
-  get commandID(): string {
-    return CommandIDs.launch;
   }
 
   get currentStepIndex(): number {
@@ -54,14 +50,14 @@ export class Tutorial implements ITutorial {
     return this._label;
   }
 
-  get options(): TutorialOptions {
+  get options(): TourOptions {
     const { styles, ...others } = this._options;
-    const options = others as TutorialOptions;
+    const options = others as TourOptions;
     options.styles = { ...styles.options } as StyleOptions;
     return options;
   }
 
-  set options(options: TutorialOptions) {
+  set options(options: TourOptions) {
     const { styles, ...others } = options;
     this._options = { ...this._options, ...others };
     this._options.styles.options = {
@@ -100,44 +96,8 @@ export class Tutorial implements ITutorial {
     }
   }
 
-  addTutorialToMenu(menu: Menu): Menu.IItem {
-    const btnOptions: Menu.IItemOptions = {
-      args: {
-        id: this._id
-      },
-      command: this.commandID
-    };
-
-    const menuButton: Menu.IItem = menu.addItem(btnOptions);
-    this._menuButtons.push(menuButton);
-    return menuButton;
-  }
-
   isRunning(): boolean {
     return this._currentStepIndex >= 0;
-  }
-
-  removeTutorialFromMenu(menu: Menu): Menu.IItem[] {
-    if (
-      !menu ||
-      !menu.items ||
-      menu.items.length <= 0 ||
-      this._menuButtons.length <= 0
-    ) {
-      return; // No-op if menu or buttons list are empty
-    }
-
-    const menuItems: Set<Menu.IItem> = new Set(menu.items);
-    const tutorialItems: Set<Menu.IItem> = new Set(this._menuButtons);
-    const intersection: Set<Menu.IItem> = new Set(
-      [...menuItems].filter(item => tutorialItems.has(item))
-    );
-    const itemsToRemove: Menu.IItem[] = Array.from(intersection);
-    itemsToRemove.forEach((item: Menu.IItem, idx: number) => {
-      menu.removeItem(item);
-      this._menuButtons.splice(idx, 1);
-    });
-    return itemsToRemove;
   }
 
   handleTourEvent = (data: CallBackProps): void => {
@@ -158,7 +118,7 @@ export class Tutorial implements ITutorial {
         this._currentStepIndex = 0;
         this._started.emit(data);
       } else if (status === STATUS.ERROR) {
-        console.error(`An error occurred with the tutorial at step: ${step}`);
+        console.error(`An error occurred with the tour at step: ${step}`);
       }
     }
 
@@ -174,7 +134,7 @@ export class Tutorial implements ITutorial {
 
   createAndAddStep(
     target: string,
-    content: string,
+    content: React.ReactNode,
     placement?: Placement,
     title?: string
   ): Step {
@@ -224,7 +184,6 @@ export class Tutorial implements ITutorial {
   private _currentStepIndex = -1;
   private _id: string;
   private _label: string;
-  private _menuButtons: Menu.IItem[] = new Array<Menu.IItem>();
   private _options: Partial<JoyrideProps>;
   private _previousStatus: valueof<status> = STATUS.READY;
   private _previousStepIndex = -1;

@@ -11,21 +11,21 @@ import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
 import { CommandIDs, JP_STYLE, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
-import { ITutorial, ITutorialManager, PLUGIN_ID, StyleOptions } from './tokens';
-import { Tutorial } from './tutorial';
-import { TutorialManager } from './tutorialManager';
+import { ITourHandler, ITourManager, PLUGIN_ID, StyleOptions } from './tokens';
+import { TourHandler } from './tour';
+import { TourManager } from './tourManager';
 import { addJSONTour } from './utils';
 
 /**
  * Initialization data for the jupyterlab-tour extension.
  */
-const extension: JupyterFrontEndPlugin<ITutorialManager> = {
+const extension: JupyterFrontEndPlugin<ITourManager> = {
   id: `${PLUGIN_ID}:plugin`,
   autoStart: true,
   activate,
   requires: [IStateDB],
   optional: [ICommandPalette, IMainMenu, INotebookTracker],
-  provides: ITutorialManager
+  provides: ITourManager
 };
 
 function activate(
@@ -34,11 +34,11 @@ function activate(
   palette?: ICommandPalette,
   menu?: MainMenu,
   nbTracker?: INotebookTracker
-): ITutorialManager {
+): ITourManager {
   const { commands } = app;
 
-  // Create tutorial manager
-  const manager = new TutorialManager(stateDB, menu, {
+  // Create tour manager
+  const manager = new TourManager(stateDB, menu, {
     locale: {
       back: 'Back',
       close: 'Close',
@@ -52,7 +52,7 @@ function activate(
   commands.addCommand(CommandIDs.launch, {
     label: args => {
       if (args['id']) {
-        const tour = manager.tutorials.get(args['id'] as string) as Tutorial;
+        const tour = manager.tutorials.get(args['id'] as string) as TourHandler;
         return tour.label;
       } else {
         return 'Launch a Tour';
@@ -79,7 +79,7 @@ function activate(
         }
       }
 
-      manager.launchConditionally([id], force);
+      manager.launch([id], force);
     }
   });
 
@@ -87,7 +87,7 @@ function activate(
     label: 'Add a tour',
     usage:
       'Add a tour and returns it.\nArguments {tour: ITour}\nReturns `null` if a failure occurs.',
-    execute: (args): ITutorial | null => {
+    execute: (args): ITourHandler | null => {
       return addJSONTour(manager, args.tour as any);
     }
   });
@@ -104,14 +104,14 @@ function activate(
   const node = document.createElement('div');
   document.body.appendChild(node);
   ReactDOM.render(
-    <TourContainer tutorialLaunched={manager.tutorialLaunched} />,
+    <TourContainer tourLaunched={manager.tutorialLaunched} />,
     node
   );
 
   if (nbTracker) {
     nbTracker.widgetAdded.connect(() => {
       if (manager.tutorials.has(NOTEBOOK_ID)) {
-        manager.launchConditionally([NOTEBOOK_ID], false);
+        manager.launch([NOTEBOOK_ID], false);
       }
     });
   }
@@ -119,7 +119,7 @@ function activate(
   app.restored.then(() => {
     if (manager.tutorials.has(WELCOME_ID)) {
       // Wait 3s before launching the first tour - to be sure element are loaded
-      setTimeout(() => manager.launchConditionally([WELCOME_ID], false), 3000);
+      setTimeout(() => manager.launch([WELCOME_ID], false), 3000);
     }
   });
 
