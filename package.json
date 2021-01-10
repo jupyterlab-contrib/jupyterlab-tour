@@ -33,7 +33,7 @@
     "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "clean": "jlpm run clean:lib",
     "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
-    "clean:labextension": "rimraf jupyterlab-tour/labextension",
+    "clean:labextension": "rimraf jupyterlab_tour/labextension",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
@@ -64,7 +64,7 @@
     "@babel/preset-env": "^7.11.0",
     "@jupyterlab/builder": "^3.0.0",
     "@jupyterlab/testutils": "^2.0.0",
-    "@types/jest": "^25.0.0",
+    "@types/jest": "^26.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-joyride": "^2.0.5",
@@ -76,11 +76,11 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.5",
     "genversion": "^2.2.1",
-    "jest": "^25.0.0",
+    "jest": "^26.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.0",
     "rimraf": "^3.0.2",
-    "ts-jest": "^25.0.0",
+    "ts-jest": "^26.0.0",
     "typescript": "~4.1.3"
   },
   "sideEffects": [
@@ -89,7 +89,12 @@
   ],
   "jupyterlab": {
     "extension": true,
-    "outputDir": "jupyterlab-tour/labextension"
+    "outputDir": "jupyterlab_tour/labextension",
+    "sharedPackages": {
+      "jupyterlab_toastify": {
+        "singleton": true
+       }
+     }
   },
   "styleModule": "style/index.js"
 }
