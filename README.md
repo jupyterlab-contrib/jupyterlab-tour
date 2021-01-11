@@ -39,7 +39,7 @@ For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupy
 ## How to add tour for my JupyterLab extension
 
 There are two methods to add a tour: the easiest is to use JupyterLab commands and the advanced version is to request this
-extension token `ITutorialManager`.
+extension token `ITourManager`.
 
 ### Add easily a tour
 
