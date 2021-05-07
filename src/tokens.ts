@@ -70,13 +70,13 @@ export interface ITour {
    */
   label: string;
   /**
-   * Tour steps
-   */
-  steps: Array<IStep>;
-  /**
    * Should this tour be added as entry in the Help menu. User-added tours always are.
    */
   hasHelpEntry: boolean;
+  /**
+   * Tour steps
+   */
+  steps: Array<IStep>;
   /**
    * A full tour description, limited to JSON-compatible values
    */
@@ -110,13 +110,6 @@ export interface ITourHandler extends IDisposable {
     placement?: Placement,
     title?: string
   ): Step;
-
-  /**
-   * Handle react-joyride callbacks
-   *
-   * @param data Callback data
-   */
-  handleTourEvent(data: CallBackProps): void;
 
   /**
    * The index of the current step of the tour. Returns -1 if tour isn't active.
@@ -197,11 +190,6 @@ export interface ITourManager extends IDisposable {
    * The currently active tour. undefined if no tour is currently running.
    */
   readonly activeTour: ITourHandler | undefined;
-
-  /**
-   * Signal emmitted with the set of tours to show to the user
-   */
-  readonly tourLaunched: ISignal<ITourManager, ITourHandler[]>;
 
   /**
    * Creates an interactive TourHandler object that can be customized and run by the TourManager.
