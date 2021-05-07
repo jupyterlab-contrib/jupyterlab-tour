@@ -1,6 +1,7 @@
 import { Token } from '@lumino/coreutils';
 import { IDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import React from 'react';
 import {
   CallBackProps,
@@ -13,6 +14,18 @@ import {
  * Extension ID
  */
 export const PLUGIN_ID = 'jupyterlab-tour';
+
+/**
+ * Settings key for user-defined tours
+ *
+ * @see ../schema/tours.json
+ */
+export const USER_TOURS_SETTINGS = `${PLUGIN_ID}:tours`;
+
+/**
+ * A prefix appended to all user tour ids.
+ */
+export const USER_TOUR_ID_PREFIX = `${PLUGIN_ID}:user-tour`;
 
 /**
  * Token to get a reference to the tours manager
@@ -63,6 +76,24 @@ export interface ITour {
    * Tour steps
    */
   steps: Array<IStep>;
+}
+
+/**
+ * A tour created by the user that can reside in JupyterLab settings JSON
+ */
+export interface IUserTour {
+  /**
+   * Tour unique ID
+   */
+  id: string;
+  /**
+   * Tour label
+   */
+  label: string;
+  /**
+   * A full tour description, limited to JSON-compatible values
+   */
+  tour: JoyrideProps;
 }
 
 /**
@@ -210,4 +241,10 @@ export interface ITourManager extends IDisposable {
    * Key: ID of the tour, value: tour object.
    */
   readonly tours: Map<string, ITourHandler>;
+
+  /**
+   * A collection of tours created by a user or site administrator in
+   * _Advanced Settings_
+   */
+  userTours: ISettingRegistry.ISettings | null;
 }

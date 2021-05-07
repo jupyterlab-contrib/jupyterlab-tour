@@ -6,12 +6,19 @@ import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { IStateDB } from '@jupyterlab/statedb';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
 import { CommandIDs, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
-import { ITourHandler, ITourManager, PLUGIN_ID } from './tokens';
+import {
+  ITourHandler,
+  ITourManager,
+  PLUGIN_ID,
+  USER_TOURS_SETTINGS
+} from './tokens';
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
 import { addJSONTour } from './utils';
@@ -24,7 +31,7 @@ const extension: JupyterFrontEndPlugin<ITourManager> = {
   autoStart: true,
   activate,
   requires: [IStateDB],
-  optional: [ICommandPalette, IMainMenu, INotebookTracker],
+  optional: [ICommandPalette, IMainMenu, INotebookTracker, ISettingRegistry],
   provides: ITourManager
 };
 
@@ -33,7 +40,8 @@ function activate(
   stateDB: IStateDB,
   palette?: ICommandPalette,
   menu?: MainMenu,
-  nbTracker?: INotebookTracker
+  nbTracker?: INotebookTracker,
+  settings?: ISettingRegistry
 ): ITourManager {
   const { commands } = app;
 
@@ -110,6 +118,13 @@ function activate(
       setTimeout(() => manager.launch([WELCOME_ID], false), 3000);
     }
   });
+
+  if (settings) {
+    settings
+      .load(USER_TOURS_SETTINGS)
+      .then(settings => (manager.userTours = settings))
+      .catch(err => console.error(err));
+  }
 
   return manager;
 }

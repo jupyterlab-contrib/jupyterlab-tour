@@ -1,12 +1,20 @@
 import { MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ISignal, Signal } from '@lumino/signaling';
 import { INotification } from 'jupyterlab_toastify';
 import { Props as JoyrideProps } from 'react-joyride';
 import { CommandIDs } from './constants';
-import { ITourHandler, ITourManager, PLUGIN_ID } from './tokens';
+import {
+  ITourHandler,
+  ITourManager,
+  IUserTour,
+  PLUGIN_ID,
+  USER_TOUR_ID_PREFIX
+} from './tokens';
 import { TourHandler } from './tour';
 import { version } from './version';
+import { Menu } from '@lumino/widgets';
 
 const STATE_ID = `${PLUGIN_ID}:state`;
 
@@ -80,6 +88,28 @@ export class TourManager implements ITourManager {
   }
 
   /**
+   * A one-time setter of user tours.
+   */
+  set userTours(userTours: ISettingRegistry.ISettings) {
+    if (this._userTours) {
+      console.warn('user tours may not be registered twice');
+      return;
+    }
+    this._userTours = userTours;
+    if (this._userTours) {
+      this._userTours.changed.connect(this._userToursChanged, this);
+      this._userToursChanged();
+    }
+  }
+
+  /**
+   * Get the user tours.
+   */
+  get userTours(): ISettingRegistry.ISettings | null {
+    return this._userTours;
+  }
+
+  /**
    * Creates an interactive TourHandler object that can be customized and run by the TourManager.
    * @param id The id used to track the tour.
    * @param label The label to use for the tour. If added to help menu, this would be the button text.
@@ -103,12 +133,13 @@ export class TourManager implements ITourManager {
     // Create tour and add it to help menu if needed
     const newTutorial: TourHandler = new TourHandler(id, label, options);
     if (this._menu && addToHelpMenu) {
-      this._menu.helpMenu.menu.addItem({
+      const menuItem = this._menu.helpMenu.menu.addItem({
         args: {
           id: newTutorial.id
         },
         command: CommandIDs.launch
       });
+      this._menuItems.set(newTutorial.id, menuItem);
     }
 
     // Add tour to current set
@@ -212,6 +243,12 @@ export class TourManager implements ITourManager {
     if (!tour) {
       return;
     }
+    // Remove tour from menu
+    if (this._menu && this._menuItems.has(id)) {
+      const item = this._menuItems.get(id);
+      this._menu.helpMenu.menu.removeItem(item);
+      this._menuItems.delete(id);
+    }
     tour.dispose();
     // Remove tour from the list
     this._tours.delete(id);
@@ -234,9 +271,69 @@ export class TourManager implements ITourManager {
     });
   };
 
+  /**
+   * Helper to sort user tours by label, if possible, falling back to unique id
+   */
+  private _compareTours(a: IUserTour, b: IUserTour): number {
+    return (
+      a.label.toLocaleLowerCase().localeCompare(b.label.toLocaleLowerCase()) ||
+      a.id.localeCompare(b.id)
+    );
+  }
+
+  /**
+   * The user changed their tours, remove and re-add all of them.
+   */
+  private _userToursChanged(): void {
+    const tours: IUserTour[] = [...(this._userTours?.composite?.tours as any)];
+
+    if (!tours) {
+      return;
+    }
+
+    for (const id of this._tours.keys()) {
+      if (id.startsWith(USER_TOUR_ID_PREFIX)) {
+        this.removeTour(id);
+      }
+    }
+
+    tours.sort(this._compareTours);
+
+    for (const tour of tours) {
+      try {
+        this._addUserTour(tour);
+      } catch (error) {
+        console.groupCollapsed(
+          `Error encountered adding user tour ${tour.label} (${tour.id})`,
+          error
+        );
+        console.table(tour.tour);
+        console.table(tour.tour.steps || []);
+        console.groupEnd();
+      }
+    }
+  }
+
+  /**
+   * Actually create a tour from JSON
+   */
+  private _addUserTour(tour: IUserTour): void {
+    const handler = this.createTour(
+      `${USER_TOUR_ID_PREFIX}:${tour.id}`,
+      tour.label,
+      true,
+      tour.tour
+    );
+
+    for (const step of tour.tour.steps) {
+      handler.addStep(step);
+    }
+  }
+
   private _activeTours: TourHandler[] = new Array<TourHandler>();
   private _isDisposed = false;
   private _menu: MainMenu | undefined;
+  private _menuItems: Map<string, Menu.IItem> = new Map();
   private _state: IManagerState = {
     toursDone: new Set<string>(),
     version
@@ -247,4 +344,6 @@ export class TourManager implements ITourManager {
     ITourManager,
     TourHandler[]
   >(this);
+
+  private _userTours: ISettingRegistry.ISettings;
 }

@@ -15,6 +15,7 @@ This extension has the following features:
 - Default tours:
   - Welcome tour
   - Notebook tour
+  - User-defined features in Settings
 - Toast proposing to start a tour - to experienced users the need to exit each time the tour.
 - If a tour has already be seen by the user, this is saved in the state database. So you can start tour on event only if the user have not seen it; e.g. the welcome tour is launched at JupyterLab start except if the user have seen it.
 
@@ -36,9 +37,51 @@ For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupy
 
 > For developers, the API has changed between v3 (for JupyterLab 3) and v2 (for JupyterLab 2).
 
+## How to add a tour with Advanced Settings
+
+As a user of JupyterLab, after you've installed `jupyterlab-tour`, you can create
+your own _Tours_ as data.
+
+- Open the JupyterLab _Advanced Settings_ panel <kbd>Ctrl+,</kbd>
+- Select _Tours_ from list of settings groups
+- In the editor, create JSON(5) compatible with the
+  [react-joyride data model](https://docs.react-joyride.com/props)
+- The _Tour_ will be available from the _Help Menu_, as well as the _Command Palette_
+
+### A simple Tour
+
+For example, to show a glowing button on the Jupyter logo, which reveals an orange
+overlay when pressed:
+
+```json5
+// json5 can have comments
+{
+  "tours": [
+    {
+      "id": "my-tour",
+      "label": "My First Tour",
+      "tour": {
+        // steps are required, and have many, many options
+        "steps": [
+          {"target": "#jp-MainLogo", "content": "Look at this!"}
+        ],
+        // below here not required!
+        "styles": {
+          "options": {
+            // you can use jupyterlab theme variables
+            "backgroundColor": "var(--jp-warn-color0)"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+
 ## How to add tour for my JupyterLab extension
 
-There are two methods to add a tour: the easiest is to use JupyterLab commands and the advanced version is to request this
+As an extension developer, there are two methods to add a tour: the easiest is to use JupyterLab commands and the advanced version is to request this
 extension token `ITourManager`.
 
 ### Add easily a tour
@@ -49,7 +92,7 @@ const { commands } = app;
 const tour = (await app.commands.execute('jupyterlab-tour:add', {
   tour: { // Tour must be of type ITour - see src/tokens.ts
     id: 'test-jupyterlab-tour:welcome',
-    label: 'Welcome Tour',    
+    label: 'Welcome Tour',
     hasHelpEntry: true,
     steps: [  // Step must be of type IStep - see src/tokens.ts
       {
