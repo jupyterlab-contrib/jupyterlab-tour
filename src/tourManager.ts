@@ -9,14 +9,14 @@ import {
   ITour,
   ITourHandler,
   ITourManager,
-  PLUGIN_ID,
-  USER_TOUR_ID_PREFIX
+  NS,
+  USER_PLUGIN_ID
 } from './tokens';
 import { TourHandler } from './tour';
 import { version } from './version';
 import { Menu } from '@lumino/widgets';
 
-const STATE_ID = `${PLUGIN_ID}:state`;
+const STATE_ID = `${NS}:state`;
 
 /**
  * Manager state saved in the state database
@@ -292,7 +292,7 @@ export class TourManager implements ITourManager {
     }
 
     for (const id of this._tours.keys()) {
-      if (id.startsWith(USER_TOUR_ID_PREFIX)) {
+      if (id.startsWith(USER_PLUGIN_ID)) {
         this.removeTour(id);
       }
     }
@@ -320,7 +320,7 @@ export class TourManager implements ITourManager {
    */
   private _addUserTour(tour: ITour): void {
     const handler = this.createTour(
-      `${USER_TOUR_ID_PREFIX}:${tour.id}`,
+      `${USER_PLUGIN_ID}:${tour.id}`,
       tour.label,
       tour.hasHelpEntry === false ? false : true,
       tour.options

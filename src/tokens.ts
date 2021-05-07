@@ -11,28 +11,29 @@ import {
 } from 'react-joyride';
 
 /**
- * Extension ID
+ * Namespace for everything
  */
-export const PLUGIN_ID = 'jupyterlab-tour';
+export const NS = 'jupyterlab-tour';
 
 /**
- * Settings key for user-defined tours
- *
- * @see ../schema/tours.json
+ * Core Extension ID
  */
-export const USER_TOURS_SETTINGS = `${PLUGIN_ID}:tours`;
+export const PLUGIN_ID = `${NS}:plugin`;
 
 /**
- * A prefix appended to all user tour ids.
+ * User-defined tours extension ID
  */
-export const USER_TOUR_ID_PREFIX = `${PLUGIN_ID}:user-tour`;
+export const USER_PLUGIN_ID = `${NS}:user-tours`;
+
+/**
+ * First-party curated tours, like Notebook and Welcomes
+ */
+export const DEFAULTS_PLUGIN_ID = `${NS}:default-tours`;
 
 /**
  * Token to get a reference to the tours manager
  */
-export const ITourManager = new Token<ITourManager>(
-  `${PLUGIN_ID}:ITourManager`
-);
+export const ITourManager = new Token<ITourManager>(`${NS}:ITourManager`);
 
 /**
  * Serialized step interface
@@ -109,6 +110,13 @@ export interface ITourHandler extends IDisposable {
     placement?: Placement,
     title?: string
   ): Step;
+
+  /**
+   * Handle react-joyride callbacks
+   *
+   * @param data Callback data
+   */
+  handleTourEvent(data: CallBackProps): void;
 
   /**
    * The index of the current step of the tour. Returns -1 if tour isn't active.
@@ -189,6 +197,11 @@ export interface ITourManager extends IDisposable {
    * The currently active tour. undefined if no tour is currently running.
    */
   readonly activeTour: ITourHandler | undefined;
+
+  /**
+   * Signal emmitted with the set of tours to show to the user
+   */
+  readonly tourLaunched: ISignal<ITourManager, ITourHandler[]>;
 
   /**
    * Creates an interactive TourHandler object that can be customized and run by the TourManager.

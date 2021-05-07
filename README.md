@@ -88,7 +88,7 @@ next opened, those overrides will become the defaults, and your tour will be ava
 An example `overrides.json` might look like:
 ```json5
 {
-  "jupyterlab-tour:tours": {
+  "jupyterlab-tour:user-tours": {
     "tours": [
       // that tour up there!
     ]

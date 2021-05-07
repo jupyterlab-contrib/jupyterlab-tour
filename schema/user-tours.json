@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "description": "Configuration for user tours. This schema is generated from https://github.com/gilbarbara/react-joyride/blob/master/types/index.d.ts",
+  "description": "Configuration for user-defined tours. This schema is generated from https://github.com/gilbarbara/react-joyride/blob/master/types/index.d.ts",
   "jupyter.lab.setting-icon-label": "Tours",
   "title": "Tours",
   "type": "object",

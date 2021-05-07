@@ -2,8 +2,7 @@ import { UseSignal } from '@jupyterlab/apputils';
 import { ISignal } from '@lumino/signaling';
 import React from 'react';
 import ReactJoyride, { CallBackProps, STATUS } from 'react-joyride';
-import { ITourManager } from './tokens';
-import { TourHandler } from './tour';
+import { ITourHandler, ITourManager } from './tokens';
 
 /**
  * Tour component properties
@@ -12,7 +11,7 @@ interface ITourProps {
   /**
    * List of tours to play
    */
-  tours: TourHandler[];
+  tours: ITourHandler[];
 }
 
 /**
@@ -88,7 +87,7 @@ interface ITourLauncherProps {
   /**
    * Tours to be run
    */
-  tours: TourHandler[];
+  tours: ITourHandler[];
 }
 
 /**
@@ -111,7 +110,7 @@ export interface ITourContainerProps {
   /**
    * Signal emitting when a tour should be launched
    */
-  tourLaunched: ISignal<ITourManager, TourHandler[]>;
+  tourLaunched: ISignal<ITourManager, ITourHandler[]>;
 }
 
 /**
