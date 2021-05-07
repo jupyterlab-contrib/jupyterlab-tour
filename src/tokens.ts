@@ -69,31 +69,17 @@ export interface ITour {
    */
   label: string;
   /**
-   * Should this tour be added as entry in the Help menu
-   */
-  hasHelpEntry: boolean;
-  /**
    * Tour steps
    */
   steps: Array<IStep>;
-}
-
-/**
- * A tour created by the user that can reside in JupyterLab settings JSON
- */
-export interface IUserTour {
   /**
-   * Tour unique ID
+   * Should this tour be added as entry in the Help menu. User-added tours always are.
    */
-  id: string;
-  /**
-   * Tour label
-   */
-  label: string;
+  hasHelpEntry: boolean;
   /**
    * A full tour description, limited to JSON-compatible values
    */
-  tour: JoyrideProps;
+  options?: JoyrideProps;
 }
 
 /**

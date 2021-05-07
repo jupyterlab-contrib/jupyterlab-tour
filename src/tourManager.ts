@@ -6,9 +6,9 @@ import { INotification } from 'jupyterlab_toastify';
 import { Props as JoyrideProps } from 'react-joyride';
 import { CommandIDs } from './constants';
 import {
+  ITour,
   ITourHandler,
   ITourManager,
-  IUserTour,
   PLUGIN_ID,
   USER_TOUR_ID_PREFIX
 } from './tokens';
@@ -274,7 +274,7 @@ export class TourManager implements ITourManager {
   /**
    * Helper to sort user tours by label, if possible, falling back to unique id
    */
-  private _compareTours(a: IUserTour, b: IUserTour): number {
+  private _compareTours(a: ITour, b: ITour): number {
     return (
       a.label.toLocaleLowerCase().localeCompare(b.label.toLocaleLowerCase()) ||
       a.id.localeCompare(b.id)
@@ -285,7 +285,7 @@ export class TourManager implements ITourManager {
    * The user changed their tours, remove and re-add all of them.
    */
   private _userToursChanged(): void {
-    const tours: IUserTour[] = [...(this._userTours?.composite?.tours as any)];
+    const tours: ITour[] = [...(this._userTours?.composite?.tours as any)];
 
     if (!tours) {
       return;
@@ -302,13 +302,14 @@ export class TourManager implements ITourManager {
     for (const tour of tours) {
       try {
         this._addUserTour(tour);
+        this.launch([tour.id]);
       } catch (error) {
         console.groupCollapsed(
           `Error encountered adding user tour ${tour.label} (${tour.id})`,
           error
         );
-        console.table(tour.tour);
-        console.table(tour.tour.steps || []);
+        console.table(tour.steps);
+        console.log(tour.options || {});
         console.groupEnd();
       }
     }
@@ -317,15 +318,15 @@ export class TourManager implements ITourManager {
   /**
    * Actually create a tour from JSON
    */
-  private _addUserTour(tour: IUserTour): void {
+  private _addUserTour(tour: ITour): void {
     const handler = this.createTour(
       `${USER_TOUR_ID_PREFIX}:${tour.id}`,
       tour.label,
-      true,
-      tour.tour
+      tour.hasHelpEntry === false ? false : true,
+      tour.options
     );
 
-    for (const step of tour.tour.steps) {
+    for (const step of tour.steps) {
       handler.addStep(step);
     }
   }

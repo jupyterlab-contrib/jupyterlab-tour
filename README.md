@@ -60,12 +60,12 @@ overlay when pressed:
     {
       "id": "my-tour",
       "label": "My First Tour",
-      "tour": {
-        // steps are required, and have many, many options
-        "steps": [
-          {"target": "#jp-MainLogo", "content": "Look at this!"}
-        ],
-        // below here not required!
+      // steps are required, and have many, many options
+      "steps": [
+        {"target": "#jp-MainLogo", "content": "Look at this!"}
+      ],
+      // below here not required!
+      "options": {
         "styles": {
           "options": {
             // you can use jupyterlab theme variables
@@ -75,6 +75,24 @@ overlay when pressed:
       }
     }
   ]
+}
+```
+
+### Shipping a Tour to Binder
+
+On Binder, and elsewhere, you can store the above (_without_ comments) in
+an [`overrides.json`](https://jupyterlab.readthedocs.io/en/stable/user/directories.html?highlight=overrides.json#overrides-json) file and put it in the _right place_,
+e.g. `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab is
+next opened, those overrides will become the defaults, and your tour will be available.
+
+An example `overrides.json` might look like:
+```json5
+{
+  "jupyterlab-tour:tours": {
+    "tours": [
+      // that tour up there!
+    ]
+  }
 }
 ```
 
@@ -109,7 +127,8 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
         target: '#jp-main-dock-panel',
         title: 'Main Content'
       }
-    ]
+    ],
+    // can also define `options`
   }
 })) as ITour;
 if ( tour ) {
