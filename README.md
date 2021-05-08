@@ -159,10 +159,12 @@ if ( tour ) {
 
 ## Disabling the User and Default Tours
 
-If you _only_ wish to disable the default _Welcome_ and _Notebook_, tours, or ones
+If you _only_ wish to see the default _Welcome_ and _Notebook_ tours, or ones
 defined by users, create a [pageConfig.json] and put it in _the right place_, e.g.
-`{sys.prefix/etc/jupyter/labconfig/pageconfig.json`. For example, to disable all
-tours not provided by other extensions:
+`{sys.prefix}/etc/jupyter/labconfig/pageconfig.json` and add the plugin IDs to
+`disabledExtensions`.
+
+For example, to disable all tours not provided by other extensions:
 
 ```json
 {
@@ -173,7 +175,7 @@ tours not provided by other extensions:
 }
 ```
 
-Adding `"jupyterlab-tour:plugin": true` will disable _all_ tours.
+Adding `"jupyterlab-tour:plugin": true` will disable _all_ tours!
 
 [pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
 
