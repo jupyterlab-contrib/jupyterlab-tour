@@ -27,6 +27,12 @@ function aTour(): ITour {
     hasHelpEntry: true,
     steps: [
       {
+        content: 'Tours of Jupyter',
+        placement: 'auto',
+        target: '#jp-MainLogo',
+        title: 'Jupyter'
+      },
+      {
         content:
           'The following tour will point out some of the main UI components within JupyterLab.',
         placement: 'right',
@@ -36,7 +42,7 @@ function aTour(): ITour {
       {
         content:
           'This is the main content area where notebooks and other content can be viewed and edited.',
-        placement: 'left-end',
+        placement: 'center',
         target: '#jp-main-dock-panel',
         title: 'Main Content'
       }

@@ -36,6 +36,12 @@ export const DEFAULTS_PLUGIN_ID = `${NS}:default-tours`;
 export const ITourManager = new Token<ITourManager>(`${NS}:ITourManager`);
 
 /**
+ * Step placement, as it's mostly used here, can have a few extra values than
+ * other uses.
+ */
+export type ExtendedPlacement = Placement | 'center' | 'auto';
+
+/**
  * Serialized step interface
  */
 export interface IStep {
@@ -50,7 +56,7 @@ export interface IStep {
   /**
    * Pop-up position
    */
-  placement?: Placement;
+  placement?: ExtendedPlacement;
   /**
    * Pop-up title
    */
@@ -107,7 +113,7 @@ export interface ITourHandler extends IDisposable {
   createAndAddStep(
     target: string,
     content: React.ReactNode,
-    placement?: Placement,
+    placement?: ExtendedPlacement,
     title?: string
   ): Step;
 
