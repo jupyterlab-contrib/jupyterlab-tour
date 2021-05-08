@@ -27,7 +27,7 @@ import { addJSONTour } from './utils';
 /**
  * Initialization data for the jupyterlab-tour extension.
  */
-const plugin: JupyterFrontEndPlugin<ITourManager> = {
+const corePlugin: JupyterFrontEndPlugin<ITourManager> = {
   id: PLUGIN_ID,
   autoStart: true,
   activate,
@@ -129,7 +129,7 @@ function activateUser(
 /**
  * Optional plugin for the curated default tours and default toast behavior
  */
-const defaultPlugin: JupyterFrontEndPlugin<void> = {
+const defaultsPlugin: JupyterFrontEndPlugin<void> = {
   id: DEFAULTS_PLUGIN_ID,
   autoStart: true,
   activate: activateDefaults,
@@ -160,4 +160,4 @@ function activateDefaults(
   });
 }
 
-export default [plugin, userPlugin, defaultPlugin];
+export default [corePlugin, userPlugin, defaultsPlugin];
