@@ -46,7 +46,7 @@ export const IUserTourManager = new Token<IUserTourManager>(
  * Step placement, as it's mostly used here, can have a few extra values than
  * other uses.
  */
-export type ExtendedPlacement = Placement | 'center' | 'auto';
+export type StepPlacement = Placement | 'center' | 'auto';
 
 /**
  * Serialized step interface
@@ -63,7 +63,7 @@ export interface IStep {
   /**
    * Pop-up position
    */
-  placement?: ExtendedPlacement;
+  placement?: StepPlacement;
   /**
    * Pop-up title
    */
@@ -122,7 +122,7 @@ export interface ITourHandler extends IDisposable {
   createAndAddStep(
     target: string,
     content: React.ReactNode,
-    placement?: ExtendedPlacement,
+    placement?: StepPlacement,
     title?: string
   ): Step;
 

@@ -9,7 +9,7 @@ import {
   valueof
 } from 'react-joyride';
 import { TutorialDefaultOptions } from './constants';
-import { ITourHandler, ExtendedPlacement } from './tokens';
+import { ITourHandler, StepPlacement } from './tokens';
 
 // TODO should be IDisposable !! handling signal connection clearance
 export class TourHandler implements ITourHandler {
@@ -139,7 +139,7 @@ export class TourHandler implements ITourHandler {
   createAndAddStep(
     target: string,
     content: React.ReactNode,
-    placement?: ExtendedPlacement,
+    placement?: StepPlacement,
     title?: string
   ): Step {
     const newStep: Step = {
