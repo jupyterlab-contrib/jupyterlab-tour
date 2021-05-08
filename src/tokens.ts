@@ -36,6 +36,13 @@ export const DEFAULTS_PLUGIN_ID = `${NS}:default-tours`;
 export const ITourManager = new Token<ITourManager>(`${NS}:ITourManager`);
 
 /**
+ * Token to get a reference to the user tours manager
+ */
+export const IUserTourManager = new Token<IUserTourManager>(
+  `${NS}:IUserTourManager`
+);
+
+/**
  * Step placement, as it's mostly used here, can have a few extra values than
  * other uses.
  */
@@ -84,7 +91,9 @@ export interface ITour {
    */
   steps: Array<IStep>;
   /**
-   * A full tour description, limited to JSON-compatible values
+   * A full tour description
+   *
+   * @see https://docs.react-joyride.com/props
    */
   options?: JoyrideProps;
 }
@@ -234,10 +243,22 @@ export interface ITourManager extends IDisposable {
    * Key: ID of the tour, value: tour object.
    */
   readonly tours: Map<string, ITourHandler>;
+}
 
-  /**
-   * A collection of tours created by a user or site administrator in
-   * _Advanced Settings_
-   */
-  userTours: ISettingRegistry.ISettings | null;
+/**
+ * User Tours manager interface
+ */
+export interface IUserTourManager {
+  readonly ready: Promise<void>;
+  readonly tourManager: ITourManager;
+}
+
+/**
+ * Namespace for user tour interfaces
+ */
+export namespace IUserTourManager {
+  export interface IOptions {
+    tourManager: ITourManager;
+    getSettings: () => Promise<ISettingRegistry.ISettings>;
+  }
 }

@@ -17,11 +17,13 @@ import {
   DEFAULTS_PLUGIN_ID,
   ITourHandler,
   ITourManager,
+  IUserTourManager,
   PLUGIN_ID,
   USER_PLUGIN_ID
 } from './tokens';
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
+import { UserTourManager } from './userTourManager';
 import { addJSONTour } from './utils';
 
 /**
@@ -108,22 +110,25 @@ function activate(
 /**
  * Optional plugin for user-defined tours stored in the settings registry
  */
-const userPlugin: JupyterFrontEndPlugin<void> = {
+const userPlugin: JupyterFrontEndPlugin<IUserTourManager> = {
   id: USER_PLUGIN_ID,
   autoStart: true,
   activate: activateUser,
-  requires: [ISettingRegistry, ITourManager]
+  requires: [ISettingRegistry, ITourManager],
+  provides: IUserTourManager
 };
 
 function activateUser(
   app: JupyterFrontEnd,
   settings: ISettingRegistry,
-  tours: ITourManager
-): void {
-  settings
-    .load(USER_PLUGIN_ID)
-    .then(settings => (tours.userTours = settings))
-    .catch(err => console.error(err));
+  tourManager: ITourManager
+): IUserTourManager {
+  const manager = new UserTourManager({
+    tourManager,
+    getSettings: (): Promise<ISettingRegistry.ISettings> =>
+      settings.load(USER_PLUGIN_ID)
+  });
+  return manager;
 }
 
 /**

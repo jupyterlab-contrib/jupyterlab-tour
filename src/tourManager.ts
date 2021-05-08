@@ -1,20 +1,17 @@
+import { Menu } from '@lumino/widgets';
+
 import { MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ISignal, Signal } from '@lumino/signaling';
+
 import { INotification } from 'jupyterlab_toastify';
+
 import { Props as JoyrideProps } from 'react-joyride';
+
 import { CommandIDs } from './constants';
-import {
-  ITour,
-  ITourHandler,
-  ITourManager,
-  NS,
-  USER_PLUGIN_ID
-} from './tokens';
+import { ITourHandler, ITourManager, NS } from './tokens';
 import { TourHandler } from './tour';
 import { version } from './version';
-import { Menu } from '@lumino/widgets';
 
 const STATE_ID = `${NS}:state`;
 
@@ -85,28 +82,6 @@ export class TourManager implements ITourManager {
    */
   get tours(): Map<string, ITourHandler> {
     return this._tours;
-  }
-
-  /**
-   * A one-time setter of user tours.
-   */
-  set userTours(userTours: ISettingRegistry.ISettings) {
-    if (this._userTours) {
-      console.warn('user tours may not be registered twice');
-      return;
-    }
-    this._userTours = userTours;
-    if (this._userTours) {
-      this._userTours.changed.connect(this._userToursChanged, this);
-      this._userToursChanged();
-    }
-  }
-
-  /**
-   * Get the user tours.
-   */
-  get userTours(): ISettingRegistry.ISettings | null {
-    return this._userTours;
   }
 
   /**
@@ -271,66 +246,6 @@ export class TourManager implements ITourManager {
     });
   };
 
-  /**
-   * Helper to sort user tours by label, if possible, falling back to unique id
-   */
-  private _compareTours(a: ITour, b: ITour): number {
-    return (
-      a.label.toLocaleLowerCase().localeCompare(b.label.toLocaleLowerCase()) ||
-      a.id.localeCompare(b.id)
-    );
-  }
-
-  /**
-   * The user changed their tours, remove and re-add all of them.
-   */
-  private _userToursChanged(): void {
-    const tours: ITour[] = [...(this._userTours?.composite?.tours as any)];
-
-    if (!tours) {
-      return;
-    }
-
-    for (const id of this._tours.keys()) {
-      if (id.startsWith(USER_PLUGIN_ID)) {
-        this.removeTour(id);
-      }
-    }
-
-    tours.sort(this._compareTours);
-
-    for (const tour of tours) {
-      try {
-        this._addUserTour(tour);
-        this.launch([tour.id]);
-      } catch (error) {
-        console.groupCollapsed(
-          `Error encountered adding user tour ${tour.label} (${tour.id})`,
-          error
-        );
-        console.table(tour.steps);
-        console.log(tour.options || {});
-        console.groupEnd();
-      }
-    }
-  }
-
-  /**
-   * Actually create a tour from JSON
-   */
-  private _addUserTour(tour: ITour): void {
-    const handler = this.createTour(
-      `${USER_PLUGIN_ID}:${tour.id}`,
-      tour.label,
-      tour.hasHelpEntry === false ? false : true,
-      tour.options
-    );
-
-    for (const step of tour.steps) {
-      handler.addStep(step);
-    }
-  }
-
   private _activeTours: TourHandler[] = new Array<TourHandler>();
   private _isDisposed = false;
   private _menu: MainMenu | undefined;
@@ -345,6 +260,4 @@ export class TourManager implements ITourManager {
     ITourManager,
     TourHandler[]
   >(this);
-
-  private _userTours: ISettingRegistry.ISettings;
 }

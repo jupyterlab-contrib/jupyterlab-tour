@@ -10,6 +10,20 @@ A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
 
 ![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/master/doc/tourDemo.gif)
 
+## Install
+
+```bash
+pip install jupyterlab-tour
+```
+
+or
+
+```bash
+conda install -c conda-forge jupyterlab-tour
+```
+
+## Features
+
 This extension has the following features:
 
 - Default tours:
@@ -81,7 +95,7 @@ overlay when pressed:
 ### Shipping a Tour to Binder
 
 On Binder, and elsewhere, you can store the above (_without_ comments) in
-an [`overrides.json`](https://jupyterlab.readthedocs.io/en/stable/user/directories.html?highlight=overrides.json#overrides-json) file and put it in the _right place_,
+an [overrides.json] file and put it in the _right place_,
 e.g. `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab is
 next opened, those overrides will become the defaults, and your tour will be available.
 
@@ -96,6 +110,7 @@ An example `overrides.json` might look like:
 }
 ```
 
+[overrides.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#overrides-json
 
 ## How to add tour for my JupyterLab extension
 
@@ -142,17 +157,26 @@ if ( tour ) {
 > One example is available on [Mamba navigator](https://github.com/mamba-org/gator/blob/master/packages/labextension/src/index.ts#L76).
 > Test it on [binder](https://mybinder.org/v2/gh/mamba-org/gator/master?urlpath=lab).
 
-## Install
+## Disabling the User and Default Tours
 
-```bash
-pip install jupyterlab-tour
+If you _only_ wish to disable the default _Welcome_ and _Notebook_, tours, or ones
+defined by users, create a [pageConfig.json] and put it in _the right place_, e.g.
+`{sys.prefix/etc/jupyter/labconfig/pageconfig.json`. For example, to disable all
+tours not provided by other extensions:
+
+```json
+{
+  "disabledExtensions": {
+    "jupyterlab-tour:user-tours": true,
+    "jupyterlab-tour:default-tours": true,
+  }
+}
 ```
 
-or
+Adding `"jupyterlab-tour:plugin": true` will disable _all_ tours.
 
-```bash
-conda install -c conda-forge jupyterlab-tour
-```
+[pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
+
 
 ## Uninstall
 

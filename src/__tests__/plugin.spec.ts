@@ -7,7 +7,7 @@ import { Signal } from '@lumino/signaling';
 import 'jest';
 import { CommandIDs } from '../constants';
 import plugin from '../index';
-import { ITour, ITourManager } from '../tokens';
+import { ITour, ITourManager, IUserTourManager } from '../tokens';
 
 const DEFAULT_TOURS_SIZE = 2;
 
@@ -90,7 +90,6 @@ describe(corePlugin.id, () => {
         expect(manager.tours.size).toEqual(1);
         expect(tour).toBeTruthy();
         expect(manager.tours.get(tour.id)).toBeTruthy();
-        expect(manager.userTours).toBeFalsy();
       });
     });
   });
@@ -103,9 +102,13 @@ describe(userPlugin.id, () => {
       const stateDB = new StateDB();
       const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
       const settings = mockSettingRegistry();
-      userPlugin.activate(app as any, settings, manager);
-      await settings.load('whatever');
-      expect(manager.tours.size).toBe(1);
+      const userManager = userPlugin.activate(
+        app as any,
+        settings,
+        manager
+      ) as IUserTourManager;
+      await userManager.ready;
+      expect(userManager.tourManager.tours.size).toBe(1);
     });
   });
 
@@ -115,10 +118,16 @@ describe(userPlugin.id, () => {
       const stateDB = new StateDB();
       const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
       const settingsRegistry = mockSettingRegistry();
-      userPlugin.activate(app as any, settingsRegistry, manager);
+      const userManager = userPlugin.activate(
+        app as any,
+        settingsRegistry,
+        manager
+      ) as IUserTourManager;
+      await userManager.ready;
       const settings = await settingsRegistry.load('whatever');
-      // settings.composite = {} as any;
+      (settings as any).composite = { tours: [] };
       (settings as any).changed.emit(void 0);
+      expect(userManager.tourManager.tours.size).toBe(0);
     });
   });
 });
