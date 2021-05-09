@@ -24,7 +24,7 @@ export class UserTourManager implements IUserTourManager {
       })
       .catch(reason => {
         console.warn(reason);
-        this._ready.reject();
+        this._ready.reject(reason);
       });
   }
 
