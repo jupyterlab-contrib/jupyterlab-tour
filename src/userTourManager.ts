@@ -22,7 +22,10 @@ export class UserTourManager implements IUserTourManager {
         this._userToursChanged();
         this._ready.resolve();
       })
-      .catch(console.warn);
+      .catch(reason => {
+        console.warn(reason);
+        this._ready.reject();
+      });
   }
 
   /**
