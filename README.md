@@ -160,11 +160,25 @@ if ( tour ) {
 ## Disabling the User and Default Tours
 
 If you _only_ wish to see the default _Welcome_ and _Notebook_ tours, or ones
-defined by users, create a [pageConfig.json] and put it in _the right place_, e.g.
+defined by users, they can be disabled via the command line or a well-known file.
+
+The examples below disable all tours not provided by third-party extensions.
+Adding `jupyterlab-tour:plugin` to either of these will disable tours altogether!
+
+### Disabling Tours from the Command Line
+
+From the command line, run:
+
+```bash
+jupyter labextension disable "jupyterlab-tour:user-tours"
+jupyter labextension disable "jupyterlab-tour:default-tours"
+```
+
+### Disabling Tours with `pageConfig.json`
+
+Create a [pageConfig.json] and put it in _the right place_, e.g.
 `{sys.prefix}/etc/jupyter/labconfig/pageconfig.json` and add the plugin IDs to
 `disabledExtensions`.
-
-For example, to disable all tours not provided by other extensions:
 
 ```json
 {
@@ -174,8 +188,6 @@ For example, to disable all tours not provided by other extensions:
   }
 }
 ```
-
-Adding `"jupyterlab-tour:plugin": true` will disable _all_ tours!
 
 [pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
 
