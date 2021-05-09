@@ -16,7 +16,8 @@
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
-    "style/index.js"
+    "style/index.js",
+    "schema/*.json"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -49,6 +50,7 @@
     "@jupyterlab/apputils": "^3.0.0",
     "@jupyterlab/mainmenu": "^3.0.0",
     "@jupyterlab/notebook": "^3.0.0",
+    "@jupyterlab/settingregistry": "^3.0.0",
     "@jupyterlab/statedb": "^3.0.0",
     "@lumino/coreutils": "^1.5.3",
     "@lumino/disposable": "^1.4.3",
@@ -57,7 +59,7 @@
     "jupyterlab_toastify": "^4.1.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-joyride": "^2.2.1"
+    "react-joyride": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.0",
@@ -67,7 +69,6 @@
     "@types/jest": "^26.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "@types/react-joyride": "^2.0.5",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
     "eslint": "^7.5.0",
@@ -89,6 +90,7 @@
   ],
   "jupyterlab": {
     "extension": true,
+    "schemaDir": "schema",
     "outputDir": "jupyterlab_tour/labextension",
     "sharedPackages": {
       "jupyterlab_toastify": {

@@ -2,7 +2,6 @@ import { JSONExt } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
 import {
   CallBackProps,
-  Placement,
   Props as JoyrideProps,
   status,
   STATUS,
@@ -10,7 +9,7 @@ import {
   valueof
 } from 'react-joyride';
 import { TutorialDefaultOptions } from './constants';
-import { ITourHandler } from './tokens';
+import { ITourHandler, StepPlacement } from './tokens';
 
 // TODO should be IDisposable !! handling signal connection clearance
 export class TourHandler implements ITourHandler {
@@ -140,7 +139,7 @@ export class TourHandler implements ITourHandler {
   createAndAddStep(
     target: string,
     content: React.ReactNode,
-    placement?: Placement,
+    placement?: StepPlacement,
     title?: string
   ): Step {
     const newStep: Step = {

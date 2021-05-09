@@ -1,6 +1,7 @@
 import { Token } from '@lumino/coreutils';
 import { IDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import React from 'react';
 import {
   CallBackProps,
@@ -10,16 +11,42 @@ import {
 } from 'react-joyride';
 
 /**
- * Extension ID
+ * Namespace for everything
  */
-export const PLUGIN_ID = 'jupyterlab-tour';
+export const NS = 'jupyterlab-tour';
+
+/**
+ * Core Extension ID
+ */
+export const PLUGIN_ID = `${NS}:plugin`;
+
+/**
+ * User-defined tours extension ID
+ */
+export const USER_PLUGIN_ID = `${NS}:user-tours`;
+
+/**
+ * First-party curated tours, like Notebook and Welcomes
+ */
+export const DEFAULTS_PLUGIN_ID = `${NS}:default-tours`;
 
 /**
  * Token to get a reference to the tours manager
  */
-export const ITourManager = new Token<ITourManager>(
-  `${PLUGIN_ID}:ITourManager`
+export const ITourManager = new Token<ITourManager>(`${NS}:ITourManager`);
+
+/**
+ * Token to get a reference to the user tours manager
+ */
+export const IUserTourManager = new Token<IUserTourManager>(
+  `${NS}:IUserTourManager`
 );
+
+/**
+ * Step placement, as it's mostly used here, can have a few extra values than
+ * other uses.
+ */
+export type StepPlacement = Placement | 'center' | 'auto';
 
 /**
  * Serialized step interface
@@ -36,7 +63,7 @@ export interface IStep {
   /**
    * Pop-up position
    */
-  placement?: Placement;
+  placement?: StepPlacement;
   /**
    * Pop-up title
    */
@@ -56,13 +83,19 @@ export interface ITour {
    */
   label: string;
   /**
-   * Should this tour be added as entry in the Help menu
+   * Should this tour be added as entry in the Help menu. User-added tours always are.
    */
   hasHelpEntry: boolean;
   /**
    * Tour steps
    */
   steps: Array<IStep>;
+  /**
+   * A full tour description
+   *
+   * @see https://docs.react-joyride.com/props
+   */
+  options?: JoyrideProps;
 }
 
 /**
@@ -89,7 +122,7 @@ export interface ITourHandler extends IDisposable {
   createAndAddStep(
     target: string,
     content: React.ReactNode,
-    placement?: Placement,
+    placement?: StepPlacement,
     title?: string
   ): Step;
 
@@ -210,4 +243,22 @@ export interface ITourManager extends IDisposable {
    * Key: ID of the tour, value: tour object.
    */
   readonly tours: Map<string, ITourHandler>;
+}
+
+/**
+ * User Tours manager interface
+ */
+export interface IUserTourManager {
+  readonly ready: Promise<void>;
+  readonly tourManager: ITourManager;
+}
+
+/**
+ * Namespace for user tour interfaces
+ */
+export namespace IUserTourManager {
+  export interface IOptions {
+    tourManager: ITourManager;
+    getSettings: () => Promise<ISettingRegistry.ISettings>;
+  }
 }

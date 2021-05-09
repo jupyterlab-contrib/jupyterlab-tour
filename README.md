@@ -10,11 +10,26 @@ A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
 
 ![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/master/doc/tourDemo.gif)
 
+## Install
+
+```bash
+pip install jupyterlab-tour
+```
+
+or
+
+```bash
+conda install -c conda-forge jupyterlab-tour
+```
+
+## Features
+
 This extension has the following features:
 
 - Default tours:
   - Welcome tour
   - Notebook tour
+  - User-defined features in Settings
 - Toast proposing to start a tour - to experienced users the need to exit each time the tour.
 - If a tour has already be seen by the user, this is saved in the state database. So you can start tour on event only if the user have not seen it; e.g. the welcome tour is launched at JupyterLab start except if the user have seen it.
 
@@ -36,9 +51,70 @@ For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupy
 
 > For developers, the API has changed between v3 (for JupyterLab 3) and v2 (for JupyterLab 2).
 
+## How to add a tour with Advanced Settings
+
+As a user of JupyterLab, after you've installed `jupyterlab-tour`, you can create
+your own _Tours_ as data.
+
+- Open the JupyterLab _Advanced Settings_ panel <kbd>Ctrl+,</kbd>
+- Select _Tours_ from list of settings groups
+- In the editor, create JSON(5) compatible with the
+  [react-joyride data model](https://docs.react-joyride.com/props)
+- The _Tour_ will be available from the _Help Menu_, as well as the _Command Palette_
+
+### A simple Tour
+
+For example, to show a glowing button on the Jupyter logo, which reveals an orange
+overlay when pressed:
+
+```json5
+// json5 can have comments
+{
+  "tours": [
+    {
+      "id": "my-tour",
+      "label": "My First Tour",
+      // steps are required, and have many, many options
+      "steps": [
+        {"target": "#jp-MainLogo", "content": "Look at this!"}
+      ],
+      // below here not required!
+      "options": {
+        "styles": {
+          "options": {
+            // you can use jupyterlab theme variables
+            "backgroundColor": "var(--jp-warn-color0)"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### Shipping a Tour to Binder
+
+On Binder, and elsewhere, you can store the above (_without_ comments) in
+an [overrides.json] file and put it in the _right place_,
+e.g. `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab is
+next opened, those overrides will become the defaults, and your tour will be available.
+
+An example `overrides.json` might look like:
+```json5
+{
+  "jupyterlab-tour:user-tours": {
+    "tours": [
+      // that tour up there!
+    ]
+  }
+}
+```
+
+[overrides.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#overrides-json
+
 ## How to add tour for my JupyterLab extension
 
-There are two methods to add a tour: the easiest is to use JupyterLab commands and the advanced version is to request this
+As an extension developer, there are two methods to add a tour: the easiest is to use JupyterLab commands and the advanced version is to request this
 extension token `ITourManager`.
 
 ### Add easily a tour
@@ -49,7 +125,7 @@ const { commands } = app;
 const tour = (await app.commands.execute('jupyterlab-tour:add', {
   tour: { // Tour must be of type ITour - see src/tokens.ts
     id: 'test-jupyterlab-tour:welcome',
-    label: 'Welcome Tour',    
+    label: 'Welcome Tour',
     hasHelpEntry: true,
     steps: [  // Step must be of type IStep - see src/tokens.ts
       {
@@ -66,7 +142,8 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
         target: '#jp-main-dock-panel',
         title: 'Main Content'
       }
-    ]
+    ],
+    // can also define `options`
   }
 })) as ITour;
 if ( tour ) {
@@ -80,17 +157,40 @@ if ( tour ) {
 > One example is available on [Mamba navigator](https://github.com/mamba-org/gator/blob/master/packages/labextension/src/index.ts#L76).
 > Test it on [binder](https://mybinder.org/v2/gh/mamba-org/gator/master?urlpath=lab).
 
-## Install
+## Disabling the User and Default Tours
+
+If you _only_ wish to see the default _Welcome_ and _Notebook_ tours, or ones
+defined by users, they can be disabled via the command line or a well-known file.
+
+The examples below disable all tours not provided by third-party extensions.
+Adding `jupyterlab-tour:plugin` to either of these will disable tours altogether!
+
+### Disabling Tours from the Command Line
+
+From the command line, run:
 
 ```bash
-pip install jupyterlab-tour
+jupyter labextension disable "jupyterlab-tour:user-tours"
+jupyter labextension disable "jupyterlab-tour:default-tours"
 ```
 
-or
+### Disabling Tours with `pageConfig.json`
 
-```bash
-conda install -c conda-forge jupyterlab-tour
+Create a [pageConfig.json] and put it in _the right place_, e.g.
+`{sys.prefix}/etc/jupyter/labconfig/pageconfig.json` and add the plugin IDs to
+`disabledExtensions`.
+
+```json
+{
+  "disabledExtensions": {
+    "jupyterlab-tour:user-tours": true,
+    "jupyterlab-tour:default-tours": true,
+  }
+}
 ```
+
+[pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
+
 
 ## Uninstall
 

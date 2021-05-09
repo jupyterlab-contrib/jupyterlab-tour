@@ -1,19 +1,19 @@
 import { Props as JoyrideProps } from 'react-joyride';
-import { PLUGIN_ID } from './tokens';
+import { NS } from './tokens';
 
 /**
  * Command IDs
  */
 export namespace CommandIDs {
-  export const addTour = `${PLUGIN_ID}:add`;
-  export const launch = `${PLUGIN_ID}:launch`;
+  export const addTour = `${NS}:add`;
+  export const launch = `${NS}:launch`;
 }
 
 /**
  * Default tour IDs
  */
-export const WELCOME_ID = `${PLUGIN_ID}:welcome`;
-export const NOTEBOOK_ID = `${PLUGIN_ID}:notebook`;
+export const WELCOME_ID = `${NS}:welcome`;
+export const NOTEBOOK_ID = `${NS}:notebook`;
 
 /**
  * Default tour options

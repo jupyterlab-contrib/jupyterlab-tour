@@ -1,0 +1,856 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "description": "Configuration for user-defined tours. This schema is generated from https://github.com/gilbarbara/react-joyride/blob/master/types/index.d.ts",
+  "jupyter.lab.setting-icon-label": "Tours",
+  "title": "Tours",
+  "type": "object",
+  "properties": {
+    "tours": {
+      "type": "array",
+      "description": "An array of a tours. Each requires an `id`, `label` and `steps[]`, and may have `options`, see https://docs.react-joyride.com",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "steps"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A machine-readble ID to identify this tour, will be prefixed. Should be unique within this document."
+          },
+          "label": {
+            "type": "string",
+            "description": "A human-readable name for the tour"
+          },
+          "hasHelpEntry": {
+            "type": "boolean",
+            "description": "Whether to add a Help Menu item with the label to launch the tour",
+            "default": true
+          },
+          "steps": {
+            "description": "The definition of the steps of a tour",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Step"
+            }
+          },
+          "options": {
+            "description": "Other options for the tour",
+            "$ref": "#/definitions/Props"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "BeaconRenderProps": {
+      "additionalProperties": false,
+      "properties": {
+        "continuous": {
+          "type": "boolean"
+        },
+        "index": {
+          "type": "number"
+        },
+        "isLastStep": {
+          "type": "boolean"
+        },
+        "size": {
+          "type": "number"
+        },
+        "step": {
+          "$ref": "#/definitions/Step"
+        }
+      },
+      "required": ["continuous", "index", "isLastStep", "size", "step"],
+      "type": "object"
+    },
+    "CallBackProps": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "controlled": {
+          "type": "boolean"
+        },
+        "index": {
+          "type": "number"
+        },
+        "lifecycle": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "status": {
+          "$ref": "#/definitions/valueof%3Cstatus%3E"
+        },
+        "step": {
+          "$ref": "#/definitions/Step"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "controlled",
+        "index",
+        "lifecycle",
+        "size",
+        "status",
+        "step",
+        "type"
+      ],
+      "type": "object"
+    },
+    "CommonProps": {
+      "additionalProperties": false,
+      "properties": {
+        "beaconComponent": {
+          "type": "string"
+        },
+        "disableCloseOnEsc": {
+          "type": "boolean"
+        },
+        "disableOverlay": {
+          "type": "boolean"
+        },
+        "disableOverlayClose": {
+          "type": "boolean"
+        },
+        "disableScrollParentFix": {
+          "type": "boolean"
+        },
+        "disableScrolling": {
+          "type": "boolean"
+        },
+        "floaterProps": {
+          "$ref": "#/definitions/FloaterProps"
+        },
+        "hideBackButton": {
+          "type": "boolean"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "showProgress": {
+          "type": "boolean"
+        },
+        "showSkipButton": {
+          "type": "boolean"
+        },
+        "spotlightClicks": {
+          "type": "boolean"
+        },
+        "spotlightPadding": {
+          "type": "number"
+        },
+        "styles": {
+          "$ref": "#/definitions/Styles"
+        },
+        "tooltipComponent": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "FloaterProps": {
+      "additionalProperties": false,
+      "properties": {
+        "disableAnimation": {
+          "type": "boolean"
+        },
+        "options": {
+          "$ref": "#/definitions/GenericObject"
+        },
+        "styles": {
+          "$ref": "#/definitions/GenericObject"
+        },
+        "wrapperOptions": {
+          "$ref": "#/definitions/GenericObject"
+        }
+      },
+      "type": "object"
+    },
+    "GenericObject": {
+      "type": "object"
+    },
+    "Locale": {
+      "additionalProperties": false,
+      "properties": {
+        "back": {
+          "type": "string"
+        },
+        "close": {
+          "type": "string"
+        },
+        "last": {
+          "type": "string"
+        },
+        "next": {
+          "type": "string"
+        },
+        "open": {
+          "type": "string"
+        },
+        "skip": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Placement": {
+      "enum": [
+        "top",
+        "top-start",
+        "top-end",
+        "bottom",
+        "bottom-start",
+        "bottom-end",
+        "left",
+        "left-start",
+        "left-end",
+        "right",
+        "right-start",
+        "right-end",
+        "auto",
+        "center"
+      ],
+      "type": "string"
+    },
+    "PlacementBeacon": {
+      "enum": ["top", "bottom", "left", "right"],
+      "type": "string"
+    },
+    "Props": {
+      "additionalProperties": false,
+      "properties": {
+        "beaconComponent": {
+          "type": "string"
+        },
+        "continuous": {
+          "type": "boolean"
+        },
+        "debug": {
+          "type": "boolean"
+        },
+        "disableCloseOnEsc": {
+          "type": "boolean"
+        },
+        "disableOverlay": {
+          "type": "boolean"
+        },
+        "disableOverlayClose": {
+          "type": "boolean"
+        },
+        "disableScrollParentFix": {
+          "type": "boolean"
+        },
+        "disableScrolling": {
+          "type": "boolean"
+        },
+        "floaterProps": {
+          "$ref": "#/definitions/FloaterProps"
+        },
+        "hideBackButton": {
+          "type": "boolean"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "run": {
+          "type": "boolean"
+        },
+        "scrollOffset": {
+          "type": "number"
+        },
+        "scrollToFirstStep": {
+          "type": "boolean"
+        },
+        "showProgress": {
+          "type": "boolean"
+        },
+        "showSkipButton": {
+          "type": "boolean"
+        },
+        "spotlightClicks": {
+          "type": "boolean"
+        },
+        "spotlightPadding": {
+          "type": "number"
+        },
+        "stepIndex": {
+          "type": "number"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/definitions/Step"
+          },
+          "type": "array"
+        },
+        "styles": {
+          "$ref": "#/definitions/Styles"
+        },
+        "tooltipComponent": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Step": {
+      "additionalProperties": false,
+      "properties": {
+        "beaconComponent": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "disableBeacon": {
+          "type": "boolean"
+        },
+        "disableCloseOnEsc": {
+          "type": "boolean"
+        },
+        "disableOverlay": {
+          "type": "boolean"
+        },
+        "disableOverlayClose": {
+          "type": "boolean"
+        },
+        "disableScrollParentFix": {
+          "type": "boolean"
+        },
+        "disableScrolling": {
+          "type": "boolean"
+        },
+        "event": {
+          "type": "string"
+        },
+        "floaterProps": {
+          "$ref": "#/definitions/FloaterProps"
+        },
+        "hideBackButton": {
+          "type": "boolean"
+        },
+        "hideCloseButton": {
+          "type": "boolean"
+        },
+        "hideFooter": {
+          "type": "boolean"
+        },
+        "isFixed": {
+          "type": "boolean"
+        },
+        "locale": {
+          "$ref": "#/definitions/Locale"
+        },
+        "offset": {
+          "type": "number"
+        },
+        "placement": {
+          "$ref": "#/definitions/Placement"
+        },
+        "placementBeacon": {
+          "$ref": "#/definitions/PlacementBeacon"
+        },
+        "showProgress": {
+          "type": "boolean"
+        },
+        "showSkipButton": {
+          "type": "boolean"
+        },
+        "spotlightClicks": {
+          "type": "boolean"
+        },
+        "spotlightPadding": {
+          "type": "number"
+        },
+        "styles": {
+          "$ref": "#/definitions/Styles"
+        },
+        "target": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "tooltipComponent": {
+          "type": "string"
+        }
+      },
+      "required": ["content", "target"],
+      "type": "object"
+    },
+    "StoreHelpers": {
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "StoreState": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "controlled": {
+          "type": "boolean"
+        },
+        "index": {
+          "type": "number"
+        },
+        "lifecycle": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "controlled",
+        "index",
+        "lifecycle",
+        "size",
+        "status"
+      ],
+      "type": "object"
+    },
+    "Styles": {
+      "additionalProperties": false,
+      "properties": {
+        "beacon": {
+          "type": "object"
+        },
+        "beaconInner": {
+          "type": "object"
+        },
+        "beaconOuter": {
+          "type": "object"
+        },
+        "buttonBack": {
+          "type": "object"
+        },
+        "buttonClose": {
+          "type": "object"
+        },
+        "buttonNext": {
+          "type": "object"
+        },
+        "buttonSkip": {
+          "type": "object"
+        },
+        "options": {
+          "additionalProperties": false,
+          "properties": {
+            "arrowColor": {
+              "type": "string"
+            },
+            "backgroundColor": {
+              "type": "string"
+            },
+            "beaconSize": {
+              "type": "number"
+            },
+            "overlayColor": {
+              "type": "string"
+            },
+            "primaryColor": {
+              "type": "string"
+            },
+            "spotlightShadow": {
+              "type": "string"
+            },
+            "textColor": {
+              "type": "string"
+            },
+            "width": {
+              "type": ["string", "number"]
+            },
+            "zIndex": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "overlay": {
+          "type": "object"
+        },
+        "overlayLegacy": {
+          "type": "object"
+        },
+        "overlayLegacyCenter": {
+          "type": "object"
+        },
+        "spotlight": {
+          "type": "object"
+        },
+        "spotlightLegacy": {
+          "type": "object"
+        },
+        "tooltip": {
+          "type": "object"
+        },
+        "tooltipContainer": {
+          "type": "object"
+        },
+        "tooltipContent": {
+          "type": "object"
+        },
+        "tooltipFooter": {
+          "type": "object"
+        },
+        "tooltipFooterSpacer": {
+          "type": "object"
+        },
+        "tooltipTitle": {
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "TooltipRenderProps": {
+      "additionalProperties": false,
+      "properties": {
+        "backProps": {
+          "additionalProperties": false,
+          "properties": {
+            "aria-label": {
+              "type": "string"
+            },
+            "data-action": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "required": ["aria-label", "data-action", "role", "title"],
+          "type": "object"
+        },
+        "closeProps": {
+          "additionalProperties": false,
+          "properties": {
+            "aria-label": {
+              "type": "string"
+            },
+            "data-action": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "required": ["aria-label", "data-action", "role", "title"],
+          "type": "object"
+        },
+        "continuous": {
+          "type": "boolean"
+        },
+        "index": {
+          "type": "number"
+        },
+        "isLastStep": {
+          "type": "boolean"
+        },
+        "primaryProps": {
+          "additionalProperties": false,
+          "properties": {
+            "aria-label": {
+              "type": "string"
+            },
+            "data-action": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "required": ["aria-label", "data-action", "role", "title"],
+          "type": "object"
+        },
+        "size": {
+          "type": "number"
+        },
+        "skipProps": {
+          "additionalProperties": false,
+          "properties": {
+            "aria-label": {
+              "type": "string"
+            },
+            "data-action": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "required": ["aria-label", "data-action", "role", "title"],
+          "type": "object"
+        },
+        "step": {
+          "$ref": "#/definitions/Step"
+        },
+        "tooltipProps": {
+          "additionalProperties": false,
+          "properties": {
+            "aria-modal": {
+              "type": "boolean"
+            },
+            "role": {
+              "type": "string"
+            }
+          },
+          "required": ["aria-modal", "role"],
+          "type": "object"
+        }
+      },
+      "required": [
+        "backProps",
+        "closeProps",
+        "continuous",
+        "index",
+        "isLastStep",
+        "primaryProps",
+        "size",
+        "skipProps",
+        "step",
+        "tooltipProps"
+      ],
+      "type": "object"
+    },
+    "actions": {
+      "additionalProperties": false,
+      "properties": {
+        "CLOSE": {
+          "enum": ["close"],
+          "type": "string"
+        },
+        "GO": {
+          "enum": ["go"],
+          "type": "string"
+        },
+        "INDEX": {
+          "enum": ["index"],
+          "type": "string"
+        },
+        "INIT": {
+          "enum": ["init"],
+          "type": "string"
+        },
+        "NEXT": {
+          "enum": ["next"],
+          "type": "string"
+        },
+        "PREV": {
+          "enum": ["prev"],
+          "type": "string"
+        },
+        "RESET": {
+          "enum": ["reset"],
+          "type": "string"
+        },
+        "RESTART": {
+          "enum": ["restart"],
+          "type": "string"
+        },
+        "SKIP": {
+          "enum": ["skip"],
+          "type": "string"
+        },
+        "START": {
+          "enum": ["start"],
+          "type": "string"
+        },
+        "STOP": {
+          "enum": ["stop"],
+          "type": "string"
+        },
+        "UPDATE": {
+          "enum": ["update"],
+          "type": "string"
+        }
+      },
+      "required": [
+        "INIT",
+        "START",
+        "STOP",
+        "RESET",
+        "RESTART",
+        "PREV",
+        "NEXT",
+        "GO",
+        "INDEX",
+        "CLOSE",
+        "SKIP",
+        "UPDATE"
+      ],
+      "type": "object"
+    },
+    "events": {
+      "additionalProperties": false,
+      "properties": {
+        "BEACON": {
+          "enum": ["beacon"],
+          "type": "string"
+        },
+        "ERROR": {
+          "enum": ["error"],
+          "type": "string"
+        },
+        "STEP_AFTER": {
+          "enum": ["step:after"],
+          "type": "string"
+        },
+        "STEP_BEFORE": {
+          "enum": ["step:before"],
+          "type": "string"
+        },
+        "TARGET_NOT_FOUND": {
+          "enum": ["error:target_not_found"],
+          "type": "string"
+        },
+        "TOOLTIP": {
+          "enum": ["tooltip"],
+          "type": "string"
+        },
+        "TOOLTIP_CLOSE": {
+          "enum": ["close"],
+          "type": "string"
+        },
+        "TOUR_END": {
+          "enum": ["tour:end"],
+          "type": "string"
+        },
+        "TOUR_START": {
+          "enum": ["tour:start"],
+          "type": "string"
+        },
+        "TOUR_STATUS": {
+          "enum": ["tour:status"],
+          "type": "string"
+        }
+      },
+      "required": [
+        "TOUR_START",
+        "STEP_BEFORE",
+        "BEACON",
+        "TOOLTIP",
+        "TOOLTIP_CLOSE",
+        "STEP_AFTER",
+        "TOUR_END",
+        "TOUR_STATUS",
+        "TARGET_NOT_FOUND",
+        "ERROR"
+      ],
+      "type": "object"
+    },
+    "lifecycle": {
+      "additionalProperties": false,
+      "properties": {
+        "BEACON": {
+          "enum": ["beacon"],
+          "type": "string"
+        },
+        "COMPLETE": {
+          "enum": ["complete"],
+          "type": "string"
+        },
+        "ERROR": {
+          "enum": ["error"],
+          "type": "string"
+        },
+        "INIT": {
+          "enum": ["init"],
+          "type": "string"
+        },
+        "READY": {
+          "enum": ["ready"],
+          "type": "string"
+        },
+        "TOOLTIP": {
+          "enum": ["tooltip"],
+          "type": "string"
+        }
+      },
+      "required": ["INIT", "READY", "BEACON", "TOOLTIP", "COMPLETE", "ERROR"],
+      "type": "object"
+    },
+    "status": {
+      "additionalProperties": false,
+      "properties": {
+        "ERROR": {
+          "enum": ["error"],
+          "type": "string"
+        },
+        "FINISHED": {
+          "enum": ["finished"],
+          "type": "string"
+        },
+        "IDLE": {
+          "enum": ["idle"],
+          "type": "string"
+        },
+        "PAUSED": {
+          "enum": ["paused"],
+          "type": "string"
+        },
+        "READY": {
+          "enum": ["ready"],
+          "type": "string"
+        },
+        "RUNNING": {
+          "enum": ["running"],
+          "type": "string"
+        },
+        "SKIPPED": {
+          "enum": ["skipped"],
+          "type": "string"
+        },
+        "WAITING": {
+          "enum": ["waiting"],
+          "type": "string"
+        }
+      },
+      "required": [
+        "IDLE",
+        "READY",
+        "WAITING",
+        "RUNNING",
+        "PAUSED",
+        "SKIPPED",
+        "FINISHED",
+        "ERROR"
+      ],
+      "type": "object"
+    },
+    "valueof<status>": {
+      "enum": [
+        "idle",
+        "ready",
+        "waiting",
+        "running",
+        "paused",
+        "skipped",
+        "finished",
+        "error"
+      ],
+      "type": "string"
+    }
+  }
+}

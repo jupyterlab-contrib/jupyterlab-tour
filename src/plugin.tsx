@@ -6,25 +6,35 @@ import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { IStateDB } from '@jupyterlab/statedb';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
 import { CommandIDs, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
-import { ITourHandler, ITourManager, PLUGIN_ID } from './tokens';
+import {
+  DEFAULTS_PLUGIN_ID,
+  ITourHandler,
+  ITourManager,
+  IUserTourManager,
+  PLUGIN_ID,
+  USER_PLUGIN_ID
+} from './tokens';
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
+import { UserTourManager } from './userTourManager';
 import { addJSONTour } from './utils';
 
 /**
  * Initialization data for the jupyterlab-tour extension.
  */
-const extension: JupyterFrontEndPlugin<ITourManager> = {
-  id: `${PLUGIN_ID}:plugin`,
+const corePlugin: JupyterFrontEndPlugin<ITourManager> = {
+  id: PLUGIN_ID,
   autoStart: true,
   activate,
   requires: [IStateDB],
-  optional: [ICommandPalette, IMainMenu, INotebookTracker],
+  optional: [ICommandPalette, IMainMenu],
   provides: ITourManager
 };
 
@@ -32,8 +42,7 @@ function activate(
   app: JupyterFrontEnd,
   stateDB: IStateDB,
   palette?: ICommandPalette,
-  menu?: MainMenu,
-  nbTracker?: INotebookTracker
+  menu?: MainMenu
 ): ITourManager {
   const { commands } = app;
 
@@ -90,28 +99,70 @@ function activate(
     });
   }
 
-  addTours(manager, app, nbTracker);
-
   const node = document.createElement('div');
+
   document.body.appendChild(node);
   ReactDOM.render(<TourContainer tourLaunched={manager.tourLaunched} />, node);
 
+  return manager;
+}
+
+/**
+ * Optional plugin for user-defined tours stored in the settings registry
+ */
+const userPlugin: JupyterFrontEndPlugin<IUserTourManager> = {
+  id: USER_PLUGIN_ID,
+  autoStart: true,
+  activate: activateUser,
+  requires: [ISettingRegistry, ITourManager],
+  provides: IUserTourManager
+};
+
+function activateUser(
+  app: JupyterFrontEnd,
+  settings: ISettingRegistry,
+  tourManager: ITourManager
+): IUserTourManager {
+  const manager = new UserTourManager({
+    tourManager,
+    getSettings: (): Promise<ISettingRegistry.ISettings> =>
+      settings.load(USER_PLUGIN_ID)
+  });
+  return manager;
+}
+
+/**
+ * Optional plugin for the curated default tours and default toast behavior
+ */
+const defaultsPlugin: JupyterFrontEndPlugin<void> = {
+  id: DEFAULTS_PLUGIN_ID,
+  autoStart: true,
+  activate: activateDefaults,
+  requires: [ITourManager],
+  optional: [INotebookTracker]
+};
+
+function activateDefaults(
+  app: JupyterFrontEnd,
+  tourManager: ITourManager,
+  nbTracker?: INotebookTracker
+): void {
+  addTours(tourManager, app, nbTracker);
+
   if (nbTracker) {
     nbTracker.widgetAdded.connect(() => {
-      if (manager.tours.has(NOTEBOOK_ID)) {
-        manager.launch([NOTEBOOK_ID], false);
+      if (tourManager.tours.has(NOTEBOOK_ID)) {
+        tourManager.launch([NOTEBOOK_ID], false);
       }
     });
   }
 
   app.restored.then(() => {
-    if (manager.tours.has(WELCOME_ID)) {
+    if (tourManager.tours.has(WELCOME_ID)) {
       // Wait 3s before launching the first tour - to be sure element are loaded
-      setTimeout(() => manager.launch([WELCOME_ID], false), 3000);
+      setTimeout(() => tourManager.launch([WELCOME_ID], false), 3000);
     }
   });
-
-  return manager;
 }
 
-export default extension;
+export default [corePlugin, userPlugin, defaultsPlugin];
