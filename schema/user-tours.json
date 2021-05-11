@@ -15,7 +15,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "A machine-readble ID to identify this tour, will be prefixed. Should be unique within this document."
+            "description": "A machine-readable ID to identify this tour, will be prefixed. Should be unique within this document."
           },
           "label": {
             "type": "string",
@@ -36,6 +36,10 @@
           "options": {
             "description": "Other options for the tour",
             "$ref": "#/definitions/Props"
+          },
+          "translation": {
+            "description": "Translation domain containing for this tour",
+            "type": "string"
           }
         }
       }
@@ -282,12 +286,6 @@
         },
         "stepIndex": {
           "type": "number"
-        },
-        "steps": {
-          "items": {
-            "$ref": "#/definitions/Step"
-          },
-          "type": "array"
         },
         "styles": {
           "$ref": "#/definitions/Styles"

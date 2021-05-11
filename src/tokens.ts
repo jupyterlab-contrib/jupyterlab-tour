@@ -91,11 +91,15 @@ export interface ITour {
    */
   steps: Array<IStep>;
   /**
-   * A full tour description
+   * Tour options
    *
    * @see https://docs.react-joyride.com/props
+   *
+   * #### Notes
+   *
+   * All options are accepted except the steps entry.
    */
-  options?: JoyrideProps;
+  options?: Omit<JoyrideProps, 'steps'>;
 }
 
 /**
