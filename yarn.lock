@@ -1622,7 +1622,7 @@
     simulate-event "~1.4.0"
     ts-jest "^26.3.0"
 
-"@jupyterlab/translation@^3.0.7":
+"@jupyterlab/translation@^3.0.0", "@jupyterlab/translation@^3.0.7":
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/@jupyterlab/translation/-/translation-3.0.7.tgz#570cb61153034c05eb7f7992f5ddeb0f93b1687e"
   integrity sha512-ZJEcmEdd6sSlhiYSpPtzE8EjzigaHKzarzziD8GwJfMVOu+bUF/nLX9RFjr5tS7CuZDIKqD08t3z1hDgQ4EfMg==

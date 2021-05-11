@@ -1,15 +1,18 @@
-import { Menu } from '@lumino/widgets';
-
 import { MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
+import { ITranslator, TranslationBundle } from '@jupyterlab/translation';
 import { ISignal, Signal } from '@lumino/signaling';
-
+import { Menu } from '@lumino/widgets';
 import { INotification } from 'jupyterlab_toastify';
-
-import { Props as JoyrideProps } from 'react-joyride';
-
+import { Locale, Props as JoyrideProps } from 'react-joyride';
 import { CommandIDs } from './constants';
-import { ITourHandler, ITourManager, NS } from './tokens';
+import {
+  ITour,
+  ITourHandler,
+  ITourManager,
+  NS,
+  USER_PLUGIN_ID
+} from './tokens';
 import { TourHandler } from './tour';
 import { version } from './version';
 
@@ -33,10 +36,21 @@ interface IManagerState {
  * The TourManager is needed to manage creation, removal and launching of Tutorials
  */
 export class TourManager implements ITourManager {
-  constructor(stateDB: IStateDB, mainMenu?: MainMenu) {
+  constructor(stateDB: IStateDB, translator: ITranslator, mainMenu?: MainMenu) {
     this._stateDB = stateDB;
     this._menu = mainMenu;
     this._tours = new Map<string, TourHandler>();
+    this._trans = translator.load('jupyterlab-tour');
+    this._translator = translator;
+
+    this._locale = {
+      back: this._trans.__('Back'),
+      close: this._trans.__('Close'),
+      last: this._trans.__('Done'),
+      next: this._trans.__('Next'),
+      open: this._trans.__('Open'),
+      skip: this._trans.__('Skip')
+    };
 
     this._stateDB.fetch(STATE_ID).then(value => {
       if (value) {
@@ -85,6 +99,57 @@ export class TourManager implements ITourManager {
   }
 
   /**
+   * Extension translation bundle
+   */
+  get translator(): TranslationBundle {
+    return this._trans;
+  }
+
+  /**
+   * Creates an interactive TourHandler object that can be customized and run by the TourManager.
+   * @param tour The tour to be created.
+   *
+   * @returns The tour created
+   *
+   * #### Notes
+   * Tour title and steps content will go through a translation bundle if they are strings.
+   */
+  addTour(tour: ITour): ITourHandler | null {
+    try {
+      let trans = this._trans;
+      if (tour.translation) {
+        trans = this._translator.load(tour.translation);
+      }
+
+      const handler = this.createTour(
+        `${USER_PLUGIN_ID}:${tour.id}`,
+        trans.__(tour.label),
+        tour.hasHelpEntry === false ? false : true,
+        tour.options
+      );
+
+      tour.steps.forEach(step => {
+        const translatedStep = { ...step };
+        if (typeof translatedStep.title === 'string') {
+          translatedStep.title = trans.__(translatedStep.title);
+        }
+        if (typeof translatedStep.content === 'string') {
+          translatedStep.content = trans.__(translatedStep.content);
+        }
+        handler.addStep(translatedStep);
+      });
+
+      return handler;
+    } catch (error) {
+      console.error(
+        this._trans.__("Fail to add tour '%1' (%2)", tour.label, tour.id),
+        error
+      );
+      return null;
+    }
+  }
+
+  /**
    * Creates an interactive TourHandler object that can be customized and run by the TourManager.
    * @param id The id used to track the tour.
    * @param label The label to use for the tour. If added to help menu, this would be the button text.
@@ -92,6 +157,9 @@ export class TourManager implements ITourManager {
    * @param options Tour options
    *
    * @returns The tour created
+   *
+   * #### Notes
+   * The tour label will not be translated.
    */
   createTour = (
     id: string,
@@ -101,8 +169,16 @@ export class TourManager implements ITourManager {
   ): ITourHandler => {
     if (this._tours.has(id)) {
       throw new Error(
-        `Error creating new tour. TourHandler id's must be unique.\nTutorial with the id: '${id}' already exists.`
+        this._trans.__(
+          "Error creating new tour. TourHandler id's must be unique.\nTutorial with the id: '%1' already exists.",
+          id
+        )
       );
+    }
+
+    // Set translation for common buttons.
+    if (!options.locale) {
+      options.locale = this._locale;
     }
 
     // Create tour and add it to help menu if needed
@@ -176,15 +252,15 @@ export class TourManager implements ITourManager {
       if (force) {
         startTours();
       } else {
-        INotification.info(`Try the ${tourList[0].label}.`, {
+        INotification.info(this._trans.__('Try the %1.', tourList[0].label), {
           autoClose: 10000,
           buttons: [
             {
-              label: 'Start now',
+              label: this._trans.__('Start now'),
               callback: startTours
             },
             {
-              label: "Don't show me again",
+              label: this._trans.__("Don't show me again"),
               callback: (): void => {
                 tourList.forEach(tour => this._rememberDoneTour(tour.id));
               }
@@ -248,6 +324,7 @@ export class TourManager implements ITourManager {
 
   private _activeTours: TourHandler[] = new Array<TourHandler>();
   private _isDisposed = false;
+  private _locale: Locale;
   private _menu: MainMenu | undefined;
   private _menuItems: Map<string, Menu.IItem> = new Map();
   private _state: IManagerState = {
@@ -255,6 +332,8 @@ export class TourManager implements ITourManager {
     version
   };
   private _stateDB: IStateDB;
+  private _trans: TranslationBundle;
+  private _translator: ITranslator;
   private _tours: Map<string, TourHandler>;
   private _tourLaunched: Signal<ITourManager, TourHandler[]> = new Signal<
     ITourManager,

@@ -1,7 +1,8 @@
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { ITranslator, TranslationBundle } from '@jupyterlab/translation';
 import { Token } from '@lumino/coreutils';
 import { IDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import React from 'react';
 import {
   CallBackProps,
@@ -100,6 +101,10 @@ export interface ITour {
    * All options are accepted except the steps entry.
    */
   options?: Omit<JoyrideProps, 'steps'>;
+  /**
+   * Translation domain containing for this tour
+   */
+  translation?: string;
 }
 
 /**
@@ -211,6 +216,19 @@ export interface ITourManager extends IDisposable {
   readonly activeTour: ITourHandler | undefined;
 
   /**
+   * Extension translation bundle
+   */
+  readonly translator: TranslationBundle;
+
+  /**
+   * Creates an interactive TourHandler object that can be customized and run by the TourManager.
+   * @param tour The tour to be created.
+   *
+   * @returns The tour created or null in case of errors
+   */
+  addTour(tour: ITour): ITourHandler | null;
+
+  /**
    * Creates an interactive TourHandler object that can be customized and run by the TourManager.
    * @param id The id used to track the tour.
    * @param label The label to use for the tour. If added to help menu, this would be the button text.
@@ -253,7 +271,13 @@ export interface ITourManager extends IDisposable {
  * User Tours manager interface
  */
 export interface IUserTourManager {
+  /**
+   * Promise resolved when the user tour manager is ready.
+   */
   readonly ready: Promise<void>;
+  /**
+   * Tour manager
+   */
   readonly tourManager: ITourManager;
 }
 
@@ -261,8 +285,21 @@ export interface IUserTourManager {
  * Namespace for user tour interfaces
  */
 export namespace IUserTourManager {
+  /**
+   * UserTourManager constructor options
+   */
   export interface IOptions {
+    /**
+     * Tour manager
+     */
     tourManager: ITourManager;
+    /**
+     * Application translator manager
+     */
+    translator?: ITranslator;
+    /**
+     * Extension settings getter
+     */
     getSettings: () => Promise<ISettingRegistry.ISettings>;
   }
 }
