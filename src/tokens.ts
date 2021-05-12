@@ -102,7 +102,7 @@ export interface ITour {
    */
   options?: Omit<JoyrideProps, 'steps'>;
   /**
-   * Translation domain containing for this tour
+   * Translation domain for this tour
    */
   translation?: string;
 }
