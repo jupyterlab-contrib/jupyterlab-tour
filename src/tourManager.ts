@@ -297,7 +297,9 @@ export class TourManager implements ITourManager {
     // Remove tour from menu
     if (this._menu && this._menuItems.has(id)) {
       const item = this._menuItems.get(id);
-      this._menu.helpMenu.menu.removeItem(item);
+      if (item) {
+        this._menu.helpMenu.menu.removeItem(item);
+      }
       this._menuItems.delete(id);
     }
     tour.dispose();

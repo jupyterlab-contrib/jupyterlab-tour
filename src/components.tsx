@@ -122,7 +122,7 @@ export interface ITourContainerProps {
 export function TourContainer(props: ITourContainerProps): JSX.Element {
   return (
     <UseSignal signal={props.tourLaunched} initialArgs={[]}>
-      {(_, tours): JSX.Element =>
+      {(_, tours): React.ReactNode =>
         tours && tours.length > 0 ? <TourLauncher tours={tours} /> : null
       }
     </UseSignal>
