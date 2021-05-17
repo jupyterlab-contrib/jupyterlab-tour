@@ -114,3 +114,4 @@ coverage/
 
 # logs
 *.log
+.vscode/
