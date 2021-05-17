@@ -182,7 +182,7 @@ export interface ITourHandler extends IDisposable {
    * Removes a step from the tour, no-op if the index is out of range.
    * @param index The index of the step to remove.
    */
-  removeStep(index: number): Step;
+  removeStep(index: number): Step | null;
 
   /**
    * A signal emitted if the user skips or ends the tour prematurely.

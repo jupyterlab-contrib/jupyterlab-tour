@@ -76,7 +76,7 @@ function activate(
           title: manager.translator.__('Choose a tour')
         });
 
-        if (answer.button.accept) {
+        if (answer.button.accept && answer.value) {
           id = answer.value;
         } else {
           return;

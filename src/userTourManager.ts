@@ -111,5 +111,5 @@ export class UserTourManager implements IUserTourManager {
   private _ready = new PromiseDelegate<void>();
   private _tourManager: ITourManager;
   private _translator: ITranslator;
-  private _userTours: ISettingRegistry.ISettings;
+  private _userTours: ISettingRegistry.ISettings | null = null;
 }

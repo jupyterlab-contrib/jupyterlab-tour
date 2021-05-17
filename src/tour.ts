@@ -20,8 +20,11 @@ export class TourHandler implements ITourHandler {
   ) {
     this._label = label;
     this._id = id;
-    const { styles, ...others } = options;
+    const { styles, ...others } = options ?? {};
     this._options = { ...TutorialDefaultOptions, ...others };
+    if (!this._options.styles) {
+      this._options.styles = {};
+    }
     this._options.styles.options = {
       ...(this._options.styles.options || {}),
       ...(styles?.options || {})
@@ -227,7 +230,7 @@ export class TourHandler implements ITourHandler {
    * Removes a step from the tour, no-op if the index is out of range.
    * @param index The index of the step to remove.
    */
-  removeStep(index: number): Step {
+  removeStep(index: number): Step | null {
     if (index < 0 || index >= this.steps.length) {
       return null;
     }

@@ -50,15 +50,15 @@ function aTour(): ITour {
   };
 }
 
-function mockSettingRegistry(): Partial<ISettingRegistry> {
-  const settings: Partial<ISettingRegistry.ISettings> = {
+function mockSettingRegistry(): ISettingRegistry {
+  const settings: ISettingRegistry.ISettings = {
     composite: { tours: [(aTour() as any) as ReadonlyJSONObject] }
-  };
+  } as any;
   (settings as any)['changed'] = new Signal<any, any>(settings);
 
   return {
     load: async (): Promise<any> => settings as any
-  };
+  } as any;
 }
 
 describe(corePlugin.id, () => {
@@ -68,7 +68,7 @@ describe(corePlugin.id, () => {
       const stateDB = new StateDB();
       corePlugin.activate(app as any, stateDB);
 
-      expect(app.commands.hasCommand(CommandIDs.addTour)).toEqual(true);
+      expect(app.commands?.hasCommand(CommandIDs.addTour)).toEqual(true);
     });
   });
 
@@ -83,7 +83,7 @@ describe(corePlugin.id, () => {
         ) as ITourManager;
         expect(manager.tours.size).toEqual(0);
 
-        const tour = await app.commands.execute(CommandIDs.addTour, {
+        const tour = await app.commands?.execute(CommandIDs.addTour, {
           tour: (aTour() as any) as ReadonlyJSONObject
         });
 
