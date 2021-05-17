@@ -20,13 +20,6 @@ export const NOTEBOOK_ID = `${NS}:notebook`;
  */
 export const TutorialDefaultOptions: Omit<JoyrideProps, 'steps'> = {
   continuous: true,
-  locale: {
-    back: 'Back',
-    close: 'Close',
-    last: 'Done',
-    next: 'Next',
-    skip: 'Skip'
-  },
   showProgress: true,
   showSkipButton: true,
   styles: {

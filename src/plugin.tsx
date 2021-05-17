@@ -7,6 +7,7 @@ import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -24,7 +25,6 @@ import {
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
 import { UserTourManager } from './userTourManager';
-import { addJSONTour } from './utils';
 
 /**
  * Initialization data for the jupyterlab-tour extension.
@@ -34,7 +34,7 @@ const corePlugin: JupyterFrontEndPlugin<ITourManager> = {
   autoStart: true,
   activate,
   requires: [IStateDB],
-  optional: [ICommandPalette, IMainMenu],
+  optional: [ICommandPalette, IMainMenu, ITranslator],
   provides: ITourManager
 };
 
@@ -42,24 +42,28 @@ function activate(
   app: JupyterFrontEnd,
   stateDB: IStateDB,
   palette?: ICommandPalette,
-  menu?: MainMenu
+  menu?: MainMenu,
+  translator?: ITranslator
 ): ITourManager {
   const { commands } = app;
 
+  translator = translator ?? nullTranslator;
+
   // Create tour manager
-  const manager = new TourManager(stateDB, menu);
+  const manager = new TourManager(stateDB, translator, menu);
 
   commands.addCommand(CommandIDs.launch, {
     label: args => {
       if (args['id']) {
         const tour = manager.tours.get(args['id'] as string) as TourHandler;
-        return tour.label;
+        return manager.translator.__(tour.label);
       } else {
-        return 'Launch a Tour';
+        return manager.translator.__('Launch a Tour');
       }
     },
-    usage:
-      'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}',
+    usage: manager.translator.__(
+      'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}'
+    ),
     isEnabled: () => !manager.activeTour,
     execute: async args => {
       let id = args['id'] as string;
@@ -69,7 +73,7 @@ function activate(
       if (!id) {
         const answer = await InputDialog.getItem({
           items: Array.from(manager.tours.keys()),
-          title: 'Choose a tour'
+          title: manager.translator.__('Choose a tour')
         });
 
         if (answer.button.accept) {
@@ -84,17 +88,18 @@ function activate(
   });
 
   commands.addCommand(CommandIDs.addTour, {
-    label: 'Add a tour',
-    usage:
-      'Add a tour and returns it.\nArguments {tour: ITour}\nReturns `null` if a failure occurs.',
+    label: manager.translator.__('Add a tour'),
+    usage: manager.translator.__(
+      'Add a tour and returns it.\nArguments {tour: ITour}\nReturns `null` if a failure occurs.'
+    ),
     execute: (args): ITourHandler | null => {
-      return addJSONTour(manager, args.tour as any);
+      return manager.addTour(args.tour as any);
     }
   });
 
   if (palette) {
     palette.addItem({
-      category: 'Help',
+      category: manager.translator.__('Help'),
       command: CommandIDs.launch
     });
   }
@@ -115,16 +120,21 @@ const userPlugin: JupyterFrontEndPlugin<IUserTourManager> = {
   autoStart: true,
   activate: activateUser,
   requires: [ISettingRegistry, ITourManager],
+  optional: [ITranslator],
   provides: IUserTourManager
 };
 
 function activateUser(
   app: JupyterFrontEnd,
   settings: ISettingRegistry,
-  tourManager: ITourManager
+  tourManager: ITourManager,
+  translator?: ITranslator
 ): IUserTourManager {
+  translator = translator || nullTranslator;
+
   const manager = new UserTourManager({
     tourManager,
+    translator,
     getSettings: (): Promise<ISettingRegistry.ISettings> =>
       settings.load(USER_PLUGIN_ID)
   });

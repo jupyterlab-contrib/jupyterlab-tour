@@ -1,10 +1,10 @@
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { PromiseDelegate } from '@lumino/coreutils';
-
 import {
-  IUserTourManager,
   ITour,
   ITourManager,
+  IUserTourManager,
   USER_PLUGIN_ID
 } from './tokens';
 
@@ -14,6 +14,8 @@ import {
 export class UserTourManager implements IUserTourManager {
   constructor(options: IUserTourManager.IOptions) {
     this._tourManager = options.tourManager;
+    this._translator = options.translator ?? nullTranslator;
+
     options
       .getSettings()
       .then(userTours => {
@@ -62,8 +64,13 @@ export class UserTourManager implements IUserTourManager {
         this._addUserTour(tour);
         this._tourManager.launch([tour.id], false);
       } catch (error) {
+        const trans = this._tourManager.translator;
         console.groupCollapsed(
-          `Error encountered adding user tour ${tour.label} (${tour.id})`,
+          trans.__(
+            'Error encountered adding user tour %1 (%2)',
+            tour.label,
+            tour.id
+          ),
           error
         );
         console.table(tour.steps);
@@ -77,29 +84,32 @@ export class UserTourManager implements IUserTourManager {
    * Actually create a tour from JSON
    */
   private _addUserTour(tour: ITour): void {
-    const handler = this._tourManager.createTour(
-      `${USER_PLUGIN_ID}:${tour.id}`,
-      tour.label,
-      tour.hasHelpEntry === false ? false : true,
-      tour.options
-    );
-
-    for (const step of tour.steps) {
-      handler.addStep(step);
-    }
+    this._tourManager.addTour(tour);
   }
 
   /**
    * Helper to sort user tours by label, if possible, falling back to unique id
    */
   private _compareTours(a: ITour, b: ITour): number {
+    let transA = this._tourManager.translator;
+    if (a.translation) {
+      transA = this._translator.load(a.translation);
+    }
+    let transB = this._tourManager.translator;
+    if (b.translation) {
+      transB = this._translator.load(b.translation);
+    }
     return (
-      a.label.toLocaleLowerCase().localeCompare(b.label.toLocaleLowerCase()) ||
+      transA
+        .__(a.label)
+        .toLocaleLowerCase()
+        .localeCompare(transB.__(b.label).toLocaleLowerCase()) ||
       a.id.localeCompare(b.id)
     );
   }
 
-  private _tourManager: ITourManager;
-  private _userTours: ISettingRegistry.ISettings;
   private _ready = new PromiseDelegate<void>();
+  private _tourManager: ITourManager;
+  private _translator: ITranslator;
+  private _userTours: ISettingRegistry.ISettings;
 }

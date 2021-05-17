@@ -135,6 +135,8 @@ export class TourHandler implements ITourHandler {
    * @param title The title to use for the the tour step.
    *
    * @returns The create step
+   *
+   * @deprecated Prefer using {@link addStep} passing the argument within an object.
    */
   createAndAddStep(
     target: string,
