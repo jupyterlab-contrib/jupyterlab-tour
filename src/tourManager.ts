@@ -122,7 +122,7 @@ export class TourManager implements ITourManager {
       }
 
       const handler = this.createTour(
-        `${USER_PLUGIN_ID}:${tour.id}`,
+        tour.id,
         trans.__(tour.label),
         tour.hasHelpEntry === false ? false : true,
         tour.options

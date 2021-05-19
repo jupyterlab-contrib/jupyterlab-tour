@@ -84,7 +84,7 @@ export class UserTourManager implements IUserTourManager {
    * Actually create a tour from JSON
    */
   private _addUserTour(tour: ITour): void {
-    this._tourManager.addTour(tour);
+    this._tourManager.addTour({ ...tour, id: `${USER_PLUGIN_ID}:${tour.id}` });
   }
 
   /**
