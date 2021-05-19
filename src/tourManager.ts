@@ -6,13 +6,7 @@ import { Menu } from '@lumino/widgets';
 import { INotification } from 'jupyterlab_toastify';
 import { Locale, Props as JoyrideProps } from 'react-joyride';
 import { CommandIDs } from './constants';
-import {
-  ITour,
-  ITourHandler,
-  ITourManager,
-  NS,
-  USER_PLUGIN_ID
-} from './tokens';
+import { ITour, ITourHandler, ITourManager, NS } from './tokens';
 import { TourHandler } from './tour';
 import { version } from './version';
 
