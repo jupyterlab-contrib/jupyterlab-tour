@@ -11,7 +11,6 @@ import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { TourContainer } from './components';
 import { CommandIDs, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
 import {
@@ -19,12 +18,17 @@ import {
   ITourHandler,
   ITourManager,
   IUserTourManager,
+  INotebookTourManager,
   PLUGIN_ID,
-  USER_PLUGIN_ID
+  USER_PLUGIN_ID,
+  NOTEBOOK_PLUGIN_ID
 } from './tokens';
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
 import { UserTourManager } from './userTourManager';
+import { NotebookTourManager } from './notebookTourManager';
+import { NotebookTourButton } from './notebookButton';
+import { tourIcon } from './icons';
 
 /**
  * Initialization data for the jupyterlab-tour extension.
@@ -62,6 +66,9 @@ function activate(
         return trans.__('Launch a Tour');
       }
     },
+    icon: args =>
+      (manager.tours.get(args['id'] as string) as TourHandler)?.icon ||
+      tourIcon,
     usage: trans.__(
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}'
     ),
@@ -128,17 +135,45 @@ const userPlugin: JupyterFrontEndPlugin<IUserTourManager> = {
 function activateUser(
   app: JupyterFrontEnd,
   settings: ISettingRegistry,
-  tourManager: ITourManager,
-  translator?: ITranslator
+  tourManager: ITourManager
 ): IUserTourManager {
-  translator = translator || nullTranslator;
-
   const manager = new UserTourManager({
     tourManager,
-    translator,
     getSettings: (): Promise<ISettingRegistry.ISettings> =>
       settings.load(USER_PLUGIN_ID)
   });
+  return manager;
+}
+
+/**
+ * Optional plugin for notebook-defined tours stored in metadata
+ */
+const notebookPlugin: JupyterFrontEndPlugin<INotebookTourManager> = {
+  id: NOTEBOOK_PLUGIN_ID,
+  autoStart: true,
+  activate: activateNotebook,
+  requires: [INotebookTracker, ITourManager],
+  provides: INotebookTourManager
+};
+
+function activateNotebook(
+  app: JupyterFrontEnd,
+  nbTracker: INotebookTracker,
+  tourManager: ITourManager
+): INotebookTourManager {
+  const manager = new NotebookTourManager({
+    tourManager
+  });
+
+  nbTracker.widgetAdded.connect((nbTracker, panel) =>
+    manager.addNotebook(panel.content)
+  );
+
+  app.docRegistry.addWidgetExtension(
+    'Notebook',
+    new NotebookTourButton({ notebookTourManager: manager })
+  );
+
   return manager;
 }
 
@@ -184,4 +219,4 @@ function activateDefaults(
   });
 }
 
-export default [corePlugin, userPlugin, defaultsPlugin];
+export default [corePlugin, userPlugin, notebookPlugin, defaultsPlugin];
