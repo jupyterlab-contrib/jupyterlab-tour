@@ -6,13 +6,7 @@ import { Menu } from '@lumino/widgets';
 import { INotification } from 'jupyterlab_toastify';
 import { Locale, Props as JoyrideProps } from 'react-joyride';
 import { CommandIDs } from './constants';
-import {
-  ITour,
-  ITourHandler,
-  ITourManager,
-  NS,
-  USER_PLUGIN_ID
-} from './tokens';
+import { ITour, ITourHandler, ITourManager, NS } from './tokens';
 import { TourHandler } from './tour';
 import { version } from './version';
 
@@ -122,7 +116,7 @@ export class TourManager implements ITourManager {
       }
 
       const handler = this.createTour(
-        `${USER_PLUGIN_ID}:${tour.id}`,
+        tour.id,
         trans.__(tour.label),
         tour.hasHelpEntry === false ? false : true,
         tour.options
