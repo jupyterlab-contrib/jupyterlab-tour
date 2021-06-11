@@ -145,7 +145,7 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
     ],
     // can also define `options`
   }
-})) as ITour;
+})) as ITourHandler;
 if ( tour ) {
   app.commands.execute('jupyterlab-tour:launch', {
     id: 'test-jupyterlab-tour:welcome',
@@ -156,6 +156,24 @@ if ( tour ) {
 
 > One example is available on [Mamba navigator](https://github.com/mamba-org/gator/blob/master/packages/labextension/src/index.ts#L76).
 > Test it on [binder](https://mybinder.org/v2/gh/mamba-org/gator/master?urlpath=lab).
+
+If you want to react to step changes to trigger elements of the UI (like opening sidebar), you can connect
+to the `stepChanged` signal. Building from the previous example, this snippet will open the filebrowser
+after the first step.
+
+```ts
+  tour.stepChanged.connect((_, data) => {
+    switch (data.type) {
+      case 'step:after':
+        if (data.step.target === '#jp-main-dock-panel') {
+          commands.execute('filebrowser:activate');
+        }
+        break;
+    }
+  });
+```
+
+> `data` is an object of type [`CallbackProps`](https://docs.react-joyride.com/callback).
 
 ## Disabling the User and Default Tours
 
