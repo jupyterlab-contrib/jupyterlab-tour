@@ -1,5 +1,6 @@
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { INotebookTracker, NotebookActions } from '@jupyterlab/notebook';
+import { IDocumentManager } from '@jupyterlab/docmanager';
 import { CommandRegistry } from '@lumino/commands';
 import React from 'react';
 import { NOTEBOOK_ID, WELCOME_ID } from './constants';
@@ -266,8 +267,10 @@ function addWelcomeTour(
  */
 function addNotebookTour(
   manager: ITourManager,
+  commands: CommandRegistry,
   shell: ILabShell,
-  nbTracker?: INotebookTracker
+  nbTracker?: INotebookTracker,
+  docManager?: IDocumentManager
 ): void {
   const __ = manager.translator.__.bind(manager.translator);
   const notebookTour = manager.createTour(
@@ -457,6 +460,22 @@ function addNotebookTour(
       }
     }
   });
+
+  // clean
+  notebookTour.finished.connect((_, data) => {
+    switch (data.step.target) {
+      case '#jp-property-inspector':
+        commands.execute('filebrowser:activate');
+        if (nbTracker) {
+            const current = nbTracker.currentWidget;
+            if (current) {
+              docManager?.deleteFile(current.context.path);
+            }
+        }
+      default:
+        break;
+    }
+  });
 }
 
 /**
@@ -469,9 +488,10 @@ function addNotebookTour(
 export function addTours(
   manager: ITourManager,
   app: JupyterFrontEnd,
-  nbTracker?: INotebookTracker
+  nbTracker?: INotebookTracker,
+  docManager?: IDocumentManager
 ): void {
   const { commands, shell } = app;
   addWelcomeTour(manager, commands);
-  addNotebookTour(manager, shell as ILabShell, nbTracker);
+  addNotebookTour(manager, commands, shell as ILabShell, nbTracker, docManager);
 }

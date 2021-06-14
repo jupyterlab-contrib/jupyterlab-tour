@@ -5,6 +5,7 @@ import {
 import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker } from '@jupyterlab/notebook';
+import { IDocumentManager } from '@jupyterlab/docmanager';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
@@ -149,15 +150,16 @@ const defaultsPlugin: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   activate: activateDefaults,
   requires: [ITourManager],
-  optional: [INotebookTracker]
+  optional: [INotebookTracker, IDocumentManager]
 };
 
 function activateDefaults(
   app: JupyterFrontEnd,
   tourManager: ITourManager,
-  nbTracker?: INotebookTracker
+  nbTracker?: INotebookTracker,
+  docManager?: IDocumentManager
 ): void {
-  addTours(tourManager, app, nbTracker);
+  addTours(tourManager, app, nbTracker, docManager);
 
   if (nbTracker) {
     nbTracker.widgetAdded.connect(() => {
