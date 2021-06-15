@@ -278,7 +278,8 @@ function addNotebookTour(
 
   notebookTour.options = {
     ...notebookTour.options,
-    hideBackButton: true
+    hideBackButton: true,
+    disableScrolling: true
   };
 
   let cellAdded = false;
