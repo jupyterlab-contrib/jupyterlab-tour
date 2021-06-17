@@ -1,5 +1,9 @@
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import { INotebookTracker, NotebookActions } from '@jupyterlab/notebook';
+import {
+  INotebookTracker,
+  NotebookActions,
+  NotebookPanel
+} from '@jupyterlab/notebook';
 import { CommandRegistry } from '@lumino/commands';
 import React from 'react';
 import { NOTEBOOK_ID, WELCOME_ID } from './constants';
@@ -266,6 +270,7 @@ function addWelcomeTour(
  */
 function addNotebookTour(
   manager: ITourManager,
+  commands: CommandRegistry,
   shell: ILabShell,
   nbTracker?: INotebookTracker
 ): void {
@@ -282,7 +287,8 @@ function addNotebookTour(
     disableScrolling: true
   };
 
-  let cellAdded = false;
+  let currentNbPanel: NotebookPanel | null = null;
+  let addedCellIndex: number | null = null;
 
   notebookTour.addStep({
     target: '.jp-MainAreaWidget.jp-NotebookPanel',
@@ -411,17 +417,14 @@ function addNotebookTour(
 
   notebookTour.stepChanged.connect((_, data) => {
     if (data.type === 'tour:start') {
-      cellAdded = false;
+      addedCellIndex = null;
     } else if (data.type === 'step:before') {
       switch (data.step.target) {
         case '.jp-NotebookPanel-toolbar svg[data-icon="ui-components:run"]':
           {
-            if (nbTracker) {
-              const current = nbTracker.currentWidget;
-              if (current) {
-                const { content, context } = current;
-                NotebookActions.run(content, context.sessionContext);
-              }
+            if (nbTracker && currentNbPanel) {
+              const { content, context } = currentNbPanel;
+              NotebookActions.run(content, context.sessionContext);
             }
           }
           break;
@@ -433,14 +436,14 @@ function addNotebookTour(
         case '.jp-NotebookPanel-toolbar .jp-Notebook-toolbarCellType':
           {
             if (nbTracker) {
-              const current = nbTracker.currentWidget;
-              if (current && !cellAdded) {
-                const notebook = current.content;
+              currentNbPanel = nbTracker.currentWidget;
+              if (currentNbPanel && !addedCellIndex) {
+                const notebook = currentNbPanel.content;
                 NotebookActions.insertBelow(notebook);
                 const activeCell = notebook.activeCell;
+                addedCellIndex = notebook.activeCellIndex;
                 if (activeCell) {
                   activeCell.model.value.text = 'a = 2\na';
-                  cellAdded = true;
                 }
               }
             }
@@ -455,6 +458,20 @@ function addNotebookTour(
           break;
         default:
           break;
+      }
+    }
+  });
+
+  // clean
+  notebookTour.finished.connect((_, data) => {
+    if (data.step.target === '#jp-property-inspector') {
+      commands.execute('filebrowser:activate');
+      if (nbTracker) {
+        if (currentNbPanel && addedCellIndex !== null) {
+          currentNbPanel.content.activeCellIndex = addedCellIndex;
+          NotebookActions.deleteCells(currentNbPanel.content);
+          addedCellIndex = null;
+        }
       }
     }
   });
@@ -474,5 +491,5 @@ export function addTours(
 ): void {
   const { commands, shell } = app;
   addWelcomeTour(manager, commands);
-  addNotebookTour(manager, shell as ILabShell, nbTracker);
+  addNotebookTour(manager, commands, shell as ILabShell, nbTracker);
 }
