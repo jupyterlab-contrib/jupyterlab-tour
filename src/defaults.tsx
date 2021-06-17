@@ -442,7 +442,6 @@ function addNotebookTour(
                 NotebookActions.insertBelow(notebook);
                 const activeCell = notebook.activeCell;
                 addedCellIndex = notebook.activeCellIndex;
-                console.log(activeCell);
                 if (activeCell) {
                   activeCell.model.value.text = 'a = 2\na';
                 }
