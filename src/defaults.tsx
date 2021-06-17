@@ -287,7 +287,8 @@ function addNotebookTour(
     disableScrolling: true
   };
 
-  let cellAdded = false;
+  let currentNbPanel: NotebookPanel | null = null;
+  let addedCellIndex: number | null = null;
 
   notebookTour.addStep({
     target: '.jp-MainAreaWidget.jp-NotebookPanel',
@@ -414,20 +415,16 @@ function addNotebookTour(
     placement: 'left'
   });
 
-  let currentNbPanel: NotebookPanel | null;
   notebookTour.stepChanged.connect((_, data) => {
     if (data.type === 'tour:start') {
-      cellAdded = false;
+      addedCellIndex = null;
     } else if (data.type === 'step:before') {
       switch (data.step.target) {
         case '.jp-NotebookPanel-toolbar svg[data-icon="ui-components:run"]':
           {
-            if (nbTracker) {
-              currentNbPanel = nbTracker.currentWidget;
-              if (currentNbPanel) {
-                const { content, context } = currentNbPanel;
-                NotebookActions.run(content, context.sessionContext);
-              }
+            if (nbTracker && currentNbPanel) {
+              const { content, context } = currentNbPanel;
+              NotebookActions.run(content, context.sessionContext);
             }
           }
           break;
@@ -439,13 +436,15 @@ function addNotebookTour(
         case '.jp-NotebookPanel-toolbar .jp-Notebook-toolbarCellType':
           {
             if (nbTracker) {
-              if (currentNbPanel && !cellAdded) {
+              currentNbPanel = nbTracker.currentWidget;
+              if (currentNbPanel && !addedCellIndex) {
                 const notebook = currentNbPanel.content;
                 NotebookActions.insertBelow(notebook);
                 const activeCell = notebook.activeCell;
+                addedCellIndex = notebook.activeCellIndex;
+                console.log(activeCell);
                 if (activeCell) {
                   activeCell.model.value.text = 'a = 2\na';
-                  cellAdded = true;
                 }
               }
             }
@@ -466,16 +465,15 @@ function addNotebookTour(
 
   // clean
   notebookTour.finished.connect((_, data) => {
-    switch (data.step.target) {
-      case '#jp-property-inspector':
-        commands.execute('filebrowser:activate');
-        if (nbTracker) {
-          if (currentNbPanel) {
-            NotebookActions.deleteCells(currentNbPanel.content);
-          }
+    if (data.step.target === '#jp-property-inspector') {
+      commands.execute('filebrowser:activate');
+      if (nbTracker) {
+        if (currentNbPanel && addedCellIndex !== null) {
+          currentNbPanel.content.activeCellIndex = addedCellIndex;
+          NotebookActions.deleteCells(currentNbPanel.content);
+          addedCellIndex = null;
         }
-      default:
-        break;
+      }
     }
   });
 }
