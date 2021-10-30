@@ -38,7 +38,7 @@
             "$ref": "#/definitions/Props"
           },
           "translation": {
-            "description": "Translation domain containing for this tour",
+            "description": "Translation domain containing strings for this tour",
             "type": "string"
           }
         }
