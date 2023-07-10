@@ -43,17 +43,17 @@ export class TourManager implements ITourManager {
       last: this._trans.__('Done'),
       next: this._trans.__('Next'),
       open: this._trans.__('Open'),
-      skip: this._trans.__('Skip')
+      skip: this._trans.__('Skip'),
     };
 
-    this._stateDB.fetch(STATE_ID).then(value => {
+    this._stateDB.fetch(STATE_ID).then((value) => {
       if (value) {
-        const savedState = (value as any) as IManagerState;
+        const savedState = value as any as IManagerState;
         if (savedState.version !== version) {
           this._state.toursDone = new Set<string>();
           this._stateDB.save(STATE_ID, {
             version,
-            toursDone: []
+            toursDone: [],
           });
         } else {
           this._state.toursDone = new Set<string>([...savedState.toursDone]);
@@ -66,7 +66,7 @@ export class TourManager implements ITourManager {
    * The currently active tour. undefined if no tour is currently running.
    */
   get activeTour(): ITourHandler | undefined {
-    const activeTour = this._activeTours.filter(tour => tour.isRunning());
+    const activeTour = this._activeTours.filter((tour) => tour.isRunning());
     return activeTour[0];
   }
 
@@ -122,7 +122,7 @@ export class TourManager implements ITourManager {
         tour.options
       );
 
-      tour.steps.forEach(step => {
+      tour.steps.forEach((step) => {
         const translatedStep = { ...step };
         if (typeof translatedStep.title === 'string') {
           translatedStep.title = trans.__(translatedStep.title);
@@ -178,11 +178,11 @@ export class TourManager implements ITourManager {
     // Create tour and add it to help menu if needed
     const newTutorial: TourHandler = new TourHandler(id, label, options);
     if (this._menu && addToHelpMenu) {
-      const menuItem = this._menu.helpMenu.menu.addItem({
+      const menuItem = this._menu.helpMenu.addItem({
         args: {
-          id: newTutorial.id
+          id: newTutorial.id,
         },
-        command: CommandIDs.launch
+        command: CommandIDs.launch,
       });
       this._menuItems.set(newTutorial.id, menuItem);
     }
@@ -234,7 +234,7 @@ export class TourManager implements ITourManager {
     ) as TourHandler[];
 
     if (!force) {
-      tourList = tourList.filter(tour => !this._state.toursDone.has(tour.id));
+      tourList = tourList.filter((tour) => !this._state.toursDone.has(tour.id));
     }
 
     const startTours = (): void => {
@@ -251,15 +251,15 @@ export class TourManager implements ITourManager {
           buttons: [
             {
               label: this._trans.__('Start now'),
-              callback: startTours
+              callback: startTours,
             },
             {
               label: this._trans.__("Don't show me again"),
               callback: (): void => {
-                tourList.forEach(tour => this._rememberDoneTour(tour.id));
-              }
-            }
-          ]
+                tourList.forEach((tour) => this._rememberDoneTour(tour.id));
+              },
+            },
+          ],
         });
       }
     }
@@ -292,7 +292,7 @@ export class TourManager implements ITourManager {
     if (this._menu && this._menuItems.has(id)) {
       const item = this._menuItems.get(id);
       if (item) {
-        this._menu.helpMenu.menu.removeItem(item);
+        this._menu.helpMenu.removeItem(item);
       }
       this._menuItems.delete(id);
     }
@@ -306,7 +306,7 @@ export class TourManager implements ITourManager {
     this._state.toursDone.delete(id);
     this._stateDB.save(STATE_ID, {
       toursDone: [...this._state.toursDone],
-      version
+      version,
     });
   };
 
@@ -314,7 +314,7 @@ export class TourManager implements ITourManager {
     this._state.toursDone.add(id);
     this._stateDB.save(STATE_ID, {
       toursDone: [...this._state.toursDone],
-      version
+      version,
     });
   };
 
@@ -325,7 +325,7 @@ export class TourManager implements ITourManager {
   private _menuItems: Map<string, Menu.IItem> = new Map();
   private _state: IManagerState = {
     toursDone: new Set<string>(),
-    version
+    version,
   };
   private _stateDB: IStateDB;
   private _trans: TranslationBundle;

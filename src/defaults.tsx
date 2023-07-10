@@ -2,7 +2,7 @@ import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import {
   INotebookTracker,
   NotebookActions,
-  NotebookPanel
+  NotebookPanel,
 } from '@jupyterlab/notebook';
 import { CommandRegistry } from '@lumino/commands';
 import React from 'react';
@@ -25,7 +25,7 @@ function addWelcomeTour(
 
   welcomeTour.options = {
     ...welcomeTour.options,
-    hideBackButton: true
+    hideBackButton: true,
   };
 
   welcomeTour.addStep({
@@ -34,7 +34,7 @@ function addWelcomeTour(
       'The following tour will point out some of the main UI components within JupyterLab.'
     ),
     placement: 'center',
-    title: __('Welcome to JupyterLab!')
+    title: __('Welcome to JupyterLab!'),
   });
 
   welcomeTour.addStep({
@@ -56,7 +56,7 @@ function addWelcomeTour(
               opacity: '0.7',
               position: 'relative',
               top: '15px',
-              width: '30px'
+              width: '30px',
             }}
           />
           <span
@@ -72,7 +72,7 @@ function addWelcomeTour(
               opacity: '0.9',
               position: 'relative',
               top: '-30px',
-              width: '60px'
+              width: '60px',
             }}
           />
         </div>
@@ -83,7 +83,7 @@ function addWelcomeTour(
     ),
     target: '#jp-main-dock-panel',
     placement: 'center',
-    title: __('Some information on the tour, first.')
+    title: __('Some information on the tour, first.'),
   });
 
   welcomeTour.addStep({
@@ -138,9 +138,9 @@ function addWelcomeTour(
     styles: {
       tooltipContent: {
         overflowY: 'auto',
-        maxHeight: '200px'
-      }
-    }
+        maxHeight: '200px',
+      },
+    },
   });
 
   welcomeTour.addStep({
@@ -170,14 +170,14 @@ function addWelcomeTour(
     ),
     placement: 'left-end',
     target: '#jp-main-dock-panel',
-    title: __('Main Work Area')
+    title: __('Main Work Area'),
   });
 
   welcomeTour.addStep({
     target: '#jp-main-statusbar',
     content: <p>{__('Various information are reported on the status bar.')}</p>,
     placement: 'top',
-    title: __('Status Bar')
+    title: __('Status Bar'),
   });
 
   welcomeTour.addStep({
@@ -201,7 +201,7 @@ function addWelcomeTour(
     ),
     placement: 'right',
     target: '.jp-SideBar.jp-mod-left',
-    title: __('Left Side Bar')
+    title: __('Left Side Bar'),
   });
 
   welcomeTour.addStep({
@@ -223,7 +223,7 @@ function addWelcomeTour(
     ),
     placement: 'right',
     target: '#filebrowser',
-    title: __('File Browser')
+    title: __('File Browser'),
   });
 
   welcomeTour.addStep({
@@ -245,7 +245,7 @@ function addWelcomeTour(
     ),
     placement: 'center',
     target: '#jp-main-dock-panel',
-    title: __('Command Palette')
+    title: __('Command Palette'),
   });
 
   welcomeTour.stepChanged.connect((_, data) => {
@@ -284,7 +284,7 @@ function addNotebookTour(
   notebookTour.options = {
     ...notebookTour.options,
     hideBackButton: true,
-    disableScrolling: true
+    disableScrolling: true,
   };
 
   let currentNbPanel: NotebookPanel | null = null;
@@ -300,7 +300,7 @@ function addNotebookTour(
       </p>
     ),
     placement: 'center',
-    title: __('Working with notebooks!')
+    title: __('Working with notebooks!'),
   });
 
   notebookTour.addStep({
@@ -312,7 +312,7 @@ function addNotebookTour(
         {__('This is the first cell.')}
       </p>
     ),
-    placement: 'bottom'
+    placement: 'bottom',
   });
 
   notebookTour.addStep({
@@ -335,7 +335,7 @@ function addNotebookTour(
           </li>
         </ul>
       </>
-    )
+    ),
   });
 
   notebookTour.addStep({
@@ -348,7 +348,7 @@ function addNotebookTour(
         )}
       </p>
     ),
-    placement: 'bottom'
+    placement: 'bottom',
   });
 
   notebookTour.addStep({
@@ -360,7 +360,7 @@ function addNotebookTour(
         )}
       </p>
     ),
-    placement: 'right'
+    placement: 'right',
   });
 
   notebookTour.addStep({
@@ -372,7 +372,7 @@ function addNotebookTour(
         )}
       </p>
     ),
-    placement: 'bottom'
+    placement: 'bottom',
   });
 
   notebookTour.addStep({
@@ -388,7 +388,7 @@ function addNotebookTour(
         )}
       </p>
     ),
-    placement: 'bottom'
+    placement: 'bottom',
   });
 
   notebookTour.addStep({
@@ -402,7 +402,7 @@ function addNotebookTour(
         )}
       </p>
     ),
-    placement: 'right'
+    placement: 'right',
   });
 
   notebookTour.addStep({
@@ -412,7 +412,7 @@ function addNotebookTour(
         {__('Metadata (like tags) can be added to cells through this tab.')}
       </p>
     ),
-    placement: 'left'
+    placement: 'left',
   });
 
   notebookTour.stepChanged.connect((_, data) => {
@@ -443,7 +443,7 @@ function addNotebookTour(
                 const activeCell = notebook.activeCell;
                 addedCellIndex = notebook.activeCellIndex;
                 if (activeCell) {
-                  activeCell.model.value.text = 'a = 2\na';
+                  activeCell.model.sharedModel.setSource('a = 2\na');
                 }
               }
             }
