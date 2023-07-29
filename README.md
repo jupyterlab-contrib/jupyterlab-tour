@@ -11,7 +11,12 @@ A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
 
 ![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/master/doc/tourDemo.gif)
 
+[![Github Actions Status](https://github.com/jupyterlab-contrib/jupyterlab-tour.git/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jupyterlab-tour.git/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour.git/main?urlpath=lab)
+A JupyterLab UI Tour.
+
 ## Install
+
+To install the extension, execute:
 
 ```bash
 pip install jupyterlab-tour
@@ -43,10 +48,9 @@ This extension has the following features:
 - Override the default style (and options) for the tour separately
 
 This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under BSD 3-Clause License with Copyright (c) 2020, Lawrence Livermore National Security, LLC.
-
 ## Requirements
 
-- JupyterLab >= 3.0
+- JupyterLab >= 3.6
 
 For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupyterlab-tour/tree/2.x).
 
@@ -213,6 +217,8 @@ Create a [pageConfig.json] and put it in _the right place_, e.g.
 
 ## Uninstall
 
+To remove the extension, execute:
+
 ```bash
 pip uninstall jupyterlab-tour
 ```
@@ -237,26 +243,60 @@ The `jlpm` command is JupyterLab's pinned version of
 # Clone the repo to your local environment
 # Change directory to the jupyterlab-tour directory
 # Install package in development mode
-pip install -e .
+pip install -e "."
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Rebuild extension Typescript source after making changes
-jlpm run build
+jlpm build
 ```
 
 You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
 
 ```bash
 # Watch the source directory in one terminal, automatically rebuilding when needed
-jlpm run watch
+jlpm watch
 # Run JupyterLab in another terminal
 jupyter lab
 ```
 
 With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
 
-By default, the `jlpm run build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
+By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
 
 ```bash
 jupyter lab build --minimize=False
 ```
+
+### Development uninstall
+
+```bash
+pip uninstall jupyterlab-tour
+```
+
+In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
+command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
+folder is located. Then you can remove the symlink named `jupyterlab-tour` within that folder.
+
+### Testing the extension
+
+#### Frontend tests
+
+This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
+
+To execute them, execute:
+
+```sh
+jlpm
+jlpm test
+```
+
+#### Integration tests
+
+This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
+More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
+
+More information are provided within the [ui-tests](./ui-tests/README.md) README.
+
+### Packaging the extension
+
+See [RELEASE](RELEASE.md)

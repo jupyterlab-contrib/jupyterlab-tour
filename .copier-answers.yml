@@ -1,0 +1,19 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.1.0
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: <author_email>
+author_name: Frederic Collonval
+data_format: string
+file_extension: ''
+has_binder: true
+has_settings: true
+kind: frontend
+labextension_name: jupyterlab-tour
+mimetype: ''
+mimetype_name: ''
+project_short_description: A JupyterLab UI Tour.
+python_name: jupyterlab_tour
+repository: https://github.com/jupyterlab-contrib/jupyterlab-tour.git
+test: true
+viewer_name: ''
+
