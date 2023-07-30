@@ -114,7 +114,11 @@ jobs:
       working-directory: ui-tests
       env:
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-      run: jlpm install
+      run: |
+        if [[ "${{ matrix.jupyterlab }}" == "3.6" ]]; then
+          jlpm add -D "@jupyterlab/galata@^4.0.0"
+        fi
+        jlpm install
 
     - name: Set up browser cache
       uses: actions/cache@v3
