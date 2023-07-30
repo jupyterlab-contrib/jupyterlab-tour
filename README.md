@@ -1,6 +1,6 @@
 # jupyterlab-tour
 
-[![Extension status](https://img.shields.io/badge/status-ready-success "ready to be used")](https://jupyterlab-contrib.github.io/)
+[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/)
 [![Github Actions Status](https://github.com/jupyterlab-contrib/jupyterlab-tour/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jupyterlab-tour/actions?query=workflow%3ABuild)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour.git/master?urlpath=lab)
 [![npm](https://img.shields.io/npm/v/jupyterlab-tour)](https://www.npmjs.com/package/jupyterlab-tour)
@@ -48,6 +48,7 @@ This extension has the following features:
 - Override the default style (and options) for the tour separately
 
 This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under BSD 3-Clause License with Copyright (c) 2020, Lawrence Livermore National Security, LLC.
+
 ## Requirements
 
 - JupyterLab >= 3.6
@@ -75,20 +76,18 @@ overlay when pressed:
 ```json5
 // json5 can have comments
 {
-  "tours": [
+  tours: [
     {
-      "id": "my-tour",
-      "label": "My First Tour",
+      id: 'my-tour',
+      label: 'My First Tour',
       // steps are required, and have many, many options
-      "steps": [
-        {"target": "#jp-MainLogo", "content": "Look at this!"}
-      ],
+      steps: [{ target: '#jp-MainLogo', content: 'Look at this!' }],
       // below here not required!
-      "options": {
-        "styles": {
-          "options": {
+      options: {
+        styles: {
+          options: {
             // you can use jupyterlab theme variables
-            "backgroundColor": "var(--jp-warn-color0)"
+            backgroundColor: 'var(--jp-warn-color0)'
           }
         }
       }
@@ -105,10 +104,11 @@ e.g. `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab i
 next opened, those overrides will become the defaults, and your tour will be available.
 
 An example `overrides.json` might look like:
+
 ```json5
 {
-  "jupyterlab-tour:user-tours": {
-    "tours": [
+  'jupyterlab-tour:user-tours': {
+    tours: [
       // that tour up there!
     ]
   }
@@ -128,11 +128,13 @@ extension token `ITourManager`.
 const { commands } = app;
 // Add a tour - returns the tour or null if something went wrong
 const tour = (await app.commands.execute('jupyterlab-tour:add', {
-  tour: { // Tour must be of type ITour - see src/tokens.ts
+  tour: {
+    // Tour must be of type ITour - see src/tokens.ts
     id: 'test-jupyterlab-tour:welcome',
     label: 'Welcome Tour',
     hasHelpEntry: true,
-    steps: [  // Step must be of type IStep - see src/tokens.ts
+    steps: [
+      // Step must be of type IStep - see src/tokens.ts
       {
         content:
           'The following tutorial will point out some of the main UI components within JupyterLab.',
@@ -147,15 +149,15 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
         target: '#jp-main-dock-panel',
         title: 'Main Content'
       }
-    ],
+    ]
     // can also define `options`
   }
 })) as ITourHandler;
-if ( tour ) {
+if (tour) {
   app.commands.execute('jupyterlab-tour:launch', {
     id: 'test-jupyterlab-tour:welcome',
-    force: false  // Optional, if false the tour will start only if the user have not seen or skipped it
-  })
+    force: false // Optional, if false the tour will start only if the user have not seen or skipped it
+  });
 }
 ```
 
@@ -167,15 +169,15 @@ to the `stepChanged` signal. Building from the previous example, this snippet wi
 after the first step.
 
 ```ts
-  tour.stepChanged.connect((_, data) => {
-    switch (data.type) {
-      case 'step:after':
-        if (data.step.target === '#jp-main-dock-panel') {
-          commands.execute('filebrowser:activate');
-        }
-        break;
-    }
-  });
+tour.stepChanged.connect((_, data) => {
+  switch (data.type) {
+    case 'step:after':
+      if (data.step.target === '#jp-main-dock-panel') {
+        commands.execute('filebrowser:activate');
+      }
+      break;
+  }
+});
 ```
 
 > `data` is an object of type [`CallbackProps`](https://docs.react-joyride.com/callback).
@@ -207,13 +209,12 @@ Create a [pageConfig.json] and put it in _the right place_, e.g.
 {
   "disabledExtensions": {
     "jupyterlab-tour:user-tours": true,
-    "jupyterlab-tour:default-tours": true,
+    "jupyterlab-tour:default-tours": true
   }
 }
 ```
 
 [pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
-
 
 ## Uninstall
 
