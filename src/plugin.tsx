@@ -51,17 +51,18 @@ function activate(
 
   // Create tour manager
   const manager = new TourManager(stateDB, translator, menu);
+  const trans = manager.translator;
 
   commands.addCommand(CommandIDs.launch, {
     label: args => {
       if (args['id']) {
         const tour = manager.tours.get(args['id'] as string) as TourHandler;
-        return manager.translator.__(tour.label);
+        return trans.__(tour.label);
       } else {
-        return manager.translator.__('Launch a Tour');
+        return trans.__('Launch a Tour');
       }
     },
-    usage: manager.translator.__(
+    usage: trans.__(
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}'
     ),
     isEnabled: () => !manager.activeTour,
@@ -73,7 +74,7 @@ function activate(
       if (!id) {
         const answer = await InputDialog.getItem({
           items: Array.from(manager.tours.keys()),
-          title: manager.translator.__('Choose a tour')
+          title: trans.__('Choose a tour')
         });
 
         if (answer.button.accept && answer.value) {
@@ -88,8 +89,8 @@ function activate(
   });
 
   commands.addCommand(CommandIDs.addTour, {
-    label: manager.translator.__('Add a tour'),
-    usage: manager.translator.__(
+    label: trans.__('Add a tour'),
+    usage: trans.__(
       'Add a tour and returns it.\nArguments {tour: ITour}\nReturns `null` if a failure occurs.'
     ),
     execute: (args): ITourHandler | null => {
@@ -99,7 +100,7 @@ function activate(
 
   if (palette) {
     palette.addItem({
-      category: manager.translator.__('Help'),
+      category: trans.__('Help'),
       command: CommandIDs.launch
     });
   }

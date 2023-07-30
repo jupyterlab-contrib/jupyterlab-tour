@@ -19,9 +19,13 @@ function addWelcomeTour(
   manager: ITourManager,
   commands: CommandRegistry
 ): void {
-  const __ = manager.translator.__.bind(manager.translator);
+  const trans = manager.translator;
 
-  const welcomeTour = manager.createTour(WELCOME_ID, __('Welcome Tour'), true);
+  const welcomeTour = manager.createTour(
+    WELCOME_ID,
+    trans.__('Welcome Tour'),
+    true
+  );
 
   welcomeTour.options = {
     ...welcomeTour.options,
@@ -30,20 +34,22 @@ function addWelcomeTour(
 
   welcomeTour.addStep({
     target: '#jp-main-dock-panel',
-    content: __(
+    content: trans.__(
       'The following tour will point out some of the main UI components within JupyterLab.'
     ),
     placement: 'center',
-    title: __('Welcome to JupyterLab!')
+    title: trans.__('Welcome to JupyterLab!')
   });
 
   welcomeTour.addStep({
     content: (
       <>
         <p>
-          {__('Pause the tour by clicking anywhere outside of the tooltip.')}
+          {trans.__(
+            'Pause the tour by clicking anywhere outside of the tooltip.'
+          )}
         </p>
-        <p>{__('Resume the tour by clicking on the symbol:')}</p>
+        <p>{trans.__('Resume the tour by clicking on the symbol:')}</p>
         <div style={{ display: 'inline-block', height: '60px' }}>
           <span
             style={{
@@ -77,64 +83,70 @@ function addWelcomeTour(
           />
         </div>
         <p>
-          <small>{__('Tip: Tours can be restarted from the Help menu.')}</small>
+          <small>
+            {trans.__('Tip: Tours can be restarted from the Help menu.')}
+          </small>
         </p>
       </>
     ),
     target: '#jp-main-dock-panel',
     placement: 'center',
-    title: __('Some information on the tour, first.')
+    title: trans.__('Some information on the tour, first.')
   });
 
   welcomeTour.addStep({
     content: (
       <details>
         <summary>
-          {__('This is the top menu bar where you can access several menus.')}
+          {trans.__(
+            'This is the top menu bar where you can access several menus.'
+          )}
         </summary>
         <ul>
           <li>
-            <strong>{__('File')}</strong>
-            {__(': actions related to files and directories')}
+            <strong>{trans.__('File')}</strong>
+            {trans.__(': actions related to files and directories')}
           </li>
           <li>
-            <strong>{__('Edit')}</strong>
-            {__(': actions related to editing documents and other activities')}
+            <strong>{trans.__('Edit')}</strong>
+            {trans.__(
+              ': actions related to editing documents and other activities'
+            )}
           </li>
           <li>
-            <strong>{__('View')}</strong>
-            {__(': actions that alter the appearance of JupyterLab')}
+            <strong>{trans.__('View')}</strong>
+            {trans.__(': actions that alter the appearance of JupyterLab')}
           </li>
           <li>
-            <strong>{__('Run')}</strong>
-            {__(
+            <strong>{trans.__('Run')}</strong>
+            {trans.__(
               ': actions for running code in notebooks and code consoles for example'
             )}
           </li>
           <li>
-            <strong>{__('Kernel')}</strong>
-            {__(
+            <strong>{trans.__('Kernel')}</strong>
+            {trans.__(
               ': actions for managing kernels (i.e. separate processes for running code)'
             )}
           </li>
           <li>
-            <strong>{__('Tabs')}</strong>
-            {__(': a list of the open documents and activities')}
+            <strong>{trans.__('Tabs')}</strong>
+            {trans.__(': a list of the open documents and activities')}
           </li>
           <li>
-            <strong>{__('Settings')}</strong>
-            {__(': common settings and an advanced settings editor')}
+            <strong>{trans.__('Settings')}</strong>
+            {trans.__(': common settings and an advanced settings editor')}
           </li>
           <li>
-            <strong>{__('Help')}</strong>
-            {__(': help links')}
+            <strong>{trans.__('Help')}</strong>
+            {trans.__(': help links')}
           </li>
         </ul>
       </details>
     ),
     placement: 'bottom',
     target: '#jp-MainMenu',
-    title: __('Top Menu Options'),
+    title: trans.__('Top Menu Options'),
     styles: {
       tooltipContent: {
         overflowY: 'auto',
@@ -147,22 +159,22 @@ function addWelcomeTour(
     content: (
       <>
         <p>
-          {__(
+          {trans.__(
             `The main area enables you to arrange documents and activities into 
             panels of tabs that can be resized or subdivided.`
           )}
         </p>
         <p>
-          {__(
+          {trans.__(
             'Drag a tab to the center of a tab panel to move the tab to the panel.'
           )}
           <br />
-          {__(
+          {trans.__(
             'Subdivide a tab panel by dragging a tab to the left, right, top, or bottom of the panel.'
           )}
         </p>
         <p>
-          {__(
+          {trans.__(
             'The tab for the current activity is marked with a colored top border.'
           )}
         </p>
@@ -170,27 +182,29 @@ function addWelcomeTour(
     ),
     placement: 'left-end',
     target: '#jp-main-dock-panel',
-    title: __('Main Work Area')
+    title: trans.__('Main Work Area')
   });
 
   welcomeTour.addStep({
     target: '#jp-main-statusbar',
-    content: <p>{__('Various information are reported on the status bar.')}</p>,
+    content: (
+      <p>{trans.__('Various information are reported on the status bar.')}</p>
+    ),
     placement: 'top',
-    title: __('Status Bar')
+    title: trans.__('Status Bar')
   });
 
   welcomeTour.addStep({
     content: (
       <>
         <p>
-          {__(
+          {trans.__(
             'This sidebar contains a number of tabs: a file browser, a list of tabs, running kernels and terminals,...'
           )}
         </p>
         <p>
           <small>
-            {__(
+            {trans.__(
               `Tip: The sidebar can be collapsed or expanded by selecting 
               "Show Left Sidebar" in the View menu or by 
               clicking on the active sidebar tab.`
@@ -201,14 +215,14 @@ function addWelcomeTour(
     ),
     placement: 'right',
     target: '.jp-SideBar.jp-mod-left',
-    title: __('Left Side Bar')
+    title: trans.__('Left Side Bar')
   });
 
   welcomeTour.addStep({
     content: (
       <>
         <p>
-          {__(
+          {trans.__(
             `The file browser enable you to work with files and directories on your 
             system. This includes opening, creating, deleting, renaming, 
             downloading, copying, and sharing files and directories.`
@@ -216,21 +230,23 @@ function addWelcomeTour(
         </p>
         <p>
           <small>
-            {__('Tip: Actions can be triggered through the context menu.')}
+            {trans.__(
+              'Tip: Actions can be triggered through the context menu.'
+            )}
           </small>
         </p>
       </>
     ),
     placement: 'right',
     target: '#filebrowser',
-    title: __('File Browser')
+    title: trans.__('File Browser')
   });
 
   welcomeTour.addStep({
     content: (
       <>
         <p>
-          {__(
+          {trans.__(
             `All user actions in JupyterLab are processed through a centralized 
             command system, called command palette. It provides a keyboard-driven 
             way to search for and run JupyterLab commands.`
@@ -238,14 +254,16 @@ function addWelcomeTour(
         </p>
         <p>
           <small>
-            {__('Tip: To open it, the default shortcut is "Ctrl + Shift + C"')}
+            {trans.__(
+              'Tip: To open it, the default shortcut is "Ctrl + Shift + C"'
+            )}
           </small>
         </p>
       </>
     ),
     placement: 'center',
     target: '#jp-main-dock-panel',
-    title: __('Command Palette')
+    title: trans.__('Command Palette')
   });
 
   welcomeTour.stepChanged.connect((_, data) => {
@@ -274,10 +292,10 @@ function addNotebookTour(
   shell: ILabShell,
   nbTracker?: INotebookTracker
 ): void {
-  const __ = manager.translator.__.bind(manager.translator);
+  const trans = manager.translator;
   const notebookTour = manager.createTour(
     NOTEBOOK_ID,
-    __('Notebook Tour'),
+    trans.__('Notebook Tour'),
     true
   );
 
@@ -294,22 +312,22 @@ function addNotebookTour(
     target: '.jp-MainAreaWidget.jp-NotebookPanel',
     content: (
       <p>
-        {__(
+        {trans.__(
           'Notebooks are documents combining live runnable code with narrative text (i.e. text, images,...).'
         )}
       </p>
     ),
     placement: 'center',
-    title: __('Working with notebooks!')
+    title: trans.__('Working with notebooks!')
   });
 
   notebookTour.addStep({
     target: '.jp-Cell.jp-Notebook-cell',
     content: (
       <p>
-        {__('Notebook consists of one cells list.')}
+        {trans.__('Notebook consists of one cells list.')}
         <br />
-        {__('This is the first cell.')}
+        {trans.__('This is the first cell.')}
       </p>
     ),
     placement: 'bottom'
@@ -319,19 +337,19 @@ function addNotebookTour(
     target: '.jp-NotebookPanel-toolbar .jp-Notebook-toolbarCellType',
     content: (
       <>
-        <p>{__('A cell can have different type')}</p>
+        <p>{trans.__('A cell can have different type')}</p>
         <ul>
           <li>
-            <strong>{__('Code')}</strong>
-            {__(': Executable code')}
+            <strong>{trans.__('Code')}</strong>
+            {trans.__(': Executable code')}
           </li>
           <li>
-            <strong>{__('Markdown')}</strong>
-            {__(': Markdown formatted text')}
+            <strong>{trans.__('Markdown')}</strong>
+            {trans.__(': Markdown formatted text')}
           </li>
           <li>
-            <strong>{__('Raw')}</strong>
-            {__(': Plain text')}
+            <strong>{trans.__('Raw')}</strong>
+            {trans.__(': Plain text')}
           </li>
         </ul>
       </>
@@ -342,7 +360,7 @@ function addNotebookTour(
     target: '.jp-Notebook-cell:last-child .jp-InputArea.jp-Cell-inputArea',
     content: (
       <p>
-        {__(
+        {trans.__(
           `A cell has an input and an output area. This is the input area that you can edit with 
           the proper syntax depending on the type.`
         )}
@@ -355,7 +373,7 @@ function addNotebookTour(
     target: '.jp-NotebookPanel-toolbar svg[data-icon="ui-components:run"]',
     content: (
       <p>
-        {__(
+        {trans.__(
           'Hitting the Play button (or pressing Shift+Enter) will execute the cell content.'
         )}
       </p>
@@ -367,7 +385,7 @@ function addNotebookTour(
     target: '.jp-Notebook-cell:last-child .jp-OutputArea.jp-Cell-outputArea',
     content: (
       <p>
-        {__(
+        {trans.__(
           'Once a cell has been executed. Its result is display in the output cell area.'
         )}
       </p>
@@ -379,11 +397,11 @@ function addNotebookTour(
     target: '.jp-NotebookPanel-toolbar .jp-KernelName',
     content: (
       <p>
-        {__(
+        {trans.__(
           'When executing a "Code" cell, its code is sent to a execution kernel.'
         )}
         <br />
-        {__(
+        {trans.__(
           'Its name and its status are displayed here and in the status bar.'
         )}
       </p>
@@ -395,9 +413,9 @@ function addNotebookTour(
     target: '#jp-running-sessions',
     content: (
       <p>
-        {__('The running kernels are listed on this tab.')}
+        {trans.__('The running kernels are listed on this tab.')}
         <br />
-        {__(
+        {trans.__(
           ' It can be used to open the associated document or to shut them down.'
         )}
       </p>
@@ -409,7 +427,9 @@ function addNotebookTour(
     target: '#jp-property-inspector',
     content: (
       <p>
-        {__('Metadata (like tags) can be added to cells through this tab.')}
+        {trans.__(
+          'Metadata (like tags) can be added to cells through this tab.'
+        )}
       </p>
     ),
     placement: 'left'
