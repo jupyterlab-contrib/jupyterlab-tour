@@ -1,17 +1,19 @@
 # jupyterlab-tour
 
-[![Extension status](https://img.shields.io/badge/status-ready-success "ready to be used")](https://jupyterlab-contrib.github.io/)
+[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/)
 [![Github Actions Status](https://github.com/jupyterlab-contrib/jupyterlab-tour/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jupyterlab-tour/actions?query=workflow%3ABuild)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour.git/master?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour/main?urlpath=lab)
 [![npm](https://img.shields.io/npm/v/jupyterlab-tour)](https://www.npmjs.com/package/jupyterlab-tour)
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab-tour)](https://pypi.org/project/jupyterlab-tour)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/jupyterlab-tour)](https://anaconda.org/conda-forge/jupyterlab-tour)
 
 A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
 
-![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/master/doc/tourDemo.gif)
+![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/main/doc/tourDemo.gif)
 
 ## Install
+
+To install the extension, execute:
 
 ```bash
 pip install jupyterlab-tour
@@ -46,7 +48,7 @@ This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDA
 
 ## Requirements
 
-- JupyterLab >= 3.0
+- JupyterLab >= 3.6
 
 For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupyterlab-tour/tree/2.x).
 
@@ -71,20 +73,18 @@ overlay when pressed:
 ```json5
 // json5 can have comments
 {
-  "tours": [
+  tours: [
     {
-      "id": "my-tour",
-      "label": "My First Tour",
+      id: 'my-tour',
+      label: 'My First Tour',
       // steps are required, and have many, many options
-      "steps": [
-        {"target": "#jp-MainLogo", "content": "Look at this!"}
-      ],
+      steps: [{ target: '#jp-MainLogo', content: 'Look at this!' }],
       // below here not required!
-      "options": {
-        "styles": {
-          "options": {
+      options: {
+        styles: {
+          options: {
             // you can use jupyterlab theme variables
-            "backgroundColor": "var(--jp-warn-color0)"
+            backgroundColor: 'var(--jp-warn-color0)'
           }
         }
       }
@@ -101,10 +101,11 @@ e.g. `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab i
 next opened, those overrides will become the defaults, and your tour will be available.
 
 An example `overrides.json` might look like:
+
 ```json5
 {
-  "jupyterlab-tour:user-tours": {
-    "tours": [
+  'jupyterlab-tour:user-tours': {
+    tours: [
       // that tour up there!
     ]
   }
@@ -124,11 +125,13 @@ extension token `ITourManager`.
 const { commands } = app;
 // Add a tour - returns the tour or null if something went wrong
 const tour = (await app.commands.execute('jupyterlab-tour:add', {
-  tour: { // Tour must be of type ITour - see src/tokens.ts
+  tour: {
+    // Tour must be of type ITour - see src/tokens.ts
     id: 'test-jupyterlab-tour:welcome',
     label: 'Welcome Tour',
     hasHelpEntry: true,
-    steps: [  // Step must be of type IStep - see src/tokens.ts
+    steps: [
+      // Step must be of type IStep - see src/tokens.ts
       {
         content:
           'The following tutorial will point out some of the main UI components within JupyterLab.',
@@ -143,15 +146,15 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
         target: '#jp-main-dock-panel',
         title: 'Main Content'
       }
-    ],
+    ]
     // can also define `options`
   }
 })) as ITourHandler;
-if ( tour ) {
+if (tour) {
   app.commands.execute('jupyterlab-tour:launch', {
     id: 'test-jupyterlab-tour:welcome',
-    force: false  // Optional, if false the tour will start only if the user have not seen or skipped it
-  })
+    force: false // Optional, if false the tour will start only if the user have not seen or skipped it
+  });
 }
 ```
 
@@ -163,15 +166,15 @@ to the `stepChanged` signal. Building from the previous example, this snippet wi
 after the first step.
 
 ```ts
-  tour.stepChanged.connect((_, data) => {
-    switch (data.type) {
-      case 'step:after':
-        if (data.step.target === '#jp-main-dock-panel') {
-          commands.execute('filebrowser:activate');
-        }
-        break;
-    }
-  });
+tour.stepChanged.connect((_, data) => {
+  switch (data.type) {
+    case 'step:after':
+      if (data.step.target === '#jp-main-dock-panel') {
+        commands.execute('filebrowser:activate');
+      }
+      break;
+  }
+});
 ```
 
 > `data` is an object of type [`CallbackProps`](https://docs.react-joyride.com/callback).
@@ -203,15 +206,16 @@ Create a [pageConfig.json] and put it in _the right place_, e.g.
 {
   "disabledExtensions": {
     "jupyterlab-tour:user-tours": true,
-    "jupyterlab-tour:default-tours": true,
+    "jupyterlab-tour:default-tours": true
   }
 }
 ```
 
 [pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
 
-
 ## Uninstall
+
+To remove the extension, execute:
 
 ```bash
 pip uninstall jupyterlab-tour
@@ -237,26 +241,60 @@ The `jlpm` command is JupyterLab's pinned version of
 # Clone the repo to your local environment
 # Change directory to the jupyterlab-tour directory
 # Install package in development mode
-pip install -e .
+pip install -e "."
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Rebuild extension Typescript source after making changes
-jlpm run build
+jlpm build
 ```
 
 You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
 
 ```bash
 # Watch the source directory in one terminal, automatically rebuilding when needed
-jlpm run watch
+jlpm watch
 # Run JupyterLab in another terminal
 jupyter lab
 ```
 
 With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
 
-By default, the `jlpm run build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
+By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
 
 ```bash
 jupyter lab build --minimize=False
 ```
+
+### Development uninstall
+
+```bash
+pip uninstall jupyterlab-tour
+```
+
+In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
+command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
+folder is located. Then you can remove the symlink named `jupyterlab-tour` within that folder.
+
+### Testing the extension
+
+#### Frontend tests
+
+This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
+
+To execute them, execute:
+
+```sh
+jlpm
+jlpm test
+```
+
+#### Integration tests
+
+This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
+More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
+
+More information are provided within the [ui-tests](./ui-tests/README.md) README.
+
+### Packaging the extension
+
+See [RELEASE](RELEASE.md)

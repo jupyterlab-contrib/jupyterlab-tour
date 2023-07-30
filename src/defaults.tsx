@@ -443,7 +443,12 @@ function addNotebookTour(
                 const activeCell = notebook.activeCell;
                 addedCellIndex = notebook.activeCellIndex;
                 if (activeCell) {
-                  activeCell.model.value.text = 'a = 2\na';
+                  try {
+                    activeCell.model.sharedModel.setSource('a = 2\na');
+                  } catch (err) {
+                    // @ts-expect-error JupyterLab 3 syntax
+                    activeCell.model.value.text = 'a = 2\na';
+                  }
                 }
               }
             }
@@ -453,9 +458,22 @@ function addNotebookTour(
         case '.jp-NotebookPanel-toolbar .jp-KernelName':
           shell.activateById('jp-running-sessions');
           break;
-        case '#jp-running-sessions':
+        case '#jp-running-sessions': {
           shell.activateById('jp-property-inspector');
+          const commonTools = shell.node
+            .querySelector('#jp-property-inspector')
+            ?.querySelector('.jp-Collapse-header:first-child');
+          if (commonTools?.classList.contains('jp-Collapse-header-collapsed')) {
+            commonTools.dispatchEvent(
+              new MouseEvent('click', {
+                button: 0,
+                bubbles: true,
+                cancelable: true
+              })
+            );
+          }
           break;
+        }
         default:
           break;
       }

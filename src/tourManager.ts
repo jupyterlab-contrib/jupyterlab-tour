@@ -1,9 +1,9 @@
+import { Notification } from '@jupyterlab/apputils';
 import { MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ITranslator, TranslationBundle } from '@jupyterlab/translation';
+import { IDisposableMenuItem } from '@jupyterlab/ui-components';
 import { ISignal, Signal } from '@lumino/signaling';
-import { Menu } from '@lumino/widgets';
-import { INotification } from 'jupyterlab_toastify';
 import { Locale, Props as JoyrideProps } from 'react-joyride';
 import { CommandIDs } from './constants';
 import { ITour, ITourHandler, ITourManager, NS } from './tokens';
@@ -48,7 +48,7 @@ export class TourManager implements ITourManager {
 
     this._stateDB.fetch(STATE_ID).then(value => {
       if (value) {
-        const savedState = (value as any) as IManagerState;
+        const savedState = value as any as IManagerState;
         if (savedState.version !== version) {
           this._state.toursDone = new Set<string>();
           this._stateDB.save(STATE_ID, {
@@ -178,12 +178,13 @@ export class TourManager implements ITourManager {
     // Create tour and add it to help menu if needed
     const newTutorial: TourHandler = new TourHandler(id, label, options);
     if (this._menu && addToHelpMenu) {
-      const menuItem = this._menu.helpMenu.menu.addItem({
+      const options = {
         args: {
           id: newTutorial.id
         },
         command: CommandIDs.launch
-      });
+      };
+      const menuItem = this._menu.helpMenu.addItem(options);
       this._menuItems.set(newTutorial.id, menuItem);
     }
 
@@ -246,9 +247,9 @@ export class TourManager implements ITourManager {
       if (force) {
         startTours();
       } else {
-        INotification.info(this._trans.__('Try the %1.', tourList[0].label), {
+        Notification.info(this._trans.__('Try the %1.', tourList[0].label), {
           autoClose: 10000,
-          buttons: [
+          actions: [
             {
               label: this._trans.__('Start now'),
               callback: startTours
@@ -292,7 +293,12 @@ export class TourManager implements ITourManager {
     if (this._menu && this._menuItems.has(id)) {
       const item = this._menuItems.get(id);
       if (item) {
-        this._menu.helpMenu.menu.removeItem(item);
+        try {
+          item.dispose();
+        } catch (err) {
+          // @ts-expect-error JupyterLab 3 syntax
+          this._menu.helpMenu.menu.removeItem(item);
+        }
       }
       this._menuItems.delete(id);
     }
@@ -322,7 +328,7 @@ export class TourManager implements ITourManager {
   private _isDisposed = false;
   private _locale: Locale;
   private _menu: MainMenu | undefined;
-  private _menuItems: Map<string, Menu.IItem> = new Map();
+  private _menuItems: Map<string, IDisposableMenuItem> = new Map();
   private _state: IManagerState = {
     toursDone: new Set<string>(),
     version

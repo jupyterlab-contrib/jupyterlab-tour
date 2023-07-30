@@ -52,7 +52,7 @@ function aTour(): ITour {
 
 function mockSettingRegistry(): ISettingRegistry {
   const settings: ISettingRegistry.ISettings = {
-    composite: { tours: [(aTour() as any) as ReadonlyJSONObject] }
+    composite: { tours: [aTour() as any as ReadonlyJSONObject] }
   } as any;
   (settings as any)['changed'] = new Signal<any, any>(settings);
 
@@ -84,7 +84,7 @@ describe(corePlugin.id, () => {
         expect(manager.tours.size).toEqual(0);
 
         const tour = await app.commands?.execute(CommandIDs.addTour, {
-          tour: (aTour() as any) as ReadonlyJSONObject
+          tour: aTour() as any as ReadonlyJSONObject
         });
 
         expect(manager.tours.size).toEqual(1);
