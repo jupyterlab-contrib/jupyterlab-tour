@@ -46,13 +46,13 @@ jobs:
 
         pip install build
         python -m build
-        pip uninstall -y "jupyterlab-tour" jupyterlab
+        pip uninstall -y "jupyterlab_tour" jupyterlab
 
     - name: Upload extension packages
       uses: actions/upload-artifact@v3
       with:
         name: extension-artifacts
-        path: dist/jupyterlab-tour*
+        path: dist/jupyterlab_tour*
         if-no-files-found: error
 
   test_isolated:
@@ -75,8 +75,7 @@ jobs:
         sudo rm -rf $(which node)
         sudo rm -rf $(which node)
 
-        pip install "jupyterlab>=4.0.0,<5" jupyterlab-tour*.whl
-
+        pip install "jupyterlab>=4.0.0,<5" jupyterlab_tour*.whl
 
         jupyter labextension list
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-tour.*OK"
@@ -109,7 +108,7 @@ jobs:
     - name: Install the extension
       run: |
         set -eux
-        python -m pip install "jupyterlab~=${{ matrix.jupyterlab }}" jupyterlab-tour*.whl
+        python -m pip install "jupyterlab~=${{ matrix.jupyterlab }}" jupyterlab_tour*.whl
 
     - name: Install dependencies
       working-directory: ui-tests

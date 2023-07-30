@@ -2,17 +2,14 @@
 
 [![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/)
 [![Github Actions Status](https://github.com/jupyterlab-contrib/jupyterlab-tour/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jupyterlab-tour/actions?query=workflow%3ABuild)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour.git/master?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour/main?urlpath=lab)
 [![npm](https://img.shields.io/npm/v/jupyterlab-tour)](https://www.npmjs.com/package/jupyterlab-tour)
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab-tour)](https://pypi.org/project/jupyterlab-tour)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/jupyterlab-tour)](https://anaconda.org/conda-forge/jupyterlab-tour)
 
 A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
 
-![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/master/doc/tourDemo.gif)
-
-[![Github Actions Status](https://github.com/jupyterlab-contrib/jupyterlab-tour.git/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jupyterlab-tour.git/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jupyterlab-tour.git/main?urlpath=lab)
-A JupyterLab UI Tour.
+![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/main/doc/tourDemo.gif)
 
 ## Install
 
