@@ -7,7 +7,7 @@ test.use({
     };
     await use(waitIsReady);
   }
-})
+});
 
 test('should run the welcome tour', async ({ page }) => {
   await page.getByRole('button', { name: 'Start now' }).click();
