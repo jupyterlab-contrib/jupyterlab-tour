@@ -34,7 +34,7 @@ export class TourManager implements ITourManager {
     this._stateDB = stateDB;
     this._menu = mainMenu;
     this._tours = new Map<string, TourHandler>();
-    this._trans = translator.load('jupyterlab-tour');
+    this._trans = translator.load('jupyterlab_tour');
     this._translator = translator;
 
     this._locale = {
