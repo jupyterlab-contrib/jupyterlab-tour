@@ -142,7 +142,7 @@ jobs:
       with:
         name: jupyterlab-tour-playwright-tests
         path: |
-          ui-tests/test-results
+          ui-tests/test-results*
           ui-tests/playwright-report
 
   check_links:
