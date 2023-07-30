@@ -20,8 +20,11 @@ test('should run the notebook tour', async ({ page }) => {
   await page.getByRole('menuitem', { name: 'File' }).click();
   await page.getByText('New', { exact: true }).click();
   await page.locator('#jp-mainmenu-file-new').getByText('Notebook').click();
-  await page.getByRole('button', { name: 'Select Kernel' }).click();
-  await page.getByRole('button', { name: 'Start now' }).click();
+  const kernelSelector = page.getByRole('button', { name: 'Select Kernel' });
+  if ((await kernelSelector.count()) > 0) {
+    await kernelSelector.click();
+  }
+  await page.getByRole('button', { name: 'Start now' }).first().click();
   await page.getByLabel('Next', { exact: true }).click();
   await page.getByLabel('Next', { exact: true }).click();
   await page.getByLabel('Next', { exact: true }).click();
