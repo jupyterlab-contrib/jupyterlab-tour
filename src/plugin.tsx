@@ -176,7 +176,7 @@ function activateDefaults(
     if (
       tourManager.tours.has(WELCOME_ID) &&
       (app.name !== 'Jupyter Notebook' ||
-        window.location.pathname.match(/\/tree$/))
+        window.location.pathname.match(/\/tree(\/.+)?$/))
     ) {
       // Wait 3s before launching the first tour - to be sure element are loaded
       setTimeout(() => tourManager.launch([WELCOME_ID], false), 3000);

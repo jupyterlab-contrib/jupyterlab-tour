@@ -1,13 +1,13 @@
-import { expect, test as base } from '@jupyterlab/galata';
+import { expect, test } from '@jupyterlab/galata';
 
-export const test = base.extend({
+test.use({
   waitForApplication: async ({ baseURL }, use, testInfo) => {
     const waitIsReady = async (page): Promise<void> => {
       await page.waitForSelector('#main-panel');
     };
     await use(waitIsReady);
   }
-});
+})
 
 test('should run the welcome tour', async ({ page }) => {
   await page.getByRole('button', { name: 'Start now' }).click();
