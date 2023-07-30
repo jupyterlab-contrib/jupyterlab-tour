@@ -1,21 +1,37 @@
 import { expect, test } from '@jupyterlab/galata';
 
-/**
- * Don't load JupyterLab webpage before running the tests.
- * This is required to ensure we capture all log messages.
- */
-test.use({ autoGoto: false });
+test('should run the welcome tour', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start now' }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
 
-test('should emit an activation console message', async ({ page }) => {
-  const logs: string[] = [];
+  await expect
+    .soft(page.locator('.react-joyride__tooltip h4'))
+    .toHaveText('Command Palette');
+  await page.getByLabel('Done').click();
+});
 
-  page.on('console', message => {
-    logs.push(message.text());
-  });
-
-  await page.goto();
-
-  expect(
-    logs.filter(s => s === 'JupyterLab extension jupyterlab-tour is activated!')
-  ).toHaveLength(1);
+test('should run the notebook tour', async ({ page }) => {
+  await page.getByRole('menuitem', { name: 'File' }).click();
+  await page.getByText('New', { exact: true }).click();
+  await page.locator('#jp-mainmenu-file-new').getByText('Notebook').click();
+  await page.getByRole('button', { name: 'Select Kernel' }).click();
+  await page.getByRole('button', { name: 'Start now' }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await page.getByLabel('Next', { exact: true }).click();
+  await expect
+    .soft(page.locator('.react-joyride__tooltip p'))
+    .toHaveText('Metadata (like tags) can be added to cells through this tab.');
+  await page.getByLabel('Done').click();
 });

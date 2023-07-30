@@ -84,6 +84,10 @@ jobs:
 
   integration-tests:
     name: Integration tests
+    strategy:
+      fail-fast: false
+      matrix:
+        jupyterlab: ['3.6', '4.0']
     needs: build
     runs-on: ubuntu-latest
 
@@ -105,7 +109,7 @@ jobs:
     - name: Install the extension
       run: |
         set -eux
-        python -m pip install "jupyterlab>=4.0.0,<5" jupyterlab-tour*.whl
+        python -m pip install "jupyterlab~=${{ matrix.jupyterlab }}" jupyterlab-tour*.whl
 
     - name: Install dependencies
       working-directory: ui-tests
