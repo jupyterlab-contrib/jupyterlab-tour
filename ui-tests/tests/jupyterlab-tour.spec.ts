@@ -27,7 +27,9 @@ test('should run the notebook tour', async ({ page }) => {
   } else {
     await page.getByRole('button', { name: 'Select', exact: true }).click();
   }
-  await page.getByRole('button', { name: 'Start now' }).first().click();
+  
+  const nth = await page.getByRole('alert').count() === 2 ? 1: 0;
+  await page.getByRole('button', { name: 'Start now' }).nth(nth).click();
   await page.getByLabel('Next', { exact: true }).click();
   await page.getByLabel('Next', { exact: true }).click();
   await page.getByLabel('Next', { exact: true }).click();
