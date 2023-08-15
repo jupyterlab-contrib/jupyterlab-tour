@@ -160,7 +160,11 @@ function activateDefaults(
 ): void {
   addTours(tourManager, app, nbTracker);
 
-  if (nbTracker) {
+  if (
+    nbTracker &&
+    (app.name !== 'Jupyter Notebook' ||
+      window.location.pathname.match(/\/notebooks\/.+$/))
+  ) {
     nbTracker.widgetAdded.connect(() => {
       if (tourManager.tours.has(NOTEBOOK_ID)) {
         tourManager.launch([NOTEBOOK_ID], false);
@@ -169,7 +173,11 @@ function activateDefaults(
   }
 
   app.restored.then(() => {
-    if (tourManager.tours.has(WELCOME_ID)) {
+    if (
+      tourManager.tours.has(WELCOME_ID) &&
+      (app.name !== 'Jupyter Notebook' ||
+        window.location.pathname.match(/\/tree(\/.+)?$/))
+    ) {
       // Wait 3s before launching the first tour - to be sure element are loaded
       setTimeout(() => tourManager.launch([WELCOME_ID], false), 3000);
     }
