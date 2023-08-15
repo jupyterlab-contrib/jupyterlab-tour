@@ -407,9 +407,7 @@ namespace DefaultTours {
               'When executing a "Code" cell, its code is sent to a execution kernel.'
             )}
             <br />
-            {trans.__(
-              'Its name and its status are displayed here and in the status bar.'
-            )}
+            {trans.__('Its name and its status are displayed here.')}
           </p>
         ),
         placement: 'bottom'
