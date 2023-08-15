@@ -12,7 +12,7 @@
         "test:notebook:update": "jlpm playwright test -c playwright-notebook.config.js --update-snapshots"
     },
     "devDependencies": {
-        "@jupyterlab/galata": "^5.0.0",
+        "@jupyterlab/galata": "^5.0.5",
         "@playwright/test": "^1.32.0"
     }
 }
