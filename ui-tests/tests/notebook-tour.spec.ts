@@ -26,17 +26,21 @@ test('should run the welcome tour', async ({ page }) => {
 test('should run the notebook tour', async ({ page }) => {
   await page.getByRole('menuitem', { name: 'File' }).click();
   await page.getByLabel('file browser').getByText('New').click();
-  await page.getByText('Notebook', { exact: true }).click();
-  await page.getByRole('button', { name: 'Select Kernel' }).click();
-  await page.getByRole('button', { name: 'Start now' }).click();
-  await page.getByLabel('Next', { exact: true }).click();
-  await page.getByLabel('Next', { exact: true }).click();
-  await page.getByLabel('Next', { exact: true }).click();
-  await page.getByLabel('Next', { exact: true }).click();
-  await page.getByLabel('Next', { exact: true }).click();
-  await page.getByLabel('Next', { exact: true }).click();
+
+  const [notebookPage] = await Promise.all([
+    page.waitForEvent('popup'),
+    page.getByText('Notebook', { exact: true }).click()
+  ]);
+  await notebookPage.getByRole('button', { name: 'Select Kernel' }).click();
+  await notebookPage.getByRole('button', { name: 'Start now' }).click();
+  await notebookPage.getByLabel('Next', { exact: true }).click();
+  await notebookPage.getByLabel('Next', { exact: true }).click();
+  await notebookPage.getByLabel('Next', { exact: true }).click();
+  await notebookPage.getByLabel('Next', { exact: true }).click();
+  await notebookPage.getByLabel('Next', { exact: true }).click();
+  await notebookPage.getByLabel('Next', { exact: true }).click();
   await expect
-    .soft(page.locator('.react-joyride__tooltip p'))
+    .soft(notebookPage.locator('.react-joyride__tooltip p'))
     .toHaveText(/Its name and its status are displayed here\.$/);
-  await page.getByLabel('Done').click();
+  await notebookPage.getByLabel('Done').click();
 });
