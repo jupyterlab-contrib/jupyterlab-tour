@@ -39,7 +39,7 @@
         "clean": "jlpm clean:lib",
         "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
         "clean:labextension": "rimraf jupyterlab_tour/labextension jupyterlab_tour/_version.py",
-        "clean:lib": "rimraf lib .*.tsbuildinfo",
+        "clean:lib": "rimraf lib .root.tsbuildinfo .src.tsbuildinfo",
         "clean:lintcache": "rimraf .eslintcache .stylelintcache",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --ext .ts,.tsx",
