@@ -33,20 +33,19 @@ This extension has the following features:
   - Welcome tour
   - Notebook tour
   - User-defined features in Settings
-- Toast proposing to start a tour - to experienced users the need to exit each time the
-  tour.
-- If a tour has already be seen by the user, this is saved in the state database. So you
-  can start tour on event only if the user have not seen it; e.g. the welcome tour is
+- Toast proposing to start a Tour
+- If a Tour has already be seen by the user, this is saved in the state database. So you
+  can start Tour on event only if the user have not seen it; e.g. the _Welcome Tour_ is
   launched at JupyterLab start except if the user have seen it.
 
 > The state is cleaned if this extension is updated
 
 - Tooltip are styled using JupyterLab theming system
 - Commands to _add_ and _launch_ tours
-- Through the tour manager (`ITourManager` extension token), add, modify or delete a
-  tour
-- Connect to tour events through signals
-- Override the default style (and options) for the tour separately
+- Through the _Tour Manager_ (`ITourManager` extension token), add, modify or delete a
+  Tour
+- Connect to Tour events through signals
+- Override the default style (and options) for the Tour separately
 
 This extension is inspired by
 [@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under
@@ -62,7 +61,7 @@ For JupyterLab 2.x, have look
 > For developers, the API has changed between v3 (for JupyterLab 3) and v2 (for
 > JupyterLab 2).
 
-## How to add a tour with Advanced Settings
+## How to add a Tour with Advanced Settings
 
 As a user of JupyterLab, after you've installed `jupyterlab-tour`, you can create your
 own _Tours_ as data.
@@ -101,21 +100,19 @@ overlay when pressed:
 }
 ```
 
-## How to add a tour to a Notebook
+## How to add a Tour to a Notebook
 
-The same JSON used to create a tour in _Advanced Settings_ can be added to a Notebook.
+The same JSON used to create a Tour in _Advanced Settings_ can be added to a Notebook.
 
 - Open the Notebook
 - Open the _Property Inspector_ sidebar (the "gears" icon)
 - Open _Advanced Tools_
 - Create a key in _Notebook Metadata_ like:
 
-```json5
+```json
 {
-  'jupyterlab-tour': {
-    tours: [
-      // that tour up there!
-    ]
+  "jupyterlab-tour": {
+    "tours": []
   }
 }
 ```
@@ -128,16 +125,14 @@ which will allow lauching one (or all) of the tours saved in the Notebook.
 On Binder, and elsewhere, you can store the above (_without_ comments) in an
 [overrides.json] file and put it in the _right place_, e.g.
 `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab is next
-opened, those overrides will become the defaults, and your tour will be available.
+opened, those overrides will become the defaults, and your Tour will be available.
 
 An example `overrides.json` might look like:
 
-```json5
+```json
 {
-  'jupyterlab-tour:user-tours': {
-    tours: [
-      // that tour up there!
-    ]
+  "jupyterlab-tour:user-tours": {
+    "tours": []
   }
 }
 ```
@@ -145,17 +140,17 @@ An example `overrides.json` might look like:
 [overrides.json]:
   https://jupyterlab.readthedocs.io/en/stable/user/directories.html#overrides-json
 
-## How to add tour for my JupyterLab extension
+## How to add Tour for my JupyterLab extension
 
 As an extension developer, there are two methods to add a tour: the easiest is to use
 JupyterLab commands and the advanced version is to request this extension token
 `ITourManager`.
 
-### Add a tour with TypeScript
+### Add a Tour with TypeScript
 
 ```ts
 const { commands } = app;
-// Add a tour - returns the tour or null if something went wrong
+// Add a Tour - returns the Tour or null if something went wrong
 const tour = (await app.commands.execute('jupyterlab-tour:add', {
   tour: {
     // Tour must be of type ITour - see src/tokens.ts
@@ -185,7 +180,7 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
 if (tour) {
   app.commands.execute('jupyterlab-tour:launch', {
     id: 'test-jupyterlab-tour:welcome',
-    force: false // Optional, if false the tour will start only if the user have not seen or skipped it
+    force: false // Optional, if false the Tour will start only if the user have not seen or skipped it
   });
 }
 ```
