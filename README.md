@@ -104,8 +104,8 @@ The same JSON used to create a tour in _Advanced Settings_ can be added to a Not
 
 ```json5
 {
-  "jupyterlab-tour": {
-    "tours": [
+  'jupyterlab-tour': {
+    tours: [
       // that tour up there!
     ]
   }

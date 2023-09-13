@@ -3,7 +3,7 @@ import { Notification } from '@jupyterlab/apputils';
 import { MainMenu } from '@jupyterlab/mainmenu';
 import { IStateDB } from '@jupyterlab/statedb';
 import { ITranslator, TranslationBundle } from '@jupyterlab/translation';
-import { IDisposableMenuItem } from '@jupyterlab/ui-components';
+import { IDisposableMenuItem, LabIcon } from '@jupyterlab/ui-components';
 import { Locale, Props as JoyrideProps } from 'react-joyride';
 
 import { CommandIDs } from './constants';

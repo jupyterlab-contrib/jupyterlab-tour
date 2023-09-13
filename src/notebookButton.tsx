@@ -1,44 +1,12 @@
 import * as React from 'react';
 
-import { IDisposable } from '@lumino/disposable';
-
-import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ReactWidget } from '@jupyterlab/apputils';
+import { Notebook } from '@jupyterlab/notebook';
 import { HTMLSelect } from '@jupyterlab/ui-components';
-import { NotebookPanel, Notebook, INotebookModel } from '@jupyterlab/notebook';
-
-import { INotebookTourManager } from './tokens';
-import { notebookTourIcon, notebookHasTourIcon, errorTourIcon } from './icons';
 import { TranslationBundle } from '@jupyterlab/translation';
 
-/**
- * A notebook widget extension that adds a tour button to the toolbar.
- */
-export class NotebookTourButton
-  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
-  constructor(options: NotebookTourButton.IOptions) {
-    this._notebookTourManager = options.notebookTourManager;
-  }
-  /**
-   * Create a new extension object.
-   */
-  createNew(
-    panel: NotebookPanel,
-    context: DocumentRegistry.IContext<INotebookModel>
-  ): IDisposable {
-    const button = new TourButton(panel.content, this._notebookTourManager);
-    panel.toolbar.insertItem(10, 'notebookTour', button);
-    return button;
-  }
-
-  private _notebookTourManager: INotebookTourManager;
-}
-
-export namespace NotebookTourButton {
-  export interface IOptions {
-    notebookTourManager: INotebookTourManager;
-  }
-}
+import { errorTourIcon, notebookHasTourIcon, notebookTourIcon } from './icons';
+import { INotebookTourManager } from './tokens';
 
 export class TourButton extends ReactWidget {
   /**

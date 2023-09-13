@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import { ErrorObject } from 'ajv';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { TranslationBundle } from '@jupyterlab/translation';
 import { Notebook } from '@jupyterlab/notebook';
@@ -365,7 +365,7 @@ export interface INotebookTourManager {
   /**
    * Get errors found in the notebook metadata
    */
-  getNotebookValidationErrors(notebook: Notebook): Ajv.ErrorObject[];
+  getNotebookValidationErrors(notebook: Notebook): ErrorObject[];
 
   /**
    * A signal that emits when a particular notebooks tours change

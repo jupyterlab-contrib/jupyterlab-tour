@@ -1,9 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { LabIcon } from '@jupyterlab/ui-components';
 
 import { NS } from './tokens';
+
+// ts-ignore instructions needed for ts-test
+// @ts-ignore
 import SVG_PIN from '../style/img/pin.svg';
+// @ts-ignore
 import SVG_PIN_USER from '../style/img/person-pin.svg';
+// @ts-ignore
 import SVG_PIN_NOTEBOOK from '../style/img/notebook-pin.svg';
+// @ts-ignore
 import SVG_PIN_BAD from '../style/img/bad-pin.svg';
 
 export const tourIcon = new LabIcon({ name: `${NS}:tour`, svgstr: SVG_PIN });

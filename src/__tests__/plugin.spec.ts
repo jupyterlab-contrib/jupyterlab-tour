@@ -2,14 +2,19 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import {
   INotebookTracker,
   Notebook,
-  NotebookModel
+  NotebookModel,
+  NotebookPanel
 } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { StateDB } from '@jupyterlab/statedb';
 import { CommandRegistry } from '@lumino/commands';
 import { ReadonlyJSONObject } from '@lumino/coreutils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { CodeMirrorMimeTypeService } from '@jupyterlab/codemirror';
+import {
+  CodeMirrorEditorFactory,
+  CodeMirrorMimeTypeService,
+  EditorLanguageRegistry
+} from '@jupyterlab/codemirror';
 import { Signal } from '@lumino/signaling';
 import 'jest';
 import { CommandIDs } from '../constants';
@@ -164,19 +169,26 @@ describe(notebookPlugin.id, () => {
         nbTracker,
         manager
       ) as INotebookTourManager;
+      const languages = new EditorLanguageRegistry();
+      const factoryService = new CodeMirrorEditorFactory({
+        languages
+      });
+      const mimeTypeService = new CodeMirrorMimeTypeService(languages);
+      const editorFactory = factoryService.newInlineEditor;
       const notebook = new Notebook({
         rendermime: null as any,
-        mimeTypeService: new CodeMirrorMimeTypeService()
+        mimeTypeService,
+        contentFactory: new NotebookPanel.ContentFactory({ editorFactory })
       });
       const model = new NotebookModel();
       notebook.model = model;
       notebookTourManager.addNotebook(notebook);
       expect(notebookTourManager.tourManager.tours.size).toBe(0);
-      model.metadata.set(NS, {
-        tours: [(aTour() as unknown) as ReadonlyJSONObject]
+      model.setMetadata(NS, {
+        tours: [aTour() as unknown as ReadonlyJSONObject]
       });
       expect(notebookTourManager.tourManager.tours.size).toBe(1);
-      model.metadata.delete(NS);
+      model.deleteMetadata(NS);
       expect(notebookTourManager.tourManager.tours.size).toBe(0);
     });
   });

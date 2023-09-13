@@ -14,10 +14,11 @@
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": "./",
     "strict": true,
     "strictNullChecks": true,
-    "target": "ES2018"
+    "target": "ES2018",
+    "tsBuildInfoFile": ".root.tsbuildinfo"
   },
-  "include": ["src/*", "./package.json", "./schema/*.json"],
+  "include": ["./package.json", "./schema/*.json"]
 }

@@ -1,16 +1,16 @@
-import Ajv from 'ajv';
+import Ajv, { ErrorObject, ValidateFunction } from 'ajv';
 
-import { Signal, ISignal } from '@lumino/signaling';
 import { Notebook } from '@jupyterlab/notebook';
+import { ISignal, Signal } from '@lumino/signaling';
+import USER_SCHEMA from '../schema/user-tours.json';
+import { notebookTourIcon } from './icons';
 import {
-  NS,
+  INotebookTourManager,
   ITour,
   ITourManager,
-  INotebookTourManager,
-  NOTEBOOK_PLUGIN_ID
+  NOTEBOOK_PLUGIN_ID,
+  NS
 } from './tokens';
-import { notebookTourIcon } from './icons';
-import USER_SCHEMA from '../schema/user-tours.json';
 
 /**
  * The NotebookTourManager is needed to sync Notebook metadata with the TourManager
@@ -18,7 +18,10 @@ import USER_SCHEMA from '../schema/user-tours.json';
 export class NotebookTourManager implements INotebookTourManager {
   constructor(options: INotebookTourManager.IOptions) {
     this._tourManager = options.tourManager;
-    this._validator = new Ajv().compile(USER_SCHEMA);
+    // `jupyter.lab...` keywords custom keywords rejected by default
+    // we may be able to do better than `strict: false` by defining
+    // custom keywords https://ajv.js.org/keywords.html
+    this._validator = new Ajv({ strict: false }).compile(USER_SCHEMA);
   }
 
   get tourManager(): ITourManager {
@@ -37,9 +40,11 @@ export class NotebookTourManager implements INotebookTourManager {
       return;
     }
 
-    notebook.model.metadata.changed.connect(() => {
-      this._notebookMetadataChanged(notebook);
-    });
+    (notebook.model.metadataChanged ?? notebook.model.metadata.changed).connect(
+      () => {
+        this._notebookMetadataChanged(notebook);
+      }
+    );
 
     notebook.disposed.connect(this._onNotebookDisposed, this);
 
@@ -67,7 +72,7 @@ export class NotebookTourManager implements INotebookTourManager {
    * @param notebook the notebook
    * @returns the list of errors
    */
-  getNotebookValidationErrors(notebook: Notebook): Ajv.ErrorObject[] {
+  getNotebookValidationErrors(notebook: Notebook): ErrorObject[] {
     return this._validationErrors.get(notebook) || [];
   }
 
@@ -89,7 +94,13 @@ export class NotebookTourManager implements INotebookTourManager {
    * The metadata changed, and therefor maybe tours: remove and re-add all of them.
    */
   private _notebookMetadataChanged(notebook: Notebook): void {
-    const metadata = notebook.model?.metadata.get(NS);
+    const { model } = notebook;
+    const metadata = model
+      ? model.getMetadata
+        ? model.getMetadata(NS)
+        : // @ts-expect-error JLab 3 API
+          model.metadata.get(NS)
+      : null;
     const trans = this._tourManager.translator;
 
     this._cleanNotebookTours(notebook);
@@ -105,8 +116,7 @@ export class NotebookTourManager implements INotebookTourManager {
         );
         console.table(errors);
       } else {
-        const tours: ITour[] =
-          (notebook.model?.metadata.get(NS) as any)['tours'] || [];
+        const tours: ITour[] = metadata['tours'] ?? [];
         for (const tour of this.tourManager.sortTours(tours)) {
           try {
             this._addNotebookTour(notebook, tour);
@@ -121,7 +131,7 @@ export class NotebookTourManager implements INotebookTourManager {
               error
             );
             console.table(tour.steps);
-            console.log(tour.options || {});
+            console.log(tour.options ?? {});
             console.groupEnd();
           }
         }
@@ -147,6 +157,6 @@ export class NotebookTourManager implements INotebookTourManager {
   private _notebookToursChanged = new Signal<INotebookTourManager, Notebook>(
     this
   );
-  private _validator: Ajv.ValidateFunction;
-  private _validationErrors = new Map<Notebook, Ajv.ErrorObject[]>();
+  private _validator: ValidateFunction;
+  private _validationErrors = new Map<Notebook, ErrorObject[]>();
 }
