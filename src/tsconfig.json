@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../lib",
     "rootDir": "./",
-    "tsBuildInfoFile": "../build/.src.tsbuildinfo"
+    "tsBuildInfoFile": "../build/.cache/tsc/.src.tsbuildinfo"
   },
   "include": ["./**/*"],
   "references": [{ "path": ".." }]
