@@ -1,8 +1,8 @@
 # a mybinder.org-ready environment for demoing jupyterlab-tour
 # this environment may also be used locally on Linux/MacOS/Windows, e.g.
 #
-#   conda env update --file binder/environment.yml
-#   conda activate jupyterlab-tour-demo
+#   mamba env update --file binder/environment.yml
+#   mamba activate jupyterlab-tour-demo
 #
 name: jupyterlab-tour-demo
 
@@ -11,9 +11,13 @@ channels:
 
 dependencies:
   # runtime dependencies
-  - python >=3.10,<3.11.0a0
-  - jupyterlab >=4.0.0,<5
+  - python ==3.11.*  #  binder needs a fairly weird pin, at present
+  - jupyterlab >=4.0.5,<5
+  - notebook >=7,<8
   # labextension build dependencies
+  - hatch-jupyter-builder >=0.5
+  - hatch-nodejs-version
+  - hatchling >=1.5.0
   - nodejs >=18,<19
   - pip
-  - wheel
+  - python-build
