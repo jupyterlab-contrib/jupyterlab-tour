@@ -248,22 +248,14 @@ export class TourHandler implements ITourHandler {
     return this.steps.splice(index, 1)[0];
   }
 
-  private _skipped: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
-  private _finished: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
-  private _started: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
-  private _stepChanged: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
+  private _skipped: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(this);
+  private _finished: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
+    this
+  );
+  private _started: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(this);
+  private _stepChanged: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
+    this
+  );
 
   private _currentStepIndex = -1;
   private _id: string;

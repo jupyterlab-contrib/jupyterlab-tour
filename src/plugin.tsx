@@ -1,7 +1,4 @@
-import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
+import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 import {
   ICommandPalette,
   IToolbarWidgetRegistry,
@@ -74,16 +71,14 @@ function activate(
       }
     },
     icon: args =>
-      (manager.tours.get(args['id'] as string) as TourHandler)?.icon ||
-      tourIcon,
+      (manager.tours.get(args['id'] as string) as TourHandler)?.icon || tourIcon,
     usage: trans.__(
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}'
     ),
     isEnabled: () => !manager.activeTour,
     execute: async args => {
       let id = args['id'] as string;
-      const force =
-        args['force'] === undefined ? true : (args['force'] as boolean);
+      const force = args['force'] === undefined ? true : (args['force'] as boolean);
 
       if (!id) {
         const answer = await InputDialog.getItem({

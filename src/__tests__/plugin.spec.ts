@@ -102,10 +102,7 @@ describe(corePlugin.id, () => {
       it('should add a tour command', async () => {
         const app = mockApp();
         const stateDB = new StateDB();
-        const manager = corePlugin.activate(
-          app as any,
-          stateDB
-        ) as ITourManager;
+        const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
         expect(manager.tours.size).toEqual(0);
 
         const tour = await app.commands?.execute(CommandIDs.addTour, {

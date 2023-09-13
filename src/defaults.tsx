@@ -3,11 +3,7 @@ import React from 'react';
 import { CommandRegistry } from '@lumino/commands';
 
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import {
-  INotebookTracker,
-  NotebookActions,
-  NotebookPanel
-} from '@jupyterlab/notebook';
+import { INotebookTracker, NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
 
 import { NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { defaultNotebookTourIcon, defaultTourIcon } from './icons';
@@ -53,9 +49,7 @@ namespace DefaultTours {
         content: (
           <>
             <p>
-              {trans.__(
-                'Pause the tour by clicking anywhere outside of the tooltip.'
-              )}
+              {trans.__('Pause the tour by clicking anywhere outside of the tooltip.')}
             </p>
             <p>{trans.__('Resume the tour by clicking on the symbol:')}</p>
             <div style={{ display: 'inline-block', height: '60px' }}>
@@ -106,9 +100,7 @@ namespace DefaultTours {
         content: (
           <details>
             <summary>
-              {trans.__(
-                'This is the top menu bar where you can access several menus.'
-              )}
+              {trans.__('This is the top menu bar where you can access several menus.')}
             </summary>
             <ul>
               <li>
@@ -196,9 +188,7 @@ namespace DefaultTours {
       welcomeTour.addStep({
         target: '#jp-main-statusbar',
         content: (
-          <p>
-            {trans.__('Various information are reported on the status bar.')}
-          </p>
+          <p>{trans.__('Various information are reported on the status bar.')}</p>
         ),
         placement: 'top',
         title: trans.__('Status Bar')
@@ -240,9 +230,7 @@ namespace DefaultTours {
             </p>
             <p>
               <small>
-                {trans.__(
-                  'Tip: Actions can be triggered through the context menu.'
-                )}
+                {trans.__('Tip: Actions can be triggered through the context menu.')}
               </small>
             </p>
           </>
@@ -395,8 +383,7 @@ namespace DefaultTours {
       });
 
       notebookTour.addStep({
-        target:
-          '.jp-Notebook-cell:last-child .jp-OutputArea.jp-Cell-outputArea',
+        target: '.jp-Notebook-cell:last-child .jp-OutputArea.jp-Cell-outputArea',
         content: (
           <p>
             {trans.__(
@@ -440,9 +427,7 @@ namespace DefaultTours {
           target: '#jp-property-inspector',
           content: (
             <p>
-              {trans.__(
-                'Metadata (like tags) can be added to cells through this tab.'
-              )}
+              {trans.__('Metadata (like tags) can be added to cells through this tab.')}
             </p>
           ),
           placement: 'left'
@@ -499,9 +484,7 @@ namespace DefaultTours {
               const commonTools = shell.node
                 .querySelector('#jp-property-inspector')
                 ?.querySelector('.jp-Collapse-header:first-child');
-              if (
-                commonTools?.classList.contains('jp-Collapse-header-collapsed')
-              ) {
+              if (commonTools?.classList.contains('jp-Collapse-header-collapsed')) {
                 commonTools.dispatchEvent(
                   new MouseEvent('click', {
                     button: 0,
@@ -582,9 +565,7 @@ namespace DefaultTours {
         content: (
           <>
             <p>
-              {trans.__(
-                'Pause the tour by clicking anywhere outside of the tooltip.'
-              )}
+              {trans.__('Pause the tour by clicking anywhere outside of the tooltip.')}
             </p>
             <p>{trans.__('Resume the tour by clicking on the symbol:')}</p>
             <div style={{ display: 'inline-block', height: '60px' }}>
@@ -635,9 +616,7 @@ namespace DefaultTours {
         content: (
           <details>
             <summary>
-              {trans.__(
-                'This is the top menu bar where you can access several menus.'
-              )}
+              {trans.__('This is the top menu bar where you can access several menus.')}
             </summary>
             <ul>
               <li>
@@ -646,9 +625,7 @@ namespace DefaultTours {
               </li>
               <li>
                 <strong>{trans.__('View')}</strong>
-                {trans.__(
-                  ': actions that alter the appearance of Jupyter Notebook'
-                )}
+                {trans.__(': actions that alter the appearance of Jupyter Notebook')}
               </li>
               <li>
                 <strong>{trans.__('Settings')}</strong>
@@ -704,9 +681,7 @@ namespace DefaultTours {
             </p>
             <p>
               <small>
-                {trans.__(
-                  'Tip: Actions can be triggered through the context menu.'
-                )}
+                {trans.__('Tip: Actions can be triggered through the context menu.')}
               </small>
             </p>
           </>

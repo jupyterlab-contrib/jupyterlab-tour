@@ -11,7 +11,7 @@ channels:
 
 dependencies:
   # runtime dependencies
-  - python ==3.11.*  #  binder needs a fairly weird pin, at present
+  - python ==3.11.* #  binder needs a fairly weird pin, at present
   - jupyterlab >=4.0.5,<5
   - notebook >=7,<8
   # labextension build dependencies

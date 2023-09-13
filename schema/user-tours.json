@@ -416,14 +416,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "action",
-        "controlled",
-        "index",
-        "lifecycle",
-        "size",
-        "status"
-      ],
+      "required": ["action", "controlled", "index", "lifecycle", "size", "status"],
       "type": "object"
     },
     "Styles": {

@@ -40,11 +40,9 @@ export class NotebookTourManager implements INotebookTourManager {
       return;
     }
 
-    (notebook.model.metadataChanged ?? notebook.model.metadata.changed).connect(
-      () => {
-        this._notebookMetadataChanged(notebook);
-      }
-    );
+    (notebook.model.metadataChanged ?? notebook.model.metadata.changed).connect(() => {
+      this._notebookMetadataChanged(notebook);
+    });
 
     notebook.disposed.connect(this._onNotebookDisposed, this);
 
@@ -154,9 +152,7 @@ export class NotebookTourManager implements INotebookTourManager {
 
   private _tourManager: ITourManager;
   private _notebookTours = new Map<Notebook, ITour[]>();
-  private _notebookToursChanged = new Signal<INotebookTourManager, Notebook>(
-    this
-  );
+  private _notebookToursChanged = new Signal<INotebookTourManager, Notebook>(this);
   private _validator: ValidateFunction;
   private _validationErrors = new Map<Notebook, ErrorObject[]>();
 }

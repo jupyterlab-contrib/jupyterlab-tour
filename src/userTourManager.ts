@@ -1,11 +1,6 @@
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { PromiseDelegate } from '@lumino/coreutils';
-import {
-  ITour,
-  ITourManager,
-  IUserTourManager,
-  USER_PLUGIN_ID
-} from './tokens';
+import { ITour, ITourManager, IUserTourManager, USER_PLUGIN_ID } from './tokens';
 
 import { userTourIcon } from './icons';
 
@@ -64,11 +59,7 @@ export class UserTourManager implements IUserTourManager {
       } catch (error) {
         const trans = this._tourManager.translator;
         console.groupCollapsed(
-          trans.__(
-            'Error encountered adding user tour %1 (%2)',
-            tour.label,
-            tour.id
-          ),
+          trans.__('Error encountered adding user tour %1 (%2)', tour.label, tour.id),
           error
         );
         console.table(tour.steps);

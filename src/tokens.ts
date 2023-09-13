@@ -9,12 +9,7 @@ import { LabIcon } from '@jupyterlab/ui-components';
 import React from 'react';
 import PACKAGE from '../package.json';
 
-import {
-  CallBackProps,
-  Placement,
-  Props as JoyrideProps,
-  Step
-} from 'react-joyride';
+import { CallBackProps, Placement, Props as JoyrideProps, Step } from 'react-joyride';
 
 /**
  * Version for everything
@@ -54,9 +49,7 @@ export const ITourManager = new Token<ITourManager>(`${NS}:ITourManager`);
 /**
  * Token to get a reference to the user tours manager
  */
-export const IUserTourManager = new Token<IUserTourManager>(
-  `${NS}:IUserTourManager`
-);
+export const IUserTourManager = new Token<IUserTourManager>(`${NS}:IUserTourManager`);
 
 /**
  * Token to get a reference to the notebook tours manager
