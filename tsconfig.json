@@ -18,7 +18,7 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "ES2018",
-    "tsBuildInfoFile": ".root.tsbuildinfo"
+    "tsBuildInfoFile": "build/.root.tsbuildinfo"
   },
   "include": ["./package.json", "./schema/*.json"]
 }
