@@ -1,2 +1,0 @@
-# Do not install in dev mode
-jupyterlab-tour

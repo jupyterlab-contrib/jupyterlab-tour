@@ -1,5 +1,6 @@
 import { JSONExt } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
+import { LabIcon } from '@jupyterlab/ui-components';
 import {
   CallBackProps,
   Props as JoyrideProps,
@@ -10,16 +11,19 @@ import {
 } from 'react-joyride';
 import { TutorialDefaultOptions } from './constants';
 import { ITourHandler, StepPlacement } from './tokens';
+import { tourIcon } from './icons';
 
 // TODO should be IDisposable !! handling signal connection clearance
 export class TourHandler implements ITourHandler {
   constructor(
     id: string,
     label: string,
-    options?: Omit<JoyrideProps, 'steps'>
+    options?: Omit<JoyrideProps, 'steps'>,
+    icon: LabIcon | null = null
   ) {
     this._label = label;
     this._id = id;
+    this._icon = icon || null;
     const { styles, ...others } = options ?? {};
     this._options = { ...TutorialDefaultOptions, ...others };
     if (!this._options.styles) {
@@ -71,6 +75,13 @@ export class TourHandler implements ITourHandler {
    */
   get label(): string {
     return this._label;
+  }
+
+  /**
+   * The tour icons
+   */
+  get icon(): LabIcon {
+    return this._icon || tourIcon;
   }
 
   /**
@@ -237,22 +248,14 @@ export class TourHandler implements ITourHandler {
     return this.steps.splice(index, 1)[0];
   }
 
-  private _skipped: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
-  private _finished: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
-  private _started: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
-  private _stepChanged: Signal<this, CallBackProps> = new Signal<
-    this,
-    CallBackProps
-  >(this);
+  private _skipped: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(this);
+  private _finished: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
+    this
+  );
+  private _started: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(this);
+  private _stepChanged: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
+    this
+  );
 
   private _currentStepIndex = -1;
   private _id: string;
@@ -262,4 +265,5 @@ export class TourHandler implements ITourHandler {
   private _previousStatus: valueof<status> = STATUS.READY;
   private _previousStepIndex = -1;
   private _steps: Step[] = new Array<Step>();
+  private _icon: LabIcon | null;
 }

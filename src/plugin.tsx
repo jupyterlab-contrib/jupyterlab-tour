@@ -1,24 +1,32 @@
+import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
-import { ICommandPalette, InputDialog } from '@jupyterlab/apputils';
+  ICommandPalette,
+  IToolbarWidgetRegistry,
+  InputDialog,
+  ReactWidget
+} from '@jupyterlab/apputils';
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
-import { INotebookTracker } from '@jupyterlab/notebook';
-import { IStateDB } from '@jupyterlab/statedb';
+import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { IStateDB } from '@jupyterlab/statedb';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 
+import { Widget } from '@lumino/widgets';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { TourContainer } from './components';
 import { CommandIDs, NOTEBOOK_ID, WELCOME_ID } from './constants';
 import { addTours } from './defaults';
+import { tourIcon } from './icons';
+import { TourButton } from './notebookButton';
+import { NotebookTourManager } from './notebookTourManager';
 import {
   DEFAULTS_PLUGIN_ID,
+  INotebookTourManager,
   ITourHandler,
   ITourManager,
   IUserTourManager,
+  NOTEBOOK_PLUGIN_ID,
+  NS,
   PLUGIN_ID,
   USER_PLUGIN_ID
 } from './tokens';
@@ -62,14 +70,15 @@ function activate(
         return trans.__('Launch a Tour');
       }
     },
+    icon: args =>
+      (manager.tours.get(args['id'] as string) as TourHandler)?.icon || tourIcon,
     usage: trans.__(
       'Launch a tour.\nIf no id provided, prompt the user.\nArguments {id: Tour ID}'
     ),
     isEnabled: () => !manager.activeTour,
     execute: async args => {
       let id = args['id'] as string;
-      const force =
-        args['force'] === undefined ? true : (args['force'] as boolean);
+      const force = args['force'] === undefined ? true : (args['force'] as boolean);
 
       if (!id) {
         const answer = await InputDialog.getItem({
@@ -105,10 +114,10 @@ function activate(
     });
   }
 
-  const node = document.createElement('div');
-
-  document.body.appendChild(node);
-  ReactDOM.render(<TourContainer tourLaunched={manager.tourLaunched} />, node);
+  const tourContainer = ReactWidget.create(
+    <TourContainer tourLaunched={manager.tourLaunched} />
+  );
+  Widget.attach(tourContainer, document.body);
 
   return manager;
 }
@@ -128,17 +137,48 @@ const userPlugin: JupyterFrontEndPlugin<IUserTourManager> = {
 function activateUser(
   app: JupyterFrontEnd,
   settings: ISettingRegistry,
-  tourManager: ITourManager,
-  translator?: ITranslator
+  tourManager: ITourManager
 ): IUserTourManager {
-  translator = translator || nullTranslator;
-
   const manager = new UserTourManager({
     tourManager,
-    translator,
     getSettings: (): Promise<ISettingRegistry.ISettings> =>
       settings.load(USER_PLUGIN_ID)
   });
+  return manager;
+}
+
+/**
+ * Optional plugin for notebook-defined tours stored in metadata
+ */
+const notebookPlugin: JupyterFrontEndPlugin<INotebookTourManager> = {
+  id: NOTEBOOK_PLUGIN_ID,
+  autoStart: true,
+  activate: activateNotebook,
+  requires: [INotebookTracker, ITourManager],
+  optional: [IToolbarWidgetRegistry],
+  provides: INotebookTourManager
+};
+
+function activateNotebook(
+  app: JupyterFrontEnd,
+  nbTracker: INotebookTracker,
+  tourManager: ITourManager,
+  toolbarRegistry: IToolbarWidgetRegistry | null
+): INotebookTourManager {
+  const manager = new NotebookTourManager({
+    tourManager
+  });
+
+  nbTracker.widgetAdded.connect((nbTracker, panel) =>
+    manager.addNotebook(panel.content)
+  );
+
+  toolbarRegistry?.addFactory(
+    'Notebook',
+    NS,
+    (panel: NotebookPanel) => new TourButton(panel.content, manager)
+  );
+
   return manager;
 }
 
@@ -184,4 +224,4 @@ function activateDefaults(
   });
 }
 
-export default [corePlugin, userPlugin, defaultsPlugin];
+export default [corePlugin, userPlugin, notebookPlugin, defaultsPlugin];

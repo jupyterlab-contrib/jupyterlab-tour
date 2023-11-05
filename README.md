@@ -33,31 +33,38 @@ This extension has the following features:
   - Welcome tour
   - Notebook tour
   - User-defined features in Settings
-- Toast proposing to start a tour - to experienced users the need to exit each time the tour.
-- If a tour has already be seen by the user, this is saved in the state database. So you can start tour on event only if the user have not seen it; e.g. the welcome tour is launched at JupyterLab start except if the user have seen it.
+- Toast proposing to start a Tour
+- If a Tour has already be seen by the user, this is saved in the state database. So you
+  can start Tour on event only if the user have not seen it; e.g. the _Welcome Tour_ is
+  launched at JupyterLab start except if the user have seen it.
 
 > The state is cleaned if this extension is updated
 
 - Tooltip are styled using JupyterLab theming system
 - Commands to _add_ and _launch_ tours
-- Through the tour manager (`ITourManager` extension token), add, modify or delete a tour
-- Connect to tour events through signals
-- Override the default style (and options) for the tour separately
+- Through the _Tour Manager_ (`ITourManager` extension token), add, modify or delete a
+  Tour
+- Connect to Tour events through signals
+- Override the default style (and options) for the Tour separately
 
-This extension is inspired by [@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under BSD 3-Clause License with Copyright (c) 2020, Lawrence Livermore National Security, LLC.
+This extension is inspired by
+[@cdat/jupyterlab-tutorial](https://github.com/CDAT/jupyterlab-tutorial) licensed under
+BSD 3-Clause License with Copyright (c) 2020, Lawrence Livermore National Security, LLC.
 
 ## Requirements
 
 - JupyterLab >= 3.6
 
-For JupyterLab 2.x, have look [there](https://github.com/jupyterlab-contrib/jupyterlab-tour/tree/2.x).
+For JupyterLab 2.x, have look
+[there](https://github.com/jupyterlab-contrib/jupyterlab-tour/tree/2.x).
 
-> For developers, the API has changed between v3 (for JupyterLab 3) and v2 (for JupyterLab 2).
+> For developers, the API has changed between v3 (for JupyterLab 3) and v2 (for
+> JupyterLab 2).
 
-## How to add a tour with Advanced Settings
+## How to add a Tour with Advanced Settings
 
-As a user of JupyterLab, after you've installed `jupyterlab-tour`, you can create
-your own _Tours_ as data.
+As a user of JupyterLab, after you've installed `jupyterlab-tour`, you can create your
+own _Tours_ as data.
 
 - Open the JupyterLab _Advanced Settings_ panel <kbd>Ctrl+,</kbd>
 - Select _Tours_ from list of settings groups
@@ -93,37 +100,57 @@ overlay when pressed:
 }
 ```
 
-### Shipping a Tour to Binder
+## How to add a Tour to a Notebook
 
-On Binder, and elsewhere, you can store the above (_without_ comments) in
-an [overrides.json] file and put it in the _right place_,
-e.g. `{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab is
-next opened, those overrides will become the defaults, and your tour will be available.
+The same JSON used to create a Tour in _Advanced Settings_ can be added to a Notebook.
 
-An example `overrides.json` might look like:
+- Open the Notebook
+- Open the _Property Inspector_ sidebar (the "gears" icon)
+- Open _Advanced Tools_
+- Create a key in _Notebook Metadata_ like:
 
-```json5
+```json
 {
-  'jupyterlab-tour:user-tours': {
-    tours: [
-      // that tour up there!
-    ]
+  "jupyterlab-tour": {
+    "tours": []
   }
 }
 ```
 
-[overrides.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#overrides-json
+Now, when the notebook is opened, a "pin" icon will be visible in the _Notebook Toolbar_
+which will allow lauching one (or all) of the tours saved in the Notebook.
 
-## How to add tour for my JupyterLab extension
+### Shipping a Tour to Binder
 
-As an extension developer, there are two methods to add a tour: the easiest is to use JupyterLab commands and the advanced version is to request this
-extension token `ITourManager`.
+On Binder, and elsewhere, you can store the above (_without_ comments) in an
+[overrides.json] file and put it in the _right place_, e.g.
+`{sys.prefix}/share/jupyter/lab/settings/overrides.json`. When JupyterLab is next
+opened, those overrides will become the defaults, and your Tour will be available.
 
-### Add easily a tour
+An example `overrides.json` might look like:
+
+```json
+{
+  "jupyterlab-tour:user-tours": {
+    "tours": []
+  }
+}
+```
+
+[overrides.json]:
+  https://jupyterlab.readthedocs.io/en/stable/user/directories.html#overrides-json
+
+## How to add Tour for my JupyterLab extension
+
+As an extension developer, there are two methods to add a tour: the easiest is to use
+JupyterLab commands and the advanced version is to request this extension token
+`ITourManager`.
+
+### Add a Tour with TypeScript
 
 ```ts
 const { commands } = app;
-// Add a tour - returns the tour or null if something went wrong
+// Add a Tour - returns the Tour or null if something went wrong
 const tour = (await app.commands.execute('jupyterlab-tour:add', {
   tour: {
     // Tour must be of type ITour - see src/tokens.ts
@@ -153,17 +180,18 @@ const tour = (await app.commands.execute('jupyterlab-tour:add', {
 if (tour) {
   app.commands.execute('jupyterlab-tour:launch', {
     id: 'test-jupyterlab-tour:welcome',
-    force: false // Optional, if false the tour will start only if the user have not seen or skipped it
+    force: false // Optional, if false the Tour will start only if the user have not seen or skipped it
   });
 }
 ```
 
-> One example is available on [Mamba navigator](https://github.com/mamba-org/gator/blob/master/packages/labextension/src/index.ts#L76).
+> One example is available on
+> [Mamba navigator](https://github.com/mamba-org/gator/blob/master/packages/labextension/src/index.ts#L76).
 > Test it on [binder](https://mybinder.org/v2/gh/mamba-org/gator/master?urlpath=lab).
 
-If you want to react to step changes to trigger elements of the UI (like opening sidebar), you can connect
-to the `stepChanged` signal. Building from the previous example, this snippet will open the filebrowser
-after the first step.
+If you want to react to step changes to trigger elements of the UI (like opening
+sidebar), you can connect to the `stepChanged` signal. Building from the previous
+example, this snippet will open the filebrowser after the first step.
 
 ```ts
 tour.stepChanged.connect((_, data) => {
@@ -177,15 +205,16 @@ tour.stepChanged.connect((_, data) => {
 });
 ```
 
-> `data` is an object of type [`CallbackProps`](https://docs.react-joyride.com/callback).
+> `data` is an object of type
+> [`CallbackProps`](https://docs.react-joyride.com/callback).
 
-## Disabling the User and Default Tours
+## Disabling the User, Notebook, and Default Tours
 
-If you _only_ wish to see the default _Welcome_ and _Notebook_ tours, or ones
-defined by users, they can be disabled via the command line or a well-known file.
+If you _only_ wish to see the default _Welcome_ and _Notebook_ tours, or ones defined by
+users, they can be disabled via the command line or a well-known file.
 
-The examples below disable all tours not provided by third-party extensions.
-Adding `jupyterlab-tour:plugin` to either of these will disable tours altogether!
+The examples below disable all tours not provided by third-party extensions. Adding
+`jupyterlab-tour:plugin` to either of these will disable tours altogether!
 
 ### Disabling Tours from the Command Line
 
@@ -193,6 +222,7 @@ From the command line, run:
 
 ```bash
 jupyter labextension disable "jupyterlab-tour:user-tours"
+jupyter labextension disable "jupyterlab-tour:notebook-tours"
 jupyter labextension disable "jupyterlab-tour:default-tours"
 ```
 
@@ -206,12 +236,14 @@ Create a [pageConfig.json] and put it in _the right place_, e.g.
 {
   "disabledExtensions": {
     "jupyterlab-tour:user-tours": true,
+    "jupyterlab-tour:notebook-tours": true,
     "jupyterlab-tour:default-tours": true
   }
 }
 ```
 
-[pageConfig.json]: https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
+[pageConfig.json]:
+  https://jupyterlab.readthedocs.io/en/stable/user/directories.html#labconfig-directories
 
 ## Uninstall
 
@@ -233,9 +265,8 @@ conda remove -c conda-forge jupyterlab-tour
 
 Note: You will need NodeJS to build the extension package.
 
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
-`yarn` or `npm` in lieu of `jlpm` below.
+The `jlpm` command is JupyterLab's pinned version of [yarn](https://yarnpkg.com/) that
+is installed with JupyterLab. You may use `yarn` or `npm` in lieu of `jlpm` below.
 
 ```bash
 # Clone the repo to your local environment
@@ -248,7 +279,9 @@ jupyter labextension develop . --overwrite
 jlpm build
 ```
 
-You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+You can watch the source directory and run JupyterLab at the same time in different
+terminals to watch for changes in the extension's source and automatically rebuild the
+extension.
 
 ```bash
 # Watch the source directory in one terminal, automatically rebuilding when needed
@@ -257,9 +290,13 @@ jlpm watch
 jupyter lab
 ```
 
-With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
+With the watch command running, every saved change will immediately be built locally and
+available in your running JupyterLab. Refresh JupyterLab to load the change in your
+browser (you may need to wait several seconds for the extension to be rebuilt).
 
-By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
+By default, the `jlpm build` command generates the source maps for this extension to
+make it easier to debug using the browser dev tools. To also generate source maps for
+the JupyterLab core extensions, you can run the following command:
 
 ```bash
 jupyter lab build --minimize=False
@@ -271,9 +308,10 @@ jupyter lab build --minimize=False
 pip uninstall jupyterlab-tour
 ```
 
-In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
-command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `jupyterlab-tour` within that folder.
+In development mode, you will also need to remove the symlink created by
+`jupyter labextension develop` command. To find its location, you can run
+`jupyter labextension list` to figure out where the `labextensions` folder is located.
+Then you can remove the symlink named `jupyterlab-tour` within that folder.
 
 ### Testing the extension
 
@@ -290,8 +328,10 @@ jlpm test
 
 #### Integration tests
 
-This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
+This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration
+tests (aka user level tests). More precisely, the JupyterLab helper
+[Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle
+testing the extension in JupyterLab.
 
 More information are provided within the [ui-tests](./ui-tests/README.md) README.
 

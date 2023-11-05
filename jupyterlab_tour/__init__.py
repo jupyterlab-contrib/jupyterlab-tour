@@ -1,3 +1,4 @@
+"""A JupyterLab UI Tour."""
 try:
     from ._version import __version__
 except ImportError:
@@ -14,3 +15,5 @@ def _jupyter_labextension_paths():
         "src": "labextension",
         "dest": "jupyterlab-tour"
     }]
+
+__all__ = ["_jupyter_labextension_paths", "__version__"]

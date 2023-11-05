@@ -16,4 +16,3 @@ python_name: jupyterlab_tour
 repository: https://github.com/jupyterlab-contrib/jupyterlab-tour.git
 test: true
 viewer_name: ''
-
