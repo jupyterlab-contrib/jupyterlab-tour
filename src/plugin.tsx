@@ -8,7 +8,7 @@ import {
 import { IMainMenu, MainMenu } from '@jupyterlab/mainmenu';
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
-import { IStateDB } from '@jupyterlab/statedb';
+import { ConfigSection } from '@jupyterlab/services';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 
 import { Widget } from '@lumino/widgets';
@@ -24,6 +24,8 @@ import {
   INotebookTourManager,
   ITourHandler,
   ITourManager,
+  ITourState,
+  ITourTracker,
   IUserTourManager,
   NOTEBOOK_PLUGIN_ID,
   NS,
@@ -33,6 +35,7 @@ import {
 import { TourHandler } from './tour';
 import { TourManager } from './tourManager';
 import { UserTourManager } from './userTourManager';
+import { PromiseDelegate } from '@lumino/coreutils';
 
 /**
  * Initialization data for the jupyterlab-tour extension.
@@ -41,24 +44,48 @@ const corePlugin: JupyterFrontEndPlugin<ITourManager> = {
   id: PLUGIN_ID,
   autoStart: true,
   activate,
-  requires: [IStateDB],
   optional: [ICommandPalette, IMainMenu, ITranslator],
   provides: ITourManager
 };
 
 function activate(
   app: JupyterFrontEnd,
-  stateDB: IStateDB,
-  palette?: ICommandPalette,
-  menu?: MainMenu,
-  translator?: ITranslator
+  palette: ICommandPalette | null,
+  menu: MainMenu | null,
+  translator: ITranslator | null
 ): ITourManager {
+  const CONFIG_SECTION_NAME = corePlugin.id.replace(/[^\w]/g, '');
   const { commands } = app;
 
   translator = translator ?? nullTranslator;
 
+  const restoreState = new PromiseDelegate<ITourState[]>();
+  const configReady = ConfigSection.create({
+    name: CONFIG_SECTION_NAME
+  });
+  const tracker: ITourTracker = Object.freeze({
+    restored: restoreState.promise,
+    save: async (state: ITourState[]) => {
+      await restoreState.promise;
+      (await configReady).update(state as any);
+    }
+  });
+
   // Create tour manager
-  const manager = new TourManager(stateDB, translator, menu);
+  const manager = new TourManager({ helpMenu: menu?.helpMenu, tracker, translator });
+  void Promise.all([
+    app.restored,
+    // Use config instead of state to store independently of the workspace
+    // if a tour has been displayed or not.
+    configReady
+  ])
+    .then(async ([_, config]) => {
+      restoreState.resolve(config.data as any);
+    })
+    .catch(error => {
+      console.error('Failed to load tour states.', error);
+      restoreState.reject(error);
+    });
   const trans = manager.translator;
 
   commands.addCommand(CommandIDs.launch, {
@@ -92,6 +119,8 @@ function activate(
           return;
         }
       }
+
+      await manager.ready;
 
       manager.launch([id], force);
     }
@@ -212,7 +241,7 @@ function activateDefaults(
     });
   }
 
-  app.restored.then(() => {
+  Promise.all([app.restored, tourManager.ready]).then(() => {
     if (
       tourManager.tours.has(WELCOME_ID) &&
       (app.name !== 'Jupyter Notebook' ||

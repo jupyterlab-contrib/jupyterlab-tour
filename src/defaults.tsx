@@ -23,13 +23,13 @@ namespace DefaultTours {
     ): void {
       const trans = manager.translator;
 
-      const welcomeTour = manager.createTour(
-        WELCOME_ID,
-        trans.__('Welcome Tour'),
-        true,
-        undefined,
-        defaultTourIcon
-      );
+      const welcomeTour = manager.createTour({
+        id: WELCOME_ID,
+        label: trans.__('Welcome Tour'),
+        hasHelpEntry: true,
+        icon: defaultTourIcon,
+        version: 20231107
+      });
 
       welcomeTour.options = {
         ...welcomeTour.options,
@@ -292,13 +292,13 @@ namespace DefaultTours {
       appName = 'JupyterLab'
     ): void {
       const trans = manager.translator;
-      const notebookTour = manager.createTour(
-        NOTEBOOK_ID,
-        trans.__('Notebook Tour'),
-        true,
-        undefined,
-        defaultNotebookTourIcon
-      );
+      const notebookTour = manager.createTour({
+        id: NOTEBOOK_ID,
+        label: trans.__('Notebook Tour'),
+        hasHelpEntry: true,
+        icon: defaultNotebookTourIcon,
+        version: 20231107
+      });
 
       notebookTour.options = {
         ...notebookTour.options,
@@ -541,11 +541,12 @@ namespace DefaultTours {
     ): void {
       const trans = manager.translator;
 
-      const welcomeTour = manager.createTour(
-        WELCOME_ID,
-        trans.__('Welcome Tour'),
-        true
-      );
+      const welcomeTour = manager.createTour({
+        id: WELCOME_ID,
+        label: trans.__('Welcome Tour'),
+        hasHelpEntry: true,
+        version: 20231107
+      });
 
       welcomeTour.options = {
         ...welcomeTour.options,

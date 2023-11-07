@@ -11,9 +11,8 @@ export class UserTourManager implements IUserTourManager {
   constructor(options: IUserTourManager.IOptions) {
     this._tourManager = options.tourManager;
 
-    options
-      .getSettings()
-      .then(userTours => {
+    Promise.all([options.getSettings(), this._tourManager.ready])
+      .then(([userTours]) => {
         this._userTours = userTours;
         this._userTours.changed.connect(this._userToursChanged, this);
         this._userToursChanged();

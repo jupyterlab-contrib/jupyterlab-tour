@@ -1,20 +1,15 @@
 import { ErrorObject } from 'ajv';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
-import { TranslationBundle } from '@jupyterlab/translation';
+import { ITranslator, TranslationBundle } from '@jupyterlab/translation';
 import { Notebook } from '@jupyterlab/notebook';
 import { Token } from '@lumino/coreutils';
 import { IDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
-import { LabIcon } from '@jupyterlab/ui-components';
+import { LabIcon, RankedMenu } from '@jupyterlab/ui-components';
 import React from 'react';
 import PACKAGE from '../package.json';
 
 import { CallBackProps, Placement, Props as JoyrideProps, Step } from 'react-joyride';
-
-/**
- * Version for everything
- */
-export const VERSION = PACKAGE.version;
 
 /**
  * Namespace for everything
@@ -120,6 +115,15 @@ export interface ITour {
    * All options are accepted except the steps entry.
    */
   options?: Omit<JoyrideProps, 'steps'>;
+  /**
+   * Tour version
+   *
+   * If a newer tour is available, it will be proposed to the user.
+   *
+   * #### Notes
+   * Prefer calendar versioning (YYYYMMDD)
+   */
+  version?: number;
   /**
    * Translation domain for this tour
    */
@@ -228,6 +232,16 @@ export interface ITourHandler extends IDisposable {
    * in order as the tour progresses.
    */
   steps: Step[];
+
+  /**
+   * Tour version
+   *
+   * If a newer tour is available, it will be proposed to the user.
+   *
+   * #### Notes
+   * Prefer calendar versioning (YYYYMMDD)
+   */
+  version?: number;
 }
 
 /**
@@ -238,6 +252,11 @@ export interface ITourManager extends IDisposable {
    * The currently active tour. undefined if no tour is currently running.
    */
   readonly activeTour: ITourHandler | undefined;
+
+  /**
+   * Promise that resolves when the manager state is restored.
+   */
+  readonly ready: Promise<void>;
 
   /**
    * Extension translation bundle
@@ -259,16 +278,11 @@ export interface ITourManager extends IDisposable {
    * @param addToHelpMenu If true, the tour will be added as a button on the help menu. Default = True.
    * @param options Tour options
    * @param icon An optional icon to display in the Help Menu and Command Palette
+   * @param version Tour version
    *
    * @returns The tour created
    */
-  createTour(
-    id: string,
-    label: string,
-    addToHelpMenu?: boolean,
-    options?: Omit<JoyrideProps, 'steps'>,
-    icon?: LabIcon
-  ): ITourHandler;
+  createTour(options: Omit<ITour, 'icon' | 'steps'> & { icon?: LabIcon }): ITourHandler;
 
   /**
    * Launches a tour or series of tours one after another in order of the array provided.
@@ -299,6 +313,54 @@ export interface ITourManager extends IDisposable {
    * Key: ID of the tour, value: tour object.
    */
   readonly tours: Map<string, ITourHandler>;
+}
+
+/**
+ * Tour state saved
+ */
+export interface ITourState {
+  /**
+   * Tour ID
+   */
+  id: string;
+  /**
+   * Tour extension version
+   */
+  version: number;
+}
+
+/**
+ * Tours tracker
+ */
+export interface ITourTracker {
+  /**
+   * Promise resolving with the tour states
+   */
+  restored: Promise<ITourState[]>;
+  /**
+   * Save the tour states.
+   *
+   * @param state Tour states
+   */
+  save(state: ITourState[]): Promise<void>;
+}
+
+/**
+ * Tour manager options
+ */
+export interface ITourManagerOptions {
+  /**
+   * Help menu where the tour are added
+   */
+  helpMenu?: RankedMenu;
+  /**
+   * Tour states tracker
+   */
+  tracker?: ITourTracker;
+  /**
+   * Application translator
+   */
+  translator?: ITranslator;
 }
 
 /**
