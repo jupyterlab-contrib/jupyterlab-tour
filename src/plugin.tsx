@@ -62,12 +62,14 @@ function activate(
   const restoreState = new PromiseDelegate<ITourState[]>();
   const configReady = ConfigSection.create({
     name: CONFIG_SECTION_NAME
+  }).catch(error => {
+    console.error('Failed to fetch state for jupyterlab-tour.', error);
   });
   const tracker: ITourTracker = Object.freeze({
     restored: restoreState.promise,
     save: async (state: ITourState[]) => {
       await restoreState.promise;
-      (await configReady).update(state as any);
+      (await configReady)?.update({ state } as any);
     }
   });
 
@@ -80,7 +82,7 @@ function activate(
     configReady
   ])
     .then(async ([_, config]) => {
-      restoreState.resolve(config.data as any);
+      restoreState.resolve((config?.data['state'] ?? []) as any);
     })
     .catch(error => {
       console.error('Failed to load tour states.', error);

@@ -47,8 +47,9 @@ export class TourManager implements ITourManager {
         .then(state => {
           this._state = state;
         })
-        .catch(error => {
-          initialize.reject(error);
+        .finally(() => {
+          // Resolve in any case so the extension works
+          initialize.resolve();
         });
     } else {
       initialize.resolve();
@@ -196,6 +197,12 @@ export class TourManager implements ITourManager {
     // Add tour to current set
     this._tours.set(id, newTutorial);
 
+    const done = (tour: TourHandler): void => {
+      this._rememberDoneTour(tour.id);
+    };
+    newTutorial.skipped.connect(done);
+    newTutorial.finished.connect(done);
+
     return newTutorial;
   };
 
@@ -217,10 +224,11 @@ export class TourManager implements ITourManager {
    * @param tours An array of tours or tutorialIDs to launch.
    * @param force Force the tour execution
    */
-  launch(tours: ITourHandler[] | string[], force = true): Promise<void> {
+  async launch(tours: ITourHandler[] | string[], force = true): Promise<void> {
     if (!tours || tours.length === 0 || this.activeTour) {
       return Promise.resolve();
     }
+    await this.ready;
     let tourGroup: Array<ITourHandler | undefined>;
 
     if (typeof tours[0] === 'string') {
@@ -236,7 +244,8 @@ export class TourManager implements ITourManager {
     if (!force) {
       tourList = tourList.filter(tour =>
         tour.version >= 0
-          ? !this._state.includes({ id: tour.id, version: tour.version })
+          ? this._state.findIndex(t => t.id === tour.id && t.version === tour.version) <
+            0
           : !this._state.map(s => s.id).includes(tour.id)
       );
     }

@@ -6,7 +6,6 @@ import {
   NotebookPanel
 } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
-import { StateDB } from '@jupyterlab/statedb';
 import { CommandRegistry } from '@lumino/commands';
 import { ReadonlyJSONObject } from '@lumino/coreutils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
@@ -90,8 +89,7 @@ describe(corePlugin.id, () => {
   describe('activation', () => {
     it('should create add-tour command', () => {
       const app = mockApp();
-      const stateDB = new StateDB();
-      corePlugin.activate(app as any, stateDB);
+      corePlugin.activate(app as any);
 
       expect(app.commands?.hasCommand(CommandIDs.addTour)).toEqual(true);
     });
@@ -101,8 +99,7 @@ describe(corePlugin.id, () => {
     describe(`${CommandIDs.addTour}`, () => {
       it('should add a tour command', async () => {
         const app = mockApp();
-        const stateDB = new StateDB();
-        const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
+        const manager = corePlugin.activate(app as any) as ITourManager;
         expect(manager.tours.size).toEqual(0);
 
         const tour = await app.commands?.execute(CommandIDs.addTour, {
@@ -121,8 +118,7 @@ describe(userPlugin.id, () => {
   describe('activation', () => {
     it('should have userTours', async () => {
       const app = mockApp();
-      const stateDB = new StateDB();
-      const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
+      const manager = corePlugin.activate(app as any) as ITourManager;
       const settings = mockSettingRegistry();
       const userManager = userPlugin.activate(
         app as any,
@@ -137,8 +133,7 @@ describe(userPlugin.id, () => {
   describe('settings', () => {
     it('should react to settings', async () => {
       const app = mockApp();
-      const stateDB = new StateDB();
-      const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
+      const manager = corePlugin.activate(app as any) as ITourManager;
       const settingsRegistry = mockSettingRegistry();
       const userManager = userPlugin.activate(
         app as any,
@@ -158,8 +153,7 @@ describe(notebookPlugin.id, () => {
   describe('activation', () => {
     it('should activate', async () => {
       const app = mockApp();
-      const stateDB = new StateDB();
-      const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
+      const manager = corePlugin.activate(app as any) as ITourManager;
       const nbTracker = mockNbTracker();
       const notebookTourManager = notebookPlugin.activate(
         app as any,
@@ -195,8 +189,7 @@ describe(defaultsPlugin.id, () => {
   describe('activation', () => {
     it('should activate', () => {
       const app = mockApp();
-      const stateDB = new StateDB();
-      const manager = corePlugin.activate(app as any, stateDB) as ITourManager;
+      const manager = corePlugin.activate(app as any) as ITourManager;
       defaultsPlugin.activate(app as any, manager);
       expect(manager.tours.size).toEqual(DEFAULT_TOURS_SIZE);
     });
