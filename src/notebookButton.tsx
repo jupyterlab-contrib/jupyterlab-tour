@@ -56,7 +56,7 @@ export class TourButton extends ReactWidget {
         title={title}
         value=""
       >
-        <option value=""></option>
+        <option style={{ display: 'none' }} value=""></option>
         {errors.length ? (
           <option>
             {trans.__('Tour metadata is not valid: see the browser console!')}

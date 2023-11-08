@@ -46,6 +46,12 @@
             "description": "Other options for the tour",
             "$ref": "#/definitions/Props"
           },
+          "version": {
+            "type": "integer",
+            "title": "The tour version",
+            "description": "The tour version (prefer calendar versioning YYYYMMDD) to determine if an user should see it again or not.",
+            "minimum": 0
+          },
           "translation": {
             "description": "Translation domain containing strings for this tour",
             "type": "string"

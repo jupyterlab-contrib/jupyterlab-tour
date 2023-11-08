@@ -62,6 +62,7 @@
         "@jupyterlab/apputils": "^4.0.0",
         "@jupyterlab/mainmenu": "^4.0.0",
         "@jupyterlab/notebook": "^4.0.0",
+        "@jupyterlab/services": "^7.0.0",
         "@jupyterlab/settingregistry": "^4.0.0",
         "@jupyterlab/statedb": "^4.0.0",
         "@jupyterlab/translation": "^4.0.0",

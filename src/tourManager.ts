@@ -1,41 +1,35 @@
 import { ISignal, Signal } from '@lumino/signaling';
 import { Notification } from '@jupyterlab/apputils';
-import { MainMenu } from '@jupyterlab/mainmenu';
-import { IStateDB } from '@jupyterlab/statedb';
-import { ITranslator, TranslationBundle } from '@jupyterlab/translation';
-import { IDisposableMenuItem, LabIcon } from '@jupyterlab/ui-components';
-import { Locale, Props as JoyrideProps } from 'react-joyride';
+import {
+  ITranslator,
+  TranslationBundle,
+  nullTranslator
+} from '@jupyterlab/translation';
+import { IDisposableMenuItem, LabIcon, RankedMenu } from '@jupyterlab/ui-components';
+import { Locale } from 'react-joyride';
 
 import { CommandIDs } from './constants';
-import { ITour, ITourHandler, ITourManager, NS, VERSION } from './tokens';
+import {
+  ITour,
+  ITourHandler,
+  ITourManager,
+  ITourManagerOptions,
+  ITourState,
+  ITourTracker
+} from './tokens';
 import { TourHandler } from './tour';
-
-const STATE_ID = `${NS}:state`;
-
-/**
- * Manager state saved in the state database
- */
-interface IManagerState {
-  /**
-   * Set of seen tour IDs
-   */
-  toursDone: Set<string>;
-  /**
-   * Tour extension version
-   */
-  version: string;
-}
+import { PromiseDelegate } from '@lumino/coreutils';
 
 /**
  * The TourManager is needed to manage creation, removal and launching of Tutorials
  */
 export class TourManager implements ITourManager {
-  constructor(stateDB: IStateDB, translator: ITranslator, mainMenu?: MainMenu) {
-    this._stateDB = stateDB;
-    this._menu = mainMenu;
+  constructor(options: ITourManagerOptions = {}) {
+    this._menu = options.helpMenu;
     this._tours = new Map<string, TourHandler>();
-    this._trans = translator.load('jupyterlab_tour');
-    this._translator = translator;
+    this._tracker = options.tracker ?? null;
+    this._translator = options.translator ?? nullTranslator;
+    this._trans = this._translator.load('jupyterlab_tour');
 
     this._locale = {
       back: this._trans.__('Back'),
@@ -46,20 +40,20 @@ export class TourManager implements ITourManager {
       skip: this._trans.__('Skip')
     };
 
-    this._stateDB.fetch(STATE_ID).then(value => {
-      if (value) {
-        const savedState = value as any as IManagerState;
-        if (savedState.version !== VERSION) {
-          this._state.toursDone = new Set<string>();
-          this._stateDB.save(STATE_ID, {
-            version: VERSION,
-            toursDone: []
-          });
-        } else {
-          this._state.toursDone = new Set<string>([...savedState.toursDone]);
-        }
-      }
-    });
+    const initialize = new PromiseDelegate<void>();
+    this._ready = initialize.promise;
+    if (this._tracker) {
+      this._tracker.restored
+        .then(state => {
+          this._state = state;
+        })
+        .finally(() => {
+          // Resolve in any case so the extension works
+          initialize.resolve();
+        });
+    } else {
+      initialize.resolve();
+    }
   }
 
   /**
@@ -75,6 +69,13 @@ export class TourManager implements ITourManager {
    */
   get isDisposed(): boolean {
     return this._isDisposed;
+  }
+
+  /**
+   * Promise that resolves when the manager state is restored.
+   */
+  get ready(): Promise<void> {
+    return this._ready;
   }
 
   /**
@@ -115,13 +116,14 @@ export class TourManager implements ITourManager {
         trans = this._translator.load(tour.translation);
       }
 
-      const handler = this.createTour(
-        tour.id,
-        trans.__(tour.label),
-        tour.hasHelpEntry === false ? false : true,
-        tour.options,
-        tour.icon ? LabIcon.resolve({ icon: tour.icon }) : null
-      );
+      const handler = this.createTour({
+        id: tour.id,
+        label: trans.__(tour.label),
+        hasHelpEntry: tour.hasHelpEntry === false ? false : true,
+        options: tour.options,
+        icon: tour.icon ? LabIcon.resolve({ icon: tour.icon }) : undefined,
+        version: tour.version
+      });
 
       tour.steps.forEach(step => {
         const translatedStep = { ...step };
@@ -157,12 +159,14 @@ export class TourManager implements ITourManager {
    * The tour label will not be translated.
    */
   createTour = (
-    id: string,
-    label: string,
-    addToHelpMenu = true,
-    options: Omit<JoyrideProps, 'steps'> = {},
-    icon: LabIcon | null = null
+    args: Omit<ITour, 'icon' | 'steps'> & { icon?: LabIcon }
   ): ITourHandler => {
+    const { id, label } = args;
+    const addToHelpMenu = args.hasHelpEntry ?? true;
+    const options = args.options ?? {};
+    const icon = args.icon ?? null;
+    const version = args.version ?? 0;
+
     if (this._tours.has(id)) {
       throw new Error(
         this._trans.__(
@@ -178,7 +182,7 @@ export class TourManager implements ITourManager {
     }
 
     // Create tour and add it to help menu if needed
-    const newTutorial: TourHandler = new TourHandler(id, label, options, icon);
+    const newTutorial: TourHandler = new TourHandler(id, label, options, icon, version);
     if (this._menu && addToHelpMenu) {
       const options = {
         args: {
@@ -186,7 +190,7 @@ export class TourManager implements ITourManager {
         },
         command: CommandIDs.launch
       };
-      const menuItem = this._menu.helpMenu.addItem(options);
+      const menuItem = this._menu.addItem(options);
       this._menuItems.set(newTutorial.id, menuItem);
     }
 
@@ -220,10 +224,11 @@ export class TourManager implements ITourManager {
    * @param tours An array of tours or tutorialIDs to launch.
    * @param force Force the tour execution
    */
-  launch(tours: ITourHandler[] | string[], force = true): Promise<void> {
+  async launch(tours: ITourHandler[] | string[], force = true): Promise<void> {
     if (!tours || tours.length === 0 || this.activeTour) {
       return Promise.resolve();
     }
+    await this.ready;
     let tourGroup: Array<ITourHandler | undefined>;
 
     if (typeof tours[0] === 'string') {
@@ -237,7 +242,12 @@ export class TourManager implements ITourManager {
     ) as TourHandler[];
 
     if (!force) {
-      tourList = tourList.filter(tour => !this._state.toursDone.has(tour.id));
+      tourList = tourList.filter(tour =>
+        tour.version >= 0
+          ? this._state.findIndex(t => t.id === tour.id && t.version === tour.version) <
+            0
+          : !this._state.map(s => s.id).includes(tour.id)
+      );
     }
 
     const startTours = (): void => {
@@ -320,19 +330,24 @@ export class TourManager implements ITourManager {
   }
 
   private _forgetDoneTour = (id: string): void => {
-    this._state.toursDone.delete(id);
-    this._stateDB.save(STATE_ID, {
-      toursDone: [...this._state.toursDone],
-      version: VERSION
-    });
+    const stateIdx = this._state.findIndex(t => t.id === id);
+    if (stateIdx >= 0) {
+      this._state = this._state.splice(stateIdx, 1);
+      this._tracker?.save(this._state);
+    }
   };
 
   private _rememberDoneTour = (id: string): void => {
-    this._state.toursDone.add(id);
-    this._stateDB.save(STATE_ID, {
-      toursDone: [...this._state.toursDone],
-      version: VERSION
-    });
+    const stateIdx = this._state.findIndex(t => t.id === id);
+    if (stateIdx >= 0) {
+      this._state[stateIdx].version = this.tours.get(id)!.version ?? -1;
+    } else {
+      this._state.push({
+        id,
+        version: this.tours.get(id)!.version ?? -1
+      });
+    }
+    this._tracker?.save(this._state);
   };
 
   /**
@@ -359,13 +374,11 @@ export class TourManager implements ITourManager {
   private _activeTours: TourHandler[] = new Array<TourHandler>();
   private _isDisposed = false;
   private _locale: Locale;
-  private _menu: MainMenu | undefined;
+  private _menu: RankedMenu | undefined;
   private _menuItems: Map<string, IDisposableMenuItem> = new Map();
-  private _state: IManagerState = {
-    toursDone: new Set<string>(),
-    version: VERSION
-  };
-  private _stateDB: IStateDB;
+  private _ready: Promise<void>;
+  private _state: ITourState[] = [];
+  private _tracker: ITourTracker | null;
   private _trans: TranslationBundle;
   private _translator: ITranslator;
   private _tours: Map<string, TourHandler>;

@@ -19,11 +19,13 @@ export class TourHandler implements ITourHandler {
     id: string,
     label: string,
     options?: Omit<JoyrideProps, 'steps'>,
-    icon: LabIcon | null = null
+    icon: LabIcon | null = null,
+    version: number = -1
   ) {
     this._label = label;
     this._id = id;
     this._icon = icon || null;
+    this._version = version;
     const { styles, ...others } = options ?? {};
     this._options = { ...TutorialDefaultOptions, ...others };
     if (!this._options.styles) {
@@ -127,6 +129,18 @@ export class TourHandler implements ITourHandler {
 
   set steps(steps: Step[]) {
     this._steps = steps;
+  }
+
+  /**
+   * Tour version
+   *
+   * If a newer tour is available, it will be proposed to the user.
+   *
+   * #### Notes
+   * Prefer calendar versioning (YYYYMMDD)
+   */
+  get version(): number {
+    return this._version;
   }
 
   /**
@@ -266,4 +280,5 @@ export class TourHandler implements ITourHandler {
   private _previousStepIndex = -1;
   private _steps: Step[] = new Array<Step>();
   private _icon: LabIcon | null;
+  private _version: number;
 }
