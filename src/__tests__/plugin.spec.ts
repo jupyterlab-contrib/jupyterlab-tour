@@ -9,6 +9,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { CommandRegistry } from '@lumino/commands';
 import { ReadonlyJSONObject } from '@lumino/coreutils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { ServiceManager } from '@jupyterlab/services';
 import {
   CodeMirrorEditorFactory,
   CodeMirrorMimeTypeService,
@@ -34,7 +35,8 @@ function mockApp(): Partial<JupyterFrontEnd> {
   return {
     commands: new CommandRegistry(),
     restored: Promise.resolve(),
-    docRegistry: new DocumentRegistry()
+    docRegistry: new DocumentRegistry(),
+    serviceManager: new ServiceManager(),
   };
 }
 
