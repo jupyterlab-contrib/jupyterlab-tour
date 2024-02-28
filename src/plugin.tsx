@@ -55,13 +55,14 @@ function activate(
   translator: ITranslator | null
 ): ITourManager {
   const CONFIG_SECTION_NAME = corePlugin.id.replace(/[^\w]/g, '');
-  const { commands } = app;
+  const { commands, serviceManager } = app;
 
   translator = translator ?? nullTranslator;
 
   const restoreState = new PromiseDelegate<ITourState[]>();
   const configReady = ConfigSection.create({
-    name: CONFIG_SECTION_NAME
+    name: CONFIG_SECTION_NAME,
+    serverSettings: serviceManager.serverSettings
   }).catch(error => {
     console.error('Failed to fetch state for jupyterlab-tour.', error);
   });
