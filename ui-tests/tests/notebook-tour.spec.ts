@@ -31,7 +31,6 @@ test('should run the notebook tour', async ({ page }) => {
     page.waitForEvent('popup'),
     page.getByText('Python 3 (ipykernel)').click()
   ]);
-  await notebookPage.getByRole('button', { name: 'Select Kernel' }).click();
   await notebookPage.getByRole('button', { name: 'Start now' }).click();
   await notebookPage.getByLabel('Next', { exact: true }).click();
   await notebookPage.getByLabel('Next', { exact: true }).click();
