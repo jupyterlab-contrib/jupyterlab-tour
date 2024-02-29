@@ -29,7 +29,7 @@ test('should run the notebook tour', async ({ page }) => {
 
   const [notebookPage] = await Promise.all([
     page.waitForEvent('popup'),
-    page.getByText('Notebook', { exact: true }).click()
+    page.getByText('Python 3 (ipykernel)').click()
   ]);
   await notebookPage.getByRole('button', { name: 'Select Kernel' }).click();
   await notebookPage.getByRole('button', { name: 'Start now' }).click();
