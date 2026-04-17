@@ -9,6 +9,12 @@
   },
   "type": "object",
   "properties": {
+    "autoLaunchDefaultTours": {
+      "type": "boolean",
+      "title": "Auto-Launch Default Tours",
+      "description": "Whether to automatically launch default tours (Welcome Tour, Notebook Tour) on first use. Tours can still be launched manually from the Help menu.",
+      "default": true
+    },
     "tours": {
       "type": "array",
       "description": "An array of a tours. Each requires an `id`, `label` and `steps[]`, and may have `options`, see https://docs.react-joyride.com",

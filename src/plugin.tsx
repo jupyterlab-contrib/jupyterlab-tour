@@ -222,38 +222,62 @@ const defaultsPlugin: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   activate: activateDefaults,
   requires: [ITourManager],
-  optional: [INotebookTracker]
+  optional: [ISettingRegistry, INotebookTracker]
 };
 
 function activateDefaults(
   app: JupyterFrontEnd,
   tourManager: ITourManager,
+  settings?: ISettingRegistry | null,
   nbTracker?: INotebookTracker
 ): void {
   addTours(tourManager, app, nbTracker);
 
-  if (
-    nbTracker &&
-    (app.name !== 'Jupyter Notebook' ||
-      window.location.pathname.match(/\/notebooks\/.+$/))
-  ) {
-    nbTracker.widgetAdded.connect(() => {
-      if (tourManager.tours.has(NOTEBOOK_ID)) {
-        tourManager.launch([NOTEBOOK_ID], false);
+  const setupTours = () => {
+    if (
+      nbTracker &&
+      (app.name !== 'Jupyter Notebook' ||
+        window.location.pathname.match(/\/notebooks\/.+$/))
+    ) {
+      nbTracker.widgetAdded.connect(() => {
+        if (tourManager.tours.has(NOTEBOOK_ID)) {
+          tourManager.launch([NOTEBOOK_ID], false);
+        }
+      });
+    }
+
+    Promise.all([app.restored, tourManager.ready]).then(() => {
+      if (
+        tourManager.tours.has(WELCOME_ID) &&
+        (app.name !== 'Jupyter Notebook' ||
+          window.location.pathname.match(/\/tree(\/.+)?$/))
+      ) {
+        // Wait 3s before launching the first tour - to be sure element are loaded
+        setTimeout(() => tourManager.launch([WELCOME_ID], false), 3000);
       }
     });
-  }
+  };
 
-  Promise.all([app.restored, tourManager.ready]).then(() => {
-    if (
-      tourManager.tours.has(WELCOME_ID) &&
-      (app.name !== 'Jupyter Notebook' ||
-        window.location.pathname.match(/\/tree(\/.+)?$/))
-    ) {
-      // Wait 3s before launching the first tour - to be sure element are loaded
-      setTimeout(() => tourManager.launch([WELCOME_ID], false), 3000);
-    }
-  });
+  // Load settings to check if auto-launch is enabled
+  if (settings) {
+    settings
+      .load(USER_PLUGIN_ID)
+      .then(userSettings => {
+        const autoLaunch = userSettings.get('autoLaunchDefaultTours')
+          .composite as boolean;
+
+        if (autoLaunch) {
+          setupTours();
+        }
+      })
+      .catch(() => {
+        // If settings fail to load, default to showing tours
+        setupTours();
+      });
+  } else {
+    // If no settings registry, default to showing tours
+    setupTours();
+  }
 }
 
 export default [corePlugin, userPlugin, notebookPlugin, defaultsPlugin];
