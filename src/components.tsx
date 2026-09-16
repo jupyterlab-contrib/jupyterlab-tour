@@ -1,7 +1,7 @@
 import { UseSignal } from '@jupyterlab/apputils';
 import type { ISignal } from '@lumino/signaling';
 import React from 'react';
-import type { CallBackProps } from 'react-joyride';
+import type { CallBackProps, StoreHelpers } from 'react-joyride';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import type { ITourManager } from './tokens';
 import type { TourHandler } from './tour';
@@ -46,19 +46,75 @@ class Tour extends React.Component<ITourProps, ITourState> {
    * Reset active tours
    */
   reset = (): void => {
+    this._stopWaiting();
     this.setState({
       run: true,
       index: 0
     });
   };
 
+  componentWillUnmount(): void {
+    this._stopWaiting();
+  }
+
+  private _helpers: StoreHelpers | null = null;
+  private _observer: MutationObserver | null = null;
+
+  private _stopWaiting = (): void => {
+    this._observer?.disconnect();
+    this._observer = null;
+  };
+
+  private _wait = (target: string, index: number): void => {
+    this._stopWaiting();
+    // Pause so Joyride cannot auto-skip this step (it increments index on
+    // error:target_not_found after the callback returns).
+    this.setState({ run: false });
+    const retry = (): void => {
+      if (!document.querySelector(target)) {
+        return;
+      }
+      this._stopWaiting();
+      this.setState({ run: true }, () => {
+        this._helpers?.go(index);
+      });
+    };
+    if (document.querySelector(target)) {
+      retry();
+      return;
+    }
+    this._observer = new MutationObserver(retry);
+    this._observer.observe(document.body, { childList: true, subtree: true });
+  };
+
+  private _setHelpers = (helpers: StoreHelpers): void => {
+    this._helpers = helpers;
+    this.props.tours[this.state.index]?.setHelpers(helpers);
+  };
+
   private _handleJoyrideCallback = (data: CallBackProps): void => {
-    const { status } = data;
+    const { index, status, step, type } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
+    const wait = !!(step as { wait?: boolean }).wait;
+    const target = step.target;
+
+    // A step with `wait` is shown once its target exists, not skipped.
+    if (type === 'error:target_not_found' && wait && typeof target === 'string') {
+      this._wait(target, index);
+      return;
+    }
+    if (this._observer && status === STATUS.FINISHED) {
+      return;
+    }
+
+    if (status === STATUS.SKIPPED) {
+      this._stopWaiting();
+    }
 
     this.props.tours[this.state.index].handleTourEvent(data);
 
     if (finishedStatuses.includes(status)) {
+      this._stopWaiting();
       this.setState({ run: false });
       const newIndex = this.state.index + 1;
       if (newIndex < this.props.tours.length) {
@@ -75,6 +131,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
         key={this.props.tours[this.state.index].id}
         {...this.props.tours[this.state.index].options}
         callback={this._handleJoyrideCallback}
+        getHelpers={this._setHelpers}
         run={this.state.run}
         steps={this.props.tours[this.state.index].steps}
       />
