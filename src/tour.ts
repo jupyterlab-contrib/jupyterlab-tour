@@ -122,6 +122,28 @@ export class TourHandler implements ITourHandler {
   }
 
   /**
+   * Controlled Joyride step index. Set this to move the tour.
+   */
+  get stepIndex(): number {
+    return this._stepIndex;
+  }
+
+  set stepIndex(index: number) {
+    if (index === this._stepIndex) {
+      return;
+    }
+    this._stepIndex = index;
+    this._stepIndexChanged.emit(index);
+  }
+
+  /**
+   * A signal emitted when {@link stepIndex} changes.
+   */
+  get stepIndexChanged(): ISignal<this, number> {
+    return this._stepIndexChanged;
+  }
+
+  /**
    * Joyride store helpers. Null until this tour is mounted.
    */
   get helpers(): StoreHelpers | null {
@@ -289,6 +311,7 @@ export class TourHandler implements ITourHandler {
   private _stepChanged: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
     this
   );
+  private _stepIndexChanged: Signal<this, number> = new Signal<this, number>(this);
 
   private _currentStepIndex = -1;
   private _helpers: StoreHelpers | null = null;
@@ -298,6 +321,7 @@ export class TourHandler implements ITourHandler {
   private _options: Partial<JoyrideProps>;
   private _previousStatus: Status = STATUS.READY;
   private _previousStepIndex = -1;
+  private _stepIndex = 0;
   private _steps: Step[] = new Array<Step>();
   private _icon: LabIcon | null;
   private _version: number;
