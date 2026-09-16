@@ -2,7 +2,7 @@ import { UseSignal } from '@jupyterlab/apputils';
 import type { ISignal } from '@lumino/signaling';
 import React from 'react';
 import type { CallBackProps, StoreHelpers } from 'react-joyride';
-import ReactJoyride, { ACTIONS, STATUS } from 'react-joyride';
+import ReactJoyride, { STATUS } from 'react-joyride';
 import type { ITourManager } from './tokens';
 import type { TourHandler } from './tour';
 
@@ -57,16 +57,11 @@ class Tour extends React.Component<ITourProps, ITourState> {
   };
 
   private _handleJoyrideCallback = (data: CallBackProps): void => {
-    const { action, index, status, type } = data;
+    const { status } = data;
     const handler = this.props.tours[this.state.index];
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
-    if (type === 'step:after' && (action === ACTIONS.NEXT || action === ACTIONS.PREV)) {
-      handler.stepIndex = index + (action === ACTIONS.PREV ? -1 : 1);
-    }
-
     handler.handleTourEvent(data);
-
     if (finishedStatuses.includes(status)) {
       this.setState({ run: false });
       const newIndex = this.state.index + 1;
