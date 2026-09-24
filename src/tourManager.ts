@@ -260,8 +260,11 @@ export class TourManager implements ITourManager {
 
     const startTours = (): void => {
       tourList.forEach(tour => {
-        tour.currentStepIndex = 0;
+        if (tour.controlled) {
+          tour.currentStepIndex = 0;
+        }
       });
+
       this._activeTours = tourList;
       this._tourLaunched.emit(tourList);
     };

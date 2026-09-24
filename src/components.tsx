@@ -69,7 +69,6 @@ class Tour extends React.Component<ITourProps, ITourState> {
   };
 
   render(): JSX.Element | null {
-    console.log('and nothin ever did, so what?');
     const handler = this.props.tours?.[this.state.index];
 
     if (!handler) {

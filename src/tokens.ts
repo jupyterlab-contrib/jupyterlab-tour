@@ -169,6 +169,12 @@ export interface ITourHandler extends IDisposable {
   ): Step;
 
   /**
+   * The index of the current step of the tour. Returns -1 if tour isn't active.
+   * Setting this moves the tour only when {@link controlled} is true.
+   */
+  currentStepIndex: number;
+
+  /**
    * Is the tour running?
    */
   isRunning(): boolean;
@@ -237,12 +243,6 @@ export interface ITourHandler extends IDisposable {
    * When false, Joyride advances on its own.
    */
   readonly controlled: boolean;
-
-  /**
-   * Current step. -1 while the tour is idle.
-   * Setting this moves the tour only when {@link controlled} is true.
-   */
-  currentStepIndex: number;
 
   /**
    * A signal emitted when {@link currentStepIndex} changes.
