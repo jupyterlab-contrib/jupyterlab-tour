@@ -134,7 +134,7 @@ export interface ITour {
    */
   translation?: string;
   /**
-   * When true, the tour step is driven by the stepIndex prop.
+   * When true, the tour step is driven by {@link ITourHandler.currentStepIndex}.
    * Default is false, which leaves Joyride uncontrolled.
    */
   controlled?: boolean;
@@ -167,11 +167,6 @@ export interface ITourHandler extends IDisposable {
     placement?: StepPlacement,
     title?: string
   ): Step;
-
-  /**
-   * The index of the current step of the tour. Returns -1 if tour isn't active.
-   */
-  readonly currentStepIndex: number;
 
   /**
    * Is the tour running?
@@ -238,20 +233,21 @@ export interface ITourHandler extends IDisposable {
   readonly stepChanged: ISignal<this, CallBackProps>;
 
   /**
-   * When true, Joyride is controlled by stepIndex.
+   * When true, Joyride is controlled by {@link currentStepIndex}.
    * When false, Joyride advances on its own.
    */
   readonly controlled: boolean;
 
   /**
-   * Step index. Setting this moves the tour only when {@link controlled} is true.
+   * Current step. -1 while the tour is idle.
+   * Setting this moves the tour only when {@link controlled} is true.
    */
-  stepIndex: number;
+  currentStepIndex: number;
 
   /**
-   * A signal emitted when {@link stepIndex} changes.
+   * A signal emitted when {@link currentStepIndex} changes.
    */
-  readonly stepIndexChanged: ISignal<this, number>;
+  readonly currentStepIndexChanged: ISignal<this, number>;
 
   /**
    * The array of steps the tour currently contains. Each step will be followed

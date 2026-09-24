@@ -37,13 +37,6 @@ export class TourHandler implements ITourHandler {
   }
 
   /**
-   * The index of the current step of the tour. Returns -1 if tour isn't active.
-   */
-  get currentStepIndex(): number {
-    return this._currentStepIndex;
-  }
-
-  /**
    * A signal emitted when all the steps of the tour have been seen and tour is finished.
    */
   get finished(): ISignal<this, CallBackProps> {
@@ -119,32 +112,32 @@ export class TourHandler implements ITourHandler {
   }
 
   /**
-   * When true, Joyride is controlled by stepIndex.
+   * When true, Joyride is controlled by {@link currentStepIndex}.
    */
   get controlled(): boolean {
     return this._controlled;
   }
 
   /**
-   * Step index. Setting this moves the tour only when controlled is true.
+   * Current step. -1 while the tour is idle.
+   * Setting this moves the tour only when {@link controlled} is true.
    */
-  get stepIndex(): number {
-    return this._stepIndex;
+  get currentStepIndex(): number {
+    return this._currentStepIndex;
   }
 
-  set stepIndex(index: number) {
-    if (index === this._stepIndex) {
+  set currentStepIndex(index: number) {
+    if (!this._controlled) {
       return;
     }
-    this._stepIndex = index;
-    this._stepIndexChanged.emit(index);
+    this._applyStepIndex(index);
   }
 
   /**
-   * A signal emitted when {@link stepIndex} changes.
+   * A signal emitted when {@link currentStepIndex} changes.
    */
-  get stepIndexChanged(): ISignal<this, number> {
-    return this._stepIndexChanged;
+  get currentStepIndexChanged(): ISignal<this, number> {
+    return this._currentStepIndexChanged;
   }
 
   /**
@@ -242,31 +235,44 @@ export class TourHandler implements ITourHandler {
     // Handle status changes when they occur
     if (status !== this._previousStatus) {
       this._previousStatus = status;
-      this._currentStepIndex = -1;
+      this._applyStepIndex(-1);
+
       if (status === STATUS.FINISHED) {
+        // this._applyStepIndex(-1);
         this._finished.emit(data);
       } else if (status === STATUS.SKIPPED) {
+        // this._applyStepIndex(-1);
         this._skipped.emit(data);
       } else if (status === STATUS.RUNNING) {
-        this._currentStepIndex = 0;
+        this._applyStepIndex(0);
         this._started.emit(data);
       } else if (status === STATUS.ERROR) {
+        // this._applyStepIndex(-1);
         console.error(`An error occurred with the tour at step: ${step}`);
+      } else if (!this._controlled) {
+        // this._applyStepIndex(-1);
       }
     }
 
     // Emit step change event
     if (status === STATUS.RUNNING) {
-      if (index !== this._previousStepIndex) {
-        this._previousStepIndex = index;
-        this._currentStepIndex = data.index;
-        if (this._controlled) {
-          this.stepIndex = data.index;
-        }
+      if (!this._controlled) {
+        this._applyStepIndex(index);
       }
       this._stepChanged.emit(data);
     }
   };
+
+  /**
+   * Store the step index and notify listeners when it changes.
+   */
+  private _applyStepIndex(index: number): void {
+    if (index === this._currentStepIndex) {
+      return;
+    }
+    this._currentStepIndex = index;
+    this._currentStepIndexChanged.emit(index);
+  }
 
   /**
    * This will replace the tour step at the specified index with a new step
@@ -301,17 +307,17 @@ export class TourHandler implements ITourHandler {
   private _stepChanged: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
     this
   );
-  private _stepIndexChanged: Signal<this, number> = new Signal<this, number>(this);
+  private _currentStepIndexChanged: Signal<this, number> = new Signal<this, number>(
+    this
+  );
 
   private _controlled = false;
-  private _currentStepIndex = -1;
   private _id: string;
   private _isDisposed = false;
   private _label: string;
   private _options: Partial<JoyrideProps>;
   private _previousStatus: Status = STATUS.READY;
-  private _previousStepIndex = -1;
-  private _stepIndex = 0;
+  private _currentStepIndex = -1;
   private _steps: Step[] = new Array<Step>();
   private _icon: LabIcon | null;
   private _version: number;

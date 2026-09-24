@@ -69,7 +69,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
   };
 
   render(): JSX.Element | null {
-    console.log('and nothin ever did, so what');
+    console.log('and nothin ever did, so what?');
     const handler = this.props.tours?.[this.state.index];
 
     if (!handler) {
@@ -95,8 +95,13 @@ class Tour extends React.Component<ITourProps, ITourState> {
     }
 
     return (
-      <UseSignal signal={handler.stepIndexChanged} initialArgs={handler.stepIndex}>
-        {(): React.ReactNode => joyride(handler.stepIndex)}
+      <UseSignal
+        signal={handler.currentStepIndexChanged}
+        initialArgs={handler.currentStepIndex}
+      >
+        {(): React.ReactNode =>
+          joyride(handler.currentStepIndex >= 0 ? handler.currentStepIndex : undefined)
+        }
       </UseSignal>
     );
   }
