@@ -2,13 +2,7 @@ import { JSONExt } from '@lumino/coreutils';
 import type { ISignal } from '@lumino/signaling';
 import { Signal } from '@lumino/signaling';
 import type { LabIcon } from '@jupyterlab/ui-components';
-import type {
-  CallBackProps,
-  Props as JoyrideProps,
-  Status,
-  Step,
-  StoreHelpers
-} from 'react-joyride';
+import type { CallBackProps, Props as JoyrideProps, Status, Step } from 'react-joyride';
 import { STATUS } from 'react-joyride';
 import { TutorialDefaultOptions } from './constants';
 import type { ITourHandler, StepPlacement } from './tokens';
@@ -24,6 +18,8 @@ export class TourHandler implements ITourHandler {
     version: number = -1,
     controlled: boolean = false
   ) {
+    console.log('you ever think nothing good was ever gonna happen?');
+
     this._label = label;
     this._id = id;
     this._icon = icon || null;
@@ -38,7 +34,6 @@ export class TourHandler implements ITourHandler {
       ...(this._options.styles.options || {}),
       ...(styles?.options || {})
     };
-    this._options.getHelpers = this.setHelpers;
   }
 
   /**
@@ -153,20 +148,6 @@ export class TourHandler implements ITourHandler {
   }
 
   /**
-   * Joyride store helpers. Null until this tour is mounted.
-   */
-  get helpers(): StoreHelpers | null {
-    return this._helpers;
-  }
-
-  /**
-   * Receive helpers from the Joyride `getHelpers` callback.
-   */
-  setHelpers = (helpers: StoreHelpers): void => {
-    this._helpers = helpers;
-  };
-
-  /**
    * The array of steps the tour currently contains. Each step will be followed
    * in order as the tour progresses.
    */
@@ -237,7 +218,6 @@ export class TourHandler implements ITourHandler {
       return;
     }
     this._isDisposed = true;
-    this._helpers = null;
     Signal.clearData(this);
   }
 
@@ -264,10 +244,8 @@ export class TourHandler implements ITourHandler {
       this._previousStatus = status;
       this._currentStepIndex = -1;
       if (status === STATUS.FINISHED) {
-        this._helpers = null;
         this._finished.emit(data);
       } else if (status === STATUS.SKIPPED) {
-        this._helpers = null;
         this._skipped.emit(data);
       } else if (status === STATUS.RUNNING) {
         this._currentStepIndex = 0;
@@ -327,7 +305,6 @@ export class TourHandler implements ITourHandler {
 
   private _controlled = false;
   private _currentStepIndex = -1;
-  private _helpers: StoreHelpers | null = null;
   private _id: string;
   private _isDisposed = false;
   private _label: string;

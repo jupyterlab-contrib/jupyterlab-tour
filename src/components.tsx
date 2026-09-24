@@ -1,7 +1,7 @@
 import { UseSignal } from '@jupyterlab/apputils';
 import type { ISignal } from '@lumino/signaling';
 import React from 'react';
-import type { CallBackProps, StoreHelpers } from 'react-joyride';
+import type { CallBackProps } from 'react-joyride';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import type { ITourManager } from './tokens';
 import type { TourHandler } from './tour';
@@ -52,10 +52,6 @@ class Tour extends React.Component<ITourProps, ITourState> {
     });
   };
 
-  private _setHelpers = (helpers: StoreHelpers): void => {
-    this.props.tours[this.state.index]?.setHelpers(helpers);
-  };
-
   private _handleJoyrideCallback = (data: CallBackProps): void => {
     const { status } = data;
     const handler = this.props.tours[this.state.index];
@@ -73,6 +69,7 @@ class Tour extends React.Component<ITourProps, ITourState> {
   };
 
   render(): JSX.Element | null {
+    console.log('and nothin ever did, so what');
     const handler = this.props.tours?.[this.state.index];
 
     if (!handler) {
@@ -87,7 +84,6 @@ class Tour extends React.Component<ITourProps, ITourState> {
         key={handler.id}
         {...options}
         callback={this._handleJoyrideCallback}
-        getHelpers={this._setHelpers}
         run={this.state.run}
         steps={handler.steps}
         {...(stepIndex === undefined ? {} : { stepIndex })}

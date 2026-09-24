@@ -13,8 +13,7 @@ import type {
   CallBackProps,
   Placement,
   Props as JoyrideProps,
-  Step,
-  StoreHelpers
+  Step
 } from 'react-joyride';
 
 /**
@@ -253,12 +252,6 @@ export interface ITourHandler extends IDisposable {
    * A signal emitted when {@link stepIndex} changes.
    */
   readonly stepIndexChanged: ISignal<this, number>;
-
-  /**
-   * Joyride store helpers (`next`, `prev`, `go`, `close`, `skip`, `reset`).
-   * Null until this tour is mounted in the UI.
-   */
-  readonly helpers: StoreHelpers | null;
 
   /**
    * The array of steps the tour currently contains. Each step will be followed
