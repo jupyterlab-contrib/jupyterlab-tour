@@ -165,6 +165,7 @@ export class TourManager implements ITourManager {
     const options = args.options ?? {};
     const icon = args.icon ?? null;
     const version = args.version ?? 0;
+    const controlled = args.controlled ?? false;
 
     if (this._tours.has(id)) {
       throw new Error(
@@ -181,7 +182,14 @@ export class TourManager implements ITourManager {
     }
 
     // Create tour and add it to help menu if needed
-    const newTutorial: TourHandler = new TourHandler(id, label, options, icon, version);
+    const newTutorial: TourHandler = new TourHandler(
+      id,
+      label,
+      options,
+      icon,
+      version,
+      controlled
+    );
     if (this._menu && addToHelpMenu) {
       const options = {
         args: {

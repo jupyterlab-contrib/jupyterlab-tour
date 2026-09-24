@@ -60,7 +60,6 @@ class Tour extends React.Component<ITourProps, ITourState> {
     const { status } = data;
     const handler = this.props.tours[this.state.index];
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
-
     handler.handleTourEvent(data);
     if (finishedStatuses.includes(status)) {
       this.setState({ run: false });
@@ -75,22 +74,33 @@ class Tour extends React.Component<ITourProps, ITourState> {
 
   render(): JSX.Element | null {
     const handler = this.props.tours?.[this.state.index];
+
     if (!handler) {
       return null;
     }
+
+    const options = { ...handler.options };
+    delete options.stepIndex;
+
+    const joyride = (stepIndex?: number): JSX.Element => (
+      <ReactJoyride
+        key={handler.id}
+        {...options}
+        callback={this._handleJoyrideCallback}
+        getHelpers={this._setHelpers}
+        run={this.state.run}
+        steps={handler.steps}
+        {...(stepIndex === undefined ? {} : { stepIndex })}
+      />
+    );
+
+    if (!handler.controlled) {
+      return joyride();
+    }
+
     return (
       <UseSignal signal={handler.stepIndexChanged} initialArgs={handler.stepIndex}>
-        {(): React.ReactNode => (
-          <ReactJoyride
-            key={handler.id}
-            {...handler.options}
-            callback={this._handleJoyrideCallback}
-            getHelpers={this._setHelpers}
-            run={this.state.run}
-            stepIndex={handler.stepIndex}
-            steps={handler.steps}
-          />
-        )}
+        {(): React.ReactNode => joyride(handler.stepIndex)}
       </UseSignal>
     );
   }

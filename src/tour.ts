@@ -21,12 +21,14 @@ export class TourHandler implements ITourHandler {
     label: string,
     options?: Omit<JoyrideProps, 'steps'>,
     icon: LabIcon | null = null,
-    version: number = -1
+    version: number = -1,
+    controlled: boolean = false
   ) {
     this._label = label;
     this._id = id;
     this._icon = icon || null;
     this._version = version;
+    this._controlled = controlled;
     const { styles, ...others } = options ?? {};
     this._options = { ...TutorialDefaultOptions, ...others };
     if (!this._options.styles) {
@@ -122,7 +124,14 @@ export class TourHandler implements ITourHandler {
   }
 
   /**
-   * Controlled Joyride step index. Set this to move the tour.
+   * When true, Joyride is controlled by stepIndex.
+   */
+  get controlled(): boolean {
+    return this._controlled;
+  }
+
+  /**
+   * Step index. Setting this moves the tour only when controlled is true.
    */
   get stepIndex(): number {
     return this._stepIndex;
@@ -273,6 +282,9 @@ export class TourHandler implements ITourHandler {
       if (index !== this._previousStepIndex) {
         this._previousStepIndex = index;
         this._currentStepIndex = data.index;
+        if (this._controlled) {
+          this.stepIndex = data.index;
+        }
       }
       this._stepChanged.emit(data);
     }
@@ -313,6 +325,7 @@ export class TourHandler implements ITourHandler {
   );
   private _stepIndexChanged: Signal<this, number> = new Signal<this, number>(this);
 
+  private _controlled = false;
   private _currentStepIndex = -1;
   private _helpers: StoreHelpers | null = null;
   private _id: string;

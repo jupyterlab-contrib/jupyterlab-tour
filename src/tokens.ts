@@ -134,6 +134,11 @@ export interface ITour {
    * Translation domain for this tour
    */
   translation?: string;
+  /**
+   * When true, the tour step is driven by the stepIndex prop.
+   * Default is false, which leaves Joyride uncontrolled.
+   */
+  controlled?: boolean;
 }
 
 /**
@@ -234,7 +239,13 @@ export interface ITourHandler extends IDisposable {
   readonly stepChanged: ISignal<this, CallBackProps>;
 
   /**
-   * Controlled Joyride step index. Set this to move the tour.
+   * When true, Joyride is controlled by stepIndex.
+   * When false, Joyride advances on its own.
+   */
+  readonly controlled: boolean;
+
+  /**
+   * Step index. Setting this moves the tour only when {@link controlled} is true.
    */
   stepIndex: number;
 
