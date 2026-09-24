@@ -121,7 +121,8 @@ export class TourManager implements ITourManager {
         hasHelpEntry: tour.hasHelpEntry === false ? false : true,
         options: tour.options,
         icon: tour.icon ? LabIcon.resolve({ icon: tour.icon }) : undefined,
-        version: tour.version
+        version: tour.version,
+        controlled: tour.controlled
       });
 
       tour.steps.forEach(step => {
