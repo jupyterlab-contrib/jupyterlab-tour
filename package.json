@@ -41,7 +41,7 @@
         "clean:labextension": "rimraf jupyterlab_tour/labextension jupyterlab_tour/_version.py",
         "clean:lib": "rimraf lib build/.cache/tsc",
         "clean:lintcache": "rimraf ./build/.cache/eslint ./build/.cache/stylelint",
-        "dedupe": "yarn-berry-deduplicate --strategy=fewer --fail",
+        "dedupe": "yarn dedupe --check",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --cache-location=./build/.cache/eslint --ext .ts,.tsx",
         "install:extension": "jlpm build",
@@ -102,7 +102,6 @@
         "stylelint-config-standard": "^34.0.0",
         "ts-jest": "^29.1.1",
         "typescript": "~5.0.4",
-        "yarn-berry-deduplicate": "^6.1.1",
         "yjs": "^13.5.40"
     },
     "sideEffects": [
