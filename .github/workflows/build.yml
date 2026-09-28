@@ -14,8 +14,8 @@ env:
   MIN_PYTHON: &min-python '3.10'
   MIN_LAB: &min-lab '4.3.0'
   MIN_NB: &min-nb '7.3.0'
-  MAX_LAB: &max-lab '4.5'
-  MAX_NB: &max-nb '7.5'
+  MAX_LAB: &max-lab '4.6'
+  MAX_NB: &max-nb '7.6'
 
 jobs:
   build:

@@ -11,7 +11,7 @@
   "properties": {
     "tours": {
       "type": "array",
-      "description": "An array of a tours. Each requires an `id`, `label` and `steps[]`, and may have `options`, see https://docs.react-joyride.com",
+      "description": "An array of tours. Each requires an `id`, `label` and `steps[]`, and may have `options`. For `steps` and `options`, see https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/SUMMARY.md",
       "default": [],
       "items": {
         "type": "object",
