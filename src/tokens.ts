@@ -113,7 +113,7 @@ export interface ITour {
   /**
    * Tour options
    *
-   * @see https://docs.react-joyride.com/props
+   * @see https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/props.md
    *
    * #### Notes
    *

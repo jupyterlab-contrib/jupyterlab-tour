@@ -7,7 +7,7 @@
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab-tour)](https://pypi.org/project/jupyterlab-tour)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/jupyterlab-tour)](https://anaconda.org/conda-forge/jupyterlab-tour)
 
-A JupyterLab UI Tour based on [react-joyride](https://docs.react-joyride.com).
+A JupyterLab UI Tour based on [react-joyride](https://react-joyride.com/) v2. That site documents v3. Docs for the v2 release used here are on the [v2.9.3 tag](https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/SUMMARY.md).
 
 ![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/main/doc/tourDemo.gif)
 
@@ -69,7 +69,7 @@ own _Tours_ as data.
 - Open the JupyterLab _Advanced Settings_ panel <kbd>Ctrl+,</kbd>
 - Select _Tours_ from list of settings groups
 - In the editor, create JSON(5) compatible with the
-  [react-joyride data model](https://docs.react-joyride.com/props)
+  [react-joyride data model](https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/props.md)
 - The _Tour_ will be available from the _Help Menu_, as well as the _Command Palette_
 
 ### A simple Tour
@@ -206,7 +206,7 @@ tour.stepChanged.connect((_, data) => {
 ```
 
 > `data` is an object of type
-> [`CallbackProps`](https://docs.react-joyride.com/callback).
+> [`CallbackProps`](https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/callback.md).
 
 ## Disabling the User, Notebook, and Default Tours
 
