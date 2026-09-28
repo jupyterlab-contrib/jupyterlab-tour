@@ -7,7 +7,9 @@
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab-tour)](https://pypi.org/project/jupyterlab-tour)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/jupyterlab-tour)](https://anaconda.org/conda-forge/jupyterlab-tour)
 
-A JupyterLab UI Tour based on [react-joyride](https://react-joyride.com/) v2. That site documents v3. Docs for the v2 release used here are on the [v2.9.3 tag](https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/SUMMARY.md).
+A JupyterLab UI Tour based on [react-joyride](https://react-joyride.com/) v2. That site
+documents v3. Docs for the v2 release used here are on the
+[v2.9.3 tag](https://github.com/gilbarbara/react-joyride/blob/v2.9.3/docs/SUMMARY.md).
 
 ![demo](https://raw.githubusercontent.com/jupyterlab-contrib/jupyterlab-tour/main/doc/tourDemo.gif)
 
