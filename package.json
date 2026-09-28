@@ -31,8 +31,8 @@
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
-        "build:labextension": "jupyter labextension build --debug .",
-        "build:labextension:dev": "jupyter labextension build --debug --development True .",
+        "build:labextension": "jupyter-builder build --debug .",
+        "build:labextension:dev": "jupyter-builder build --debug --development True .",
         "build:lib": "jlpm build:lib:prod --sourceMap",
         "build:lib:prod": "tsc -b src",
         "build:prod": "jlpm clean && jlpm build:lib:prod && jlpm build:labextension",
@@ -54,7 +54,7 @@
         "stylelint:check": "stylelint --cache --cache-location=./build/.cache/stylelint \"style/**/*.css\"",
         "test": "jest --coverage",
         "watch": "run-p watch:src watch:labextension",
-        "watch:labextension": "jupyter labextension watch .",
+        "watch:labextension": "jupyter-builder watch .",
         "watch:src": "jlpm build:lib -w"
     },
     "dependencies": {
@@ -78,7 +78,7 @@
     "devDependencies": {
         "@babel/core": "^7.20.12",
         "@babel/preset-env": "^7.20.2",
-        "@jupyterlab/builder": "^4.3.0",
+        "@jupyter/builder": "^1.2.1",
         "@jupyterlab/testutils": "^4.3.0",
         "@types/jest": "^29.2.0",
         "@types/json-schema": "^7.0.11",
