@@ -15,12 +15,14 @@ export class TourHandler implements ITourHandler {
     label: string,
     options?: Omit<JoyrideProps, 'steps'>,
     icon: LabIcon | null = null,
-    version: number = -1
+    version: number = -1,
+    controlled: boolean = false
   ) {
     this._label = label;
     this._id = id;
     this._icon = icon || null;
     this._version = version;
+    this._controlled = controlled;
     const { styles, ...others } = options ?? {};
     this._options = { ...TutorialDefaultOptions, ...others };
     if (!this._options.styles) {
@@ -34,9 +36,19 @@ export class TourHandler implements ITourHandler {
 
   /**
    * The index of the current step of the tour. Returns -1 if tour isn't active.
+   * Setting this moves the tour only when {@link controlled} is true.
    */
   get currentStepIndex(): number {
     return this._currentStepIndex;
+  }
+
+  set currentStepIndex(index: number) {
+    if (index === this._currentStepIndex) {
+      return;
+    }
+
+    this._currentStepIndex = index;
+    this._currentStepIndexChanged.emit(index);
   }
 
   /**
@@ -112,6 +124,20 @@ export class TourHandler implements ITourHandler {
    */
   get stepChanged(): ISignal<this, CallBackProps> {
     return this._stepChanged;
+  }
+
+  /**
+   * When true, Joyride is controlled by {@link currentStepIndex}.
+   */
+  get controlled(): boolean {
+    return this._controlled;
+  }
+
+  /**
+   * A signal emitted when {@link currentStepIndex} changes.
+   */
+  get currentStepIndexChanged(): ISignal<this, number> {
+    return this._currentStepIndexChanged;
   }
 
   /**
@@ -209,13 +235,14 @@ export class TourHandler implements ITourHandler {
     // Handle status changes when they occur
     if (status !== this._previousStatus) {
       this._previousStatus = status;
-      this._currentStepIndex = -1;
+      this.currentStepIndex = -1;
+
       if (status === STATUS.FINISHED) {
         this._finished.emit(data);
       } else if (status === STATUS.SKIPPED) {
         this._skipped.emit(data);
       } else if (status === STATUS.RUNNING) {
-        this._currentStepIndex = 0;
+        this.currentStepIndex = 0;
         this._started.emit(data);
       } else if (status === STATUS.ERROR) {
         console.error(`An error occurred with the tour at step: ${step}`);
@@ -224,9 +251,8 @@ export class TourHandler implements ITourHandler {
 
     // Emit step change event
     if (status === STATUS.RUNNING) {
-      if (index !== this._previousStepIndex) {
-        this._previousStepIndex = index;
-        this._currentStepIndex = data.index;
+      if (!this._controlled) {
+        this.currentStepIndex = index;
       }
       this._stepChanged.emit(data);
     }
@@ -265,6 +291,9 @@ export class TourHandler implements ITourHandler {
   private _stepChanged: Signal<this, CallBackProps> = new Signal<this, CallBackProps>(
     this
   );
+  private _currentStepIndexChanged: Signal<this, number> = new Signal<this, number>(
+    this
+  );
 
   private _currentStepIndex = -1;
   private _id: string;
@@ -272,8 +301,8 @@ export class TourHandler implements ITourHandler {
   private _label: string;
   private _options: Partial<JoyrideProps>;
   private _previousStatus: Status = STATUS.READY;
-  private _previousStepIndex = -1;
   private _steps: Step[] = new Array<Step>();
   private _icon: LabIcon | null;
   private _version: number;
+  private _controlled = false;
 }

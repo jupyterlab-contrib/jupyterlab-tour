@@ -54,10 +54,9 @@ class Tour extends React.Component<ITourProps, ITourState> {
 
   private _handleJoyrideCallback = (data: CallBackProps): void => {
     const { status } = data;
+    const handler = this.props.tours[this.state.index];
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
-
-    this.props.tours[this.state.index].handleTourEvent(data);
-
+    handler.handleTourEvent(data);
     if (finishedStatuses.includes(status)) {
       this.setState({ run: false });
       const newIndex = this.state.index + 1;
@@ -70,15 +69,40 @@ class Tour extends React.Component<ITourProps, ITourState> {
   };
 
   render(): JSX.Element | null {
-    return this.props.tours && this.props.tours[this.state.index] ? (
+    const handler = this.props.tours?.[this.state.index];
+
+    if (!handler) {
+      return null;
+    }
+
+    const options = { ...handler.options };
+    delete options.stepIndex;
+
+    const joyride = (stepIndex?: number): JSX.Element => (
       <ReactJoyride
-        key={this.props.tours[this.state.index].id}
-        {...this.props.tours[this.state.index].options}
+        key={handler.id}
+        {...options}
         callback={this._handleJoyrideCallback}
         run={this.state.run}
-        steps={this.props.tours[this.state.index].steps}
+        steps={handler.steps}
+        {...(stepIndex === undefined ? {} : { stepIndex })}
       />
-    ) : null;
+    );
+
+    if (!handler.controlled) {
+      return joyride();
+    }
+
+    return (
+      <UseSignal
+        signal={handler.currentStepIndexChanged}
+        initialArgs={handler.currentStepIndex}
+      >
+        {(): React.ReactNode =>
+          joyride(handler.currentStepIndex >= 0 ? handler.currentStepIndex : undefined)
+        }
+      </UseSignal>
+    );
   }
 }
 

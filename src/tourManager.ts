@@ -121,7 +121,8 @@ export class TourManager implements ITourManager {
         hasHelpEntry: tour.hasHelpEntry === false ? false : true,
         options: tour.options,
         icon: tour.icon ? LabIcon.resolve({ icon: tour.icon }) : undefined,
-        version: tour.version
+        version: tour.version,
+        controlled: tour.controlled
       });
 
       tour.steps.forEach(step => {
@@ -165,6 +166,7 @@ export class TourManager implements ITourManager {
     const options = args.options ?? {};
     const icon = args.icon ?? null;
     const version = args.version ?? 0;
+    const controlled = args.controlled ?? false;
 
     if (this._tours.has(id)) {
       throw new Error(
@@ -181,7 +183,14 @@ export class TourManager implements ITourManager {
     }
 
     // Create tour and add it to help menu if needed
-    const newTutorial: TourHandler = new TourHandler(id, label, options, icon, version);
+    const newTutorial: TourHandler = new TourHandler(
+      id,
+      label,
+      options,
+      icon,
+      version,
+      controlled
+    );
     if (this._menu && addToHelpMenu) {
       const options = {
         args: {
@@ -250,6 +259,12 @@ export class TourManager implements ITourManager {
     }
 
     const startTours = (): void => {
+      tourList.forEach(tour => {
+        if (tour.controlled) {
+          tour.currentStepIndex = 0;
+        }
+      });
+
       this._activeTours = tourList;
       this._tourLaunched.emit(tourList);
     };
