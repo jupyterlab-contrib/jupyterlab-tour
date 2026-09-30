@@ -12,10 +12,6 @@ on:
       post_version_spec:
         description: 'Post Version Specifier'
         required: false
-      # silent:
-      #   description: "Set a placeholder in the changelog and don't publish the release."
-      #   required: false
-      #   type: boolean
       since:
         description: 'Use PRs with activity since this date or git reference'
         required: false
