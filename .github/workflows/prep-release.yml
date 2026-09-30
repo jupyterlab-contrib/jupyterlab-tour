@@ -33,7 +33,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version_spec: ${{ github.event.inputs.version_spec }}
-          # silent: ${{ github.event.inputs.silent }}
           post_version_spec: ${{ github.event.inputs.post_version_spec }}
           branch: ${{ github.event.inputs.branch }}
           since: ${{ github.event.inputs.since }}
