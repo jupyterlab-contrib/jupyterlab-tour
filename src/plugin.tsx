@@ -237,10 +237,15 @@ function activateDefaults(
     (app.name !== 'Jupyter Notebook' ||
       window.location.pathname.match(/\/notebooks\/.+$/))
   ) {
+    let hasOfferedNotebookTour = false;
+
     nbTracker.widgetAdded.connect(() => {
-      if (tourManager.tours.has(NOTEBOOK_ID)) {
-        tourManager.launch([NOTEBOOK_ID], false);
+      if (hasOfferedNotebookTour || !tourManager.tours.has(NOTEBOOK_ID)) {
+        return;
       }
+
+      hasOfferedNotebookTour = true;
+      void tourManager.launch([NOTEBOOK_ID], false);
     });
   }
 
